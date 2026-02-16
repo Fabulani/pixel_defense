@@ -1,0 +1,33 @@
+[gd_scene format=3 uid="uid://c5ddo8e7h0slh"]
+
+[ext_resource type="Script" uid="uid://cbb580k6c3i2j" path="res://scenes/levels/level.gd" id="1_377w7"]
+[ext_resource type="PackedScene" uid="uid://jl5by2a6d7m6" path="res://scenes/towers/tower_basic.tscn" id="2_bovvr"]
+[ext_resource type="PackedScene" uid="uid://cspwgnxrwkpkb" path="res://scenes/ui/player_camera.tscn" id="3_b2cq8"]
+
+[sub_resource type="TileSet" id="TileSet_bovvr"]
+
+[sub_resource type="Curve2D" id="Curve2D_ftxyw"]
+_data = {
+"points": PackedVector2Array(0, 0, 0, 0, 42, 49, 0, 0, 0, 0, 318, 37, 0, 0, 0, 0, 306, 601, 0, 0, 0, 0, 780, 584, 0, 0, 0, 0, 775, 280, 0, 0, 0, 0, 1105, 278)
+}
+point_count = 6
+
+[node name="Level" type="Node2D" unique_id=1663716660]
+script = ExtResource("1_377w7")
+
+[node name="BG" type="Node2D" parent="." unique_id=1710723251]
+
+[node name="TileMapLayer" type="TileMapLayer" parent="BG" unique_id=1857320528]
+tile_set = SubResource("TileSet_bovvr")
+
+[node name="Path2D" type="Path2D" parent="." unique_id=721747939]
+curve = SubResource("Curve2D_ftxyw")
+
+[node name="Towers" type="Node2D" parent="." unique_id=1574640511]
+
+[node name="TowerBasic" parent="Towers" unique_id=1298449892 instance=ExtResource("2_bovvr")]
+position = Vector2(680, 240)
+
+[node name="Bullets" type="Node2D" parent="." unique_id=818737758]
+
+[node name="PlayerCamera" parent="." unique_id=1926886031 instance=ExtResource("3_b2cq8")]
