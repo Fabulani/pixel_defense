@@ -2,6 +2,24 @@
 
 Tower defense with randomly generated maps every wave.
 
+# Install
+
+Download Git LFS: https://git-lfs.com/
+
+Clone:
+
+```sh
+git clone git@github.com:Fabulani/pixel_defense.git
+```
+
+Initialize Git LFS and fetch assets:
+
+```sh
+git lfs install && git lfs fetch
+```
+
+# Notes
+
 AI suggestion:
 	
 | Day | Objective | Concrete Tasks | Deliverable |
