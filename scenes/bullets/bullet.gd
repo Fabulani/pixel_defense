@@ -1,7 +1,7 @@
 extends Area2D
 
 var direction: Vector2
-var speed := 800
+var speed := 500
 
 func setup(pos, angle, bullet_enum):
 	position = pos

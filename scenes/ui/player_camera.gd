@@ -1,7 +1,7 @@
 extends Camera2D
 
 var drag: bool
-@export var acceleration: float = 3
+@export var acceleration: float = 1
 
 func _input(event):
 	if event is InputEventMouseButton and event.button_index == 3:

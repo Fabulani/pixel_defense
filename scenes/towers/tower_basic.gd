@@ -9,4 +9,4 @@ func _process(_delta: float) -> void:
 func _on_reload_timer_timeout() -> void:
 	if enemies:
 		var dir = Vector2.DOWN.rotated($Turret.rotation).normalized()
-		shoot.emit(position + dir * 64, $Turret.rotation, Data.Bullet.SINGLE)
+		shoot.emit(position + dir * 8, $Turret.rotation, Data.Bullet.SINGLE)

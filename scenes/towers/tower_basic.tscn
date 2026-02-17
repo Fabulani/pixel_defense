@@ -2,23 +2,26 @@
 
 [ext_resource type="PackedScene" uid="uid://br8jx6eys5877" path="res://scenes/towers/tower.tscn" id="1_kruwa"]
 [ext_resource type="Script" uid="uid://300l41j501e5" path="res://scenes/towers/tower_basic.gd" id="2_4fgg7"]
-[ext_resource type="Texture2D" uid="uid://ck8r714w8xbtt" path="res://icon.svg" id="2_6vco4"]
+[ext_resource type="Texture2D" uid="uid://cad40gc5v100w" path="res://assets/tiles/tile_0029.png" id="3_6ku0u"]
+[ext_resource type="Texture2D" uid="uid://rfk0lmbvu1jc" path="res://assets/tiles/tile_0030.png" id="4_iqfda"]
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_4fgg7"]
-radius = 500.0
+radius = 200.0
 
 [node name="TowerBasic" unique_id=1298449892 instance=ExtResource("1_kruwa")]
 script = ExtResource("2_4fgg7")
 
 [node name="Base" parent="." index="0" unique_id=1746217729]
 modulate = Color(0, 0, 0.21176471, 1)
-texture = ExtResource("2_6vco4")
+texture = ExtResource("3_6ku0u")
 
 [node name="Turret" parent="." index="1" unique_id=2044774637]
-modulate = Color(1, 0, 1, 1)
-texture = ExtResource("2_6vco4")
+texture = ExtResource("4_iqfda")
 
 [node name="CollisionShape2D" parent="EnemyDetectionArea" parent_id_path=PackedInt32Array(1190206869) index="0" unique_id=404107249]
 shape = SubResource("CircleShape2D_4fgg7")
+
+[node name="ReloadTimer" parent="." index="3" unique_id=561375537]
+wait_time = 0.5
 
 [connection signal="timeout" from="ReloadTimer" to="." method="_on_reload_timer_timeout"]
