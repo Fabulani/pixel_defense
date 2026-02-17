@@ -28,6 +28,12 @@ Data="*uid://b3pd8fjmh3o8u"
 version_control/plugin_name="GitPlugin"
 version_control/autoload_on_startup=true
 
+[layer_names]
+
+2d_physics/layer_1="enemies"
+2d_physics/layer_2="projectiles"
+2d_physics/layer_3="towers"
+
 [rendering]
 
 renderer/rendering_method="mobile"

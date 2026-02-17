@@ -8,7 +8,7 @@ func setup(new_path_follow: PathFollow2D):
 
 # Called when the node enters the scene tree for the first time.
 func _ready():
-	pass
+	add_to_group("enemies")
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta: float) -> void:
