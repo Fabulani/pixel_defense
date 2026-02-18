@@ -12,7 +12,6 @@ radius = 200.0
 script = ExtResource("2_4fgg7")
 
 [node name="Base" parent="." index="0" unique_id=1746217729]
-modulate = Color(0, 0, 0.21176471, 1)
 texture = ExtResource("3_6ku0u")
 
 [node name="Turret" parent="." index="1" unique_id=2044774637]
