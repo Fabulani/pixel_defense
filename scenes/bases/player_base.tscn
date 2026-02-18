@@ -1,0 +1,19 @@
+[gd_scene format=3 uid="uid://dnbq1t1oyn8fv"]
+
+[ext_resource type="Script" uid="uid://drppykrq2qb0j" path="res://scenes/levels/player_base.gd" id="1_isdcw"]
+[ext_resource type="Texture2D" uid="uid://dhxgp8y0e7grb" path="res://assets/tiles/tile_0072.png" id="2_uom3b"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_xb4v1"]
+size = Vector2(16, 14)
+
+[node name="PlayerBase" type="Area2D" unique_id=1938638869]
+collision_layer = 8
+script = ExtResource("1_isdcw")
+
+[node name="Sprite2D" type="Sprite2D" parent="." unique_id=2125760659]
+texture = ExtResource("2_uom3b")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=811180338]
+shape = SubResource("RectangleShape2D_xb4v1")
+
+[connection signal="area_entered" from="." to="." method="_on_area_entered"]

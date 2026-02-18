@@ -33,6 +33,7 @@ version_control/autoload_on_startup=true
 2d_physics/layer_1="enemies"
 2d_physics/layer_2="projectiles"
 2d_physics/layer_3="towers"
+2d_physics/layer_4="player base"
 
 [rendering]
 

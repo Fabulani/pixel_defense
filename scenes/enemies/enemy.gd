@@ -1,7 +1,7 @@
 class_name Enemy extends Area2D
 
 var _path_follow: PathFollow2D
-var _health = 3
+var _health = 10
 
 func setup(new_path_follow: PathFollow2D):
 	_path_follow = new_path_follow
@@ -19,5 +19,5 @@ func _process(delta: float) -> void:
 func _on_area_entered(bullet: Area2D):
 	_health -= 1
 	if _health <= 0:
-		self.queue_free()
+		queue_free()
 	bullet.queue_free()
