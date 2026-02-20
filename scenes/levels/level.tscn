@@ -3,10 +3,9 @@
 [ext_resource type="Script" uid="uid://cbb580k6c3i2j" path="res://scenes/levels/level.gd" id="1_377w7"]
 [ext_resource type="PackedScene" uid="uid://jl5by2a6d7m6" path="res://scenes/towers/tower_basic.tscn" id="2_bovvr"]
 [ext_resource type="Texture2D" uid="uid://cwjyrtmf3ydng" path="res://assets/tilemap/tiles_packed.png" id="2_xb4v1"]
-[ext_resource type="PackedScene" uid="uid://cspwgnxrwkpkb" path="res://scenes/ui/player_camera.tscn" id="3_b2cq8"]
 [ext_resource type="PackedScene" uid="uid://dnbq1t1oyn8fv" path="res://scenes/bases/player_base.tscn" id="5_urvlt"]
 
-[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_urvlt"]
+[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_xb4v1"]
 resource_name = "Tiles"
 texture = ExtResource("2_xb4v1")
 0:0/0 = 0
@@ -436,7 +435,7 @@ texture = ExtResource("2_xb4v1")
 terrain_set_0/mode = 0
 terrain_set_0/terrain_0/name = "Grass"
 terrain_set_0/terrain_0/color = Color(1, 0.34509805, 0.2509804, 1)
-sources/0 = SubResource("TileSetAtlasSource_urvlt")
+sources/0 = SubResource("TileSetAtlasSource_xb4v1")
 
 [sub_resource type="Curve2D" id="Curve2D_xb4v1"]
 _data = {
@@ -462,10 +461,6 @@ curve = SubResource("Curve2D_xb4v1")
 position = Vector2(218, 105)
 
 [node name="Bullets" type="Node2D" parent="." unique_id=818737758]
-
-[node name="PlayerCamera" parent="." unique_id=1926886031 instance=ExtResource("3_b2cq8")]
-position = Vector2(232, 131)
-zoom = Vector2(2.48, 2.48)
 
 [node name="PlayerBase" parent="." unique_id=1938638869 instance=ExtResource("5_urvlt")]
 position = Vector2(440, 152)

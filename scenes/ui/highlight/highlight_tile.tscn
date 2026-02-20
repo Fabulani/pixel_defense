@@ -7,5 +7,6 @@
 script = ExtResource("1_ha81l")
 
 [node name="Sprite2D" type="Sprite2D" parent="." unique_id=617467158]
+modulate = Color(1, 1, 1, 0.5568628)
 texture = ExtResource("2_bgt8l")
 centered = false
