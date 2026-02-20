@@ -20,4 +20,3 @@ func place_tower(cell_position : Vector2i) -> void:
 	var new_tower : Node2D = tower_packed_scene.instantiate()
 	new_tower.position = cell_position * CELL_SIZE + Vector2i(CELL_SIZE/2, CELL_SIZE/2)
 	add_child(new_tower)
-	# TODO: tower is drawing on top of highlight
