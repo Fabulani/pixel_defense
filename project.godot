@@ -23,6 +23,10 @@ config/icon="res://icon.svg"
 
 Data="*uid://b3pd8fjmh3o8u"
 
+[display]
+
+window/stretch/mode="viewport"
+
 [editor]
 
 version_control/plugin_name="GitPlugin"
@@ -45,4 +49,5 @@ left_mouse={
 
 [rendering]
 
+textures/canvas_textures/default_texture_filter=0
 renderer/rendering_method="mobile"
