@@ -4,11 +4,18 @@
 [ext_resource type="Script" uid="uid://chavefiqa5na" path="res://scenes/main/main.gd" id="1_l3cfh"]
 [ext_resource type="PackedScene" uid="uid://jl5by2a6d7m6" path="res://scenes/towers/tower_basic.tscn" id="2_6q06x"]
 [ext_resource type="PackedScene" uid="uid://c5ddo8e7h0slh" path="res://scenes/levels/level.tscn" id="3_k2fmo"]
+[ext_resource type="Script" uid="uid://b8vkhmkqiqk07" path="res://scenes/managers/building_manager.gd" id="3_ow5a4"]
 [ext_resource type="PackedScene" uid="uid://cspwgnxrwkpkb" path="res://scenes/ui/player_camera.tscn" id="4_yyfjg"]
 
-[node name="Main" type="Node2D" unique_id=74125191]
+[node name="Main" type="Node2D" unique_id=74125191 node_paths=PackedStringArray("building_manager")]
 script = ExtResource("1_l3cfh")
+building_manager = NodePath("BuildingManager")
 tower_packed_scene = ExtResource("2_6q06x")
+
+[node name="BuildingManager" type="Node" parent="." unique_id=637507500 node_paths=PackedStringArray("level_layer")]
+script = ExtResource("3_ow5a4")
+level_layer = NodePath("../Level")
+metadata/_custom_type_script = "uid://b8vkhmkqiqk07"
 
 [node name="PlayerCamera" parent="." unique_id=1926886031 instance=ExtResource("4_yyfjg")]
 position = Vector2(232, 131)
