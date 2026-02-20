@@ -3,19 +3,23 @@
 [ext_resource type="PackedScene" uid="uid://cfu7ww43adwlf" path="res://scenes/ui/highlight/highlight_tile.tscn" id="1_k2fmo"]
 [ext_resource type="Script" uid="uid://chavefiqa5na" path="res://scenes/main/main.gd" id="1_l3cfh"]
 [ext_resource type="PackedScene" uid="uid://jl5by2a6d7m6" path="res://scenes/towers/tower_basic.tscn" id="2_6q06x"]
+[ext_resource type="PackedScene" uid="uid://cfa11hv32x4xj" path="res://scenes/managers/building_manager.tscn" id="3_hujxm"]
 [ext_resource type="PackedScene" uid="uid://c5ddo8e7h0slh" path="res://scenes/levels/level.tscn" id="3_k2fmo"]
-[ext_resource type="Script" uid="uid://b8vkhmkqiqk07" path="res://scenes/managers/building_manager.gd" id="3_ow5a4"]
+[ext_resource type="PackedScene" uid="uid://dpsuk0shrkk0d" path="res://scenes/managers/pathfinding_manager.tscn" id="4_b1x3f"]
 [ext_resource type="PackedScene" uid="uid://cspwgnxrwkpkb" path="res://scenes/ui/player_camera.tscn" id="4_yyfjg"]
+[ext_resource type="PackedScene" uid="uid://dbkc22ud4e32" path="res://scenes/spawners/enemy_spawner.tscn" id="7_yyfjg"]
+[ext_resource type="PackedScene" uid="uid://b1mg352s1f4mt" path="res://scenes/enemies/enemy_entity.tscn" id="9_b1x3f"]
 
 [node name="Main" type="Node2D" unique_id=74125191 node_paths=PackedStringArray("building_manager")]
 script = ExtResource("1_l3cfh")
 building_manager = NodePath("BuildingManager")
 tower_packed_scene = ExtResource("2_6q06x")
 
-[node name="BuildingManager" type="Node" parent="." unique_id=637507500 node_paths=PackedStringArray("level_layer")]
-script = ExtResource("3_ow5a4")
+[node name="BuildingManager" parent="." unique_id=829787398 node_paths=PackedStringArray("level_layer") instance=ExtResource("3_hujxm")]
 level_layer = NodePath("../Level")
-metadata/_custom_type_script = "uid://b8vkhmkqiqk07"
+
+[node name="PathfindingManager" parent="." unique_id=66316873 node_paths=PackedStringArray("level_layer") instance=ExtResource("4_b1x3f")]
+level_layer = NodePath("../Level")
 
 [node name="PlayerCamera" parent="." unique_id=1926886031 instance=ExtResource("4_yyfjg")]
 position = Vector2(232, 131)
@@ -25,3 +29,13 @@ zoom = Vector2(2.48, 2.48)
 
 [node name="HighlightTile" parent="." unique_id=1118327556 instance=ExtResource("1_k2fmo")]
 top_level = true
+
+[node name="EnemySpawner" parent="." unique_id=1573003688 instance=ExtResource("7_yyfjg")]
+
+[node name="EnemyEntity" parent="." unique_id=1178725513 node_paths=PackedStringArray("target_pos", "pathfinding_manager") instance=ExtResource("9_b1x3f")]
+position = Vector2(37, 179)
+target_pos = NodePath("../Marker2D")
+pathfinding_manager = NodePath("../PathfindingManager")
+
+[node name="Marker2D" type="Marker2D" parent="." unique_id=23311884]
+position = Vector2(440, 153)

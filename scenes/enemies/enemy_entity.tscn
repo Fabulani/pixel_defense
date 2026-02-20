@@ -1,0 +1,16 @@
+[gd_scene format=3 uid="uid://b1mg352s1f4mt"]
+
+[ext_resource type="Script" uid="uid://iwqck7whgec3" path="res://scenes/enemies/enemy_entity.gd" id="1_vequf"]
+[ext_resource type="Texture2D" uid="uid://b0uyhu3tcesfm" path="res://assets/ships/ship_0023.png" id="2_35g40"]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_re1xi"]
+
+[node name="EnemyEntity" type="CharacterBody2D" unique_id=1178725513]
+script = ExtResource("1_vequf")
+
+[node name="Sprite2D" type="Sprite2D" parent="." unique_id=1385029781]
+rotation = 1.5707964
+texture = ExtResource("2_35g40")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=1444159112]
+shape = SubResource("CircleShape2D_re1xi")
