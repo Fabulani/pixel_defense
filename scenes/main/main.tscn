@@ -2,11 +2,13 @@
 
 [ext_resource type="PackedScene" uid="uid://cfu7ww43adwlf" path="res://scenes/ui/highlight/highlight_tile.tscn" id="1_k2fmo"]
 [ext_resource type="Script" uid="uid://chavefiqa5na" path="res://scenes/main/main.gd" id="1_l3cfh"]
+[ext_resource type="PackedScene" uid="uid://jl5by2a6d7m6" path="res://scenes/towers/tower_basic.tscn" id="2_6q06x"]
 [ext_resource type="PackedScene" uid="uid://c5ddo8e7h0slh" path="res://scenes/levels/level.tscn" id="3_k2fmo"]
 [ext_resource type="PackedScene" uid="uid://cspwgnxrwkpkb" path="res://scenes/ui/player_camera.tscn" id="4_yyfjg"]
 
 [node name="Main" type="Node2D" unique_id=74125191]
 script = ExtResource("1_l3cfh")
+tower_packed_scene = ExtResource("2_6q06x")
 
 [node name="PlayerCamera" parent="." unique_id=1926886031 instance=ExtResource("4_yyfjg")]
 position = Vector2(232, 131)
