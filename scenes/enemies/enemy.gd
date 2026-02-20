@@ -1,7 +1,8 @@
 class_name Enemy extends Area2D
 
 var _path_follow: PathFollow2D
-var _health = 10
+var _health = 15
+var _speed = 50
 
 func setup(new_path_follow: PathFollow2D):
 	_path_follow = new_path_follow
@@ -10,9 +11,8 @@ func _ready():
 	add_to_group("enemies")
 
 func _process(delta: float) -> void:
-	_path_follow.progress += 100*delta
+	_path_follow.progress += _speed*delta
 	if _path_follow.progress_ratio >= 0.99:
-		print("damage")
 		queue_free()
 
 
