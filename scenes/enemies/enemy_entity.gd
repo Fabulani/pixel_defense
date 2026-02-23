@@ -1,9 +1,9 @@
 class_name EnemyEntity extends CharacterBody2D
 
 @export var movement_speed : float = 50
+@export var health: int = 3
 
 var path_array : Array[Vector2i] = []
-
 var pathfinding : PathfindingManager
 var target_pos : Vector2
 
@@ -30,3 +30,11 @@ func recalculate_path() -> void:
 	path_array = pathfinding.get_valid_path(global_position / 16, target_pos / 16)
 
 # TODO: on_level_changed signal: recalculate_path()
+
+func hit(damage: int):
+	health -= damage
+	if health <= 0:
+		death()
+		
+func death() -> void:
+	queue_free()

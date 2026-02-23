@@ -6,7 +6,7 @@
 
 [node name="EnemySpawner" type="Node2D" unique_id=1573003688]
 script = ExtResource("1_kbb3g")
-wave_data_array = Array[PackedScene]([ExtResource("2_safso"), ExtResource("2_safso")])
+wave_data_array = Array[PackedScene]([ExtResource("2_safso"), ExtResource("2_safso"), ExtResource("2_safso"), ExtResource("2_safso"), ExtResource("2_safso")])
 
 [node name="Sprite2D" type="Sprite2D" parent="." unique_id=839354663]
 texture = ExtResource("3_ggh3e")
