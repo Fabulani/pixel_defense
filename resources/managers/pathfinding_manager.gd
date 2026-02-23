@@ -33,3 +33,6 @@ func get_valid_path(start_position : Vector2i, end_position : Vector2i) -> Array
 		
 		path_array.append(current_point)
 	return path_array
+
+func set_cell_solid(cell_position: Vector2i, solid: bool) -> void:
+	astar_grid.set_point_solid(cell_position, solid)

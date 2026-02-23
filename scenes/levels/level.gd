@@ -19,5 +19,9 @@ func create_bullet(pos: Vector2, angle: float, bullet_enum: Data.Bullet):
 	$Bullets.add_child(bullet)
 
 
-func _on_building_manager_new_tower_built(tower: Tower) -> void:
+func _on_building_manager_new_tower_built(tower: Tower, cell_position: Vector2i) -> void:
+	pathfinding.set_cell_solid(cell_position, true)
+	for enemy in get_tree().get_nodes_in_group("enemy_group"):
+		enemy.recalculate_path()
+	
 	tower.connect('shoot', create_bullet)

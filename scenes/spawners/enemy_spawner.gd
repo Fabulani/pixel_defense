@@ -28,6 +28,7 @@ func spawn_entity() -> void:
 	enemy.pathfinding = pathfinding
 	enemy.target_pos = target_pos
 	add_child(enemy)
+	enemy.add_to_group("enemy_group")
 
 
 func _on_enemy_spawn_timer_timeout() -> void:

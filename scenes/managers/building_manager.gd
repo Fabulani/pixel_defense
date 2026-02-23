@@ -1,6 +1,6 @@
 class_name BuildingManager extends Node
 
-signal new_tower_built(tower: Tower)
+signal new_tower_built(tower: Tower, cell_position: Vector2i)
 
 @export var level_layer: Node2D = null
 
@@ -19,7 +19,7 @@ func place_tower(cell_position : Vector2i, tower_packed_scene : PackedScene) -> 
 	new_tower.add_to_group(TOWER_GROUP)	
 	add_child(new_tower)
 	used_tiles.append(cell_position)
-	new_tower_built.emit(new_tower) 
+	new_tower_built.emit(new_tower, cell_position) 
 
 func check_valid_tower_placement(cell_position : Vector2i) -> bool:
 	if used_tiles.has(cell_position):
