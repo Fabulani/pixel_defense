@@ -1,6 +1,5 @@
 class_name Level extends Node2D
 
-var enemy_scene = preload("res://scenes/enemies/enemy.tscn")
 var bullet_scene = preload("res://scenes/bullets/bullet.tscn")
 
 var pathfinding := PathfindingManager.new()
