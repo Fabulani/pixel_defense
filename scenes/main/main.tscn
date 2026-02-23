@@ -30,3 +30,5 @@ top_level = true
 position = Vector2(440, 153)
 
 [node name="EntityContainer" type="Node" parent="." unique_id=2107950223]
+
+[connection signal="new_tower_built" from="ManagerContainer/BuildingManager" to="Level" method="_on_building_manager_new_tower_built"]

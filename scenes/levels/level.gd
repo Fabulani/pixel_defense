@@ -20,3 +20,7 @@ func create_bullet(pos: Vector2, angle: float, bullet_enum: Data.Bullet):
 	var bullet = bullet_scene.instantiate()
 	bullet.setup(pos, angle, bullet_enum)
 	$Bullets.add_child(bullet)
+
+
+func _on_building_manager_new_tower_built(tower: Tower) -> void:
+	tower.connect('shoot', create_bullet)

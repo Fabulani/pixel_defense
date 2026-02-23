@@ -1,5 +1,7 @@
 class_name BuildingManager extends Node
 
+signal new_tower_built(tower: Tower)
+
 @export var level_layer: Node2D = null
 
 const IS_BUILDABLE : String = "buildable"
@@ -16,6 +18,7 @@ func place_tower(cell_position : Vector2i, tower_packed_scene : PackedScene) -> 
 	new_tower.position = cell_position * CELL_SIZE + Vector2i(CELL_SIZE/2, CELL_SIZE/2)
 	new_tower.add_to_group(TOWER_GROUP) 	
 	add_child(new_tower)
+	new_tower_built.emit(new_tower) 
 
 func check_valid_tower_placement(cell_position : Vector2i) -> bool:
 	if used_tiles.has(cell_position):
