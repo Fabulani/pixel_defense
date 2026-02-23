@@ -1,11 +1,15 @@
 [gd_scene format=3 uid="uid://dbkc22ud4e32"]
 
 [ext_resource type="Script" uid="uid://cc8hn5m1wdc3q" path="res://scenes/spawners/enemy_spawner.gd" id="1_kbb3g"]
+[ext_resource type="PackedScene" uid="uid://b1mg352s1f4mt" path="res://scenes/enemies/enemy_entity.tscn" id="2_safso"]
+[ext_resource type="Texture2D" uid="uid://55gkx1u2ns7i" path="res://assets/tiles/tile_0096.png" id="3_ggh3e"]
 
 [node name="EnemySpawner" type="Node2D" unique_id=1573003688]
 script = ExtResource("1_kbb3g")
+wave_data_array = Array[PackedScene]([ExtResource("2_safso"), ExtResource("2_safso")])
 
 [node name="Sprite2D" type="Sprite2D" parent="." unique_id=839354663]
+texture = ExtResource("3_ggh3e")
 
 [node name="EnemySpawnTimer" type="Timer" parent="." unique_id=1347065656]
 
