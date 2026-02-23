@@ -1,5 +1,7 @@
 class_name PlayerBase extends Area2D
 
+signal game_over
+
 var _health = 1
 
 func _on_body_entered(body: EnemyEntity) -> void:
@@ -8,4 +10,4 @@ func _on_body_entered(body: EnemyEntity) -> void:
 		body.queue_free()
 		if _health <= 0:
 			queue_free()
-			print("Game Over")
+			game_over.emit()

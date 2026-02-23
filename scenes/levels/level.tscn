@@ -1,7 +1,6 @@
 [gd_scene format=4 uid="uid://c5ddo8e7h0slh"]
 
 [ext_resource type="Script" uid="uid://cbb580k6c3i2j" path="res://scenes/levels/level.gd" id="1_377w7"]
-[ext_resource type="PackedScene" uid="uid://jl5by2a6d7m6" path="res://scenes/towers/tower_basic.tscn" id="2_bovvr"]
 [ext_resource type="Texture2D" uid="uid://cwjyrtmf3ydng" path="res://assets/tilemap/tiles_packed.png" id="2_xb4v1"]
 [ext_resource type="PackedScene" uid="uid://dbkc22ud4e32" path="res://scenes/spawners/enemy_spawner.tscn" id="5_d4w6o"]
 [ext_resource type="PackedScene" uid="uid://dnbq1t1oyn8fv" path="res://scenes/bases/player_base.tscn" id="5_urvlt"]
@@ -446,11 +445,6 @@ tile_set = SubResource("TileSet_bovvr")
 
 [node name="Path2D" type="Path2D" parent="." unique_id=721747939]
 curve = SubResource("Curve2D_xb4v1")
-
-[node name="Towers" type="Node2D" parent="." unique_id=1574640511]
-
-[node name="TowerBasic" parent="Towers" unique_id=1298449892 instance=ExtResource("2_bovvr")]
-position = Vector2(218, 105)
 
 [node name="Bullets" type="Node2D" parent="." unique_id=818737758]
 
