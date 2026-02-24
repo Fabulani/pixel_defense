@@ -10,6 +10,7 @@ func _ready() -> void:
 	current_level.get_node("PlayerBase").game_over.connect(_on_game_over)
 
 func _on_game_over() -> void:
+	# TODO: change to pause after user input is better handled (pause here freezes input as of now)
 	get_tree().reload_current_scene()
 
 func _unhandled_input(event: InputEvent) -> void:
