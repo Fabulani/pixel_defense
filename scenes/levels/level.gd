@@ -1,17 +1,23 @@
 class_name Level extends Node2D
 
-var bullet_scene = preload("res://scenes/bullets/bullet.tscn")
-
+var bullet_scene  = preload("res://scenes/bullets/bullet.tscn")
 var pathfinding := PathfindingManager.new()
 
-@onready var enemy_spawner = $EnemySpawner
-@onready var target_pos = $PlayerBase.global_position
+@export var enemy_spawner: EnemySpawner
+@export var wave_manager: WaveManager
+
+@onready var target_pos: Vector2 = $PlayerBase.global_position
 
 func _ready() -> void:
 	pathfinding.setup($TileMapLayer)
 	enemy_spawner.pathfinding = pathfinding
 	enemy_spawner.target_pos = target_pos
 	RenderingServer.set_default_clear_color('dff6f5')
+	
+	wave_manager.all_waves_done.connect(_on_wave_manager_all_waves_done)
+	
+	# Starts the waves
+	wave_manager.start_next_wave()
 
 func create_bullet(pos: Vector2, angle: float, bullet_enum: Data.Bullet):
 	var bullet = bullet_scene.instantiate()
@@ -25,3 +31,6 @@ func _on_building_manager_new_tower_built(tower: Tower, cell_position: Vector2i)
 		enemy.recalculate_path()
 	
 	tower.connect('shoot', create_bullet)
+
+func _on_wave_manager_all_waves_done():
+	pass

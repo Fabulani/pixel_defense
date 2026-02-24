@@ -1,6 +1,6 @@
 class_name EnemyEntity extends CharacterBody2D
 
-@export var movement_speed : float = 40
+@export var movement_speed : float = 100
 @export var health: int = 30
 
 var path_array : Array[Vector2i] = []
