@@ -1,9 +1,10 @@
 class_name EnemyEntity extends CharacterBody2D
 
-@export var movement_speed : float = 75
-@export var health: int = 3
+@export var movement_speed : float = 40
+@export var health: int = 30
 
 var path_array : Array[Vector2i] = []
+var path_index := 0
 var pathfinding : PathfindingManager
 var target_pos : Vector2
 
@@ -16,19 +17,18 @@ func _process(_delta: float) -> void:
 	move_and_slide()
 
 func get_path_to_position() -> void:
-	if path_array:
-		var direction : Vector2 = global_position.direction_to(path_array[0])
+	if path_array and path_index < path_array.size():
+		var direction : Vector2 = global_position.direction_to(path_array[path_index])
 		velocity = direction * movement_speed
 		
-		if global_position.distance_to(path_array[0]) <= 10:
-			path_array.remove_at(0)	
+		if global_position.distance_to(path_array[path_index]) <= 10:
+			path_index += 1
 	else:
 		velocity = Vector2.ZERO
 
 func recalculate_path() -> void:
 	path_array = pathfinding.get_valid_path(global_position / 16, target_pos / 16)
-
-# TODO: on_level_changed signal: recalculate_path()
+	path_index = 0
 
 func hit(damage: int):
 	health -= damage
