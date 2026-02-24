@@ -20,6 +20,7 @@ func get_path_to_position() -> void:
 	if path_array and path_index < path_array.size():
 		var direction : Vector2 = global_position.direction_to(path_array[path_index])
 		velocity = direction * movement_speed
+		rotation = velocity.angle()
 		
 		if global_position.distance_to(path_array[path_index]) <= 10:
 			path_index += 1
