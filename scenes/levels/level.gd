@@ -2,6 +2,7 @@ class_name Level extends Node2D
 
 var bullet_scene  = preload("res://scenes/bullets/bullet.tscn")
 var pathfinding := PathfindingManager.new()
+var currency := CurrencyManager.new()
 
 @export var enemy_spawner: EnemySpawner
 @export var wave_manager: WaveManager
@@ -9,9 +10,13 @@ var pathfinding := PathfindingManager.new()
 @onready var target_pos: Vector2 = $PlayerBase.global_position
 
 func _ready() -> void:
+	# Starting currency
+	currency.coins = 3
+	
 	pathfinding.setup($TileMapLayer)
 	enemy_spawner.pathfinding = pathfinding
 	enemy_spawner.target_pos = target_pos
+	enemy_spawner.currency = currency
 	RenderingServer.set_default_clear_color('dff6f5')
 	
 	wave_manager.all_waves_done.connect(_on_wave_manager_all_waves_done)

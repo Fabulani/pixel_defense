@@ -1,13 +1,16 @@
 class_name Main extends Node2D
 
-@export var building_manager : BuildingManager = null
-@export var tower_packed_scene : PackedScene = null
+@export var building_manager : BuildingManager
 @onready var tile_map_layer: TileMapLayer = $Level/TileMapLayer
+
+var tower_packed_scene := preload("res://scenes/towers/tower_basic.tscn")
 
 @onready var current_level := $Level
 
 func _ready() -> void:
 	current_level.get_node("PlayerBase").game_over.connect(_on_game_over)
+	building_manager.currency = current_level.currency
+	building_manager.new_tower_built.connect(current_level._on_building_manager_new_tower_built)
 
 func _on_game_over() -> void:
 	# TODO: change to pause after user input is better handled (pause here freezes input as of now)

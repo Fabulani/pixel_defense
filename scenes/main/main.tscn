@@ -2,20 +2,13 @@
 
 [ext_resource type="PackedScene" uid="uid://cfu7ww43adwlf" path="res://scenes/ui/highlight/highlight_tile.tscn" id="1_k2fmo"]
 [ext_resource type="Script" uid="uid://chavefiqa5na" path="res://scenes/main/main.gd" id="1_l3cfh"]
-[ext_resource type="PackedScene" uid="uid://jl5by2a6d7m6" path="res://scenes/towers/tower_basic.tscn" id="2_6q06x"]
 [ext_resource type="PackedScene" uid="uid://cfa11hv32x4xj" path="res://scenes/managers/building_manager.tscn" id="3_hujxm"]
 [ext_resource type="PackedScene" uid="uid://c5ddo8e7h0slh" path="res://scenes/levels/level.tscn" id="3_k2fmo"]
 [ext_resource type="PackedScene" uid="uid://cspwgnxrwkpkb" path="res://scenes/ui/player_camera.tscn" id="4_yyfjg"]
 
 [node name="Main" type="Node2D" unique_id=74125191 node_paths=PackedStringArray("building_manager")]
 script = ExtResource("1_l3cfh")
-building_manager = NodePath("ManagerContainer/BuildingManager")
-tower_packed_scene = ExtResource("2_6q06x")
-
-[node name="ManagerContainer" type="Node" parent="." unique_id=529708479]
-
-[node name="BuildingManager" parent="ManagerContainer" unique_id=829787398 node_paths=PackedStringArray("level_layer") instance=ExtResource("3_hujxm")]
-level_layer = NodePath("../../Level")
+building_manager = NodePath("BuildingManager")
 
 [node name="PlayerCamera" parent="." unique_id=1926886031 instance=ExtResource("4_yyfjg")]
 position = Vector2(232, 131)
@@ -26,6 +19,5 @@ zoom = Vector2(2.48, 2.48)
 [node name="HighlightTile" parent="." unique_id=1118327556 instance=ExtResource("1_k2fmo")]
 top_level = true
 
-[node name="EntityContainer" type="Node" parent="." unique_id=2107950223]
-
-[connection signal="new_tower_built" from="ManagerContainer/BuildingManager" to="Level" method="_on_building_manager_new_tower_built"]
+[node name="BuildingManager" parent="." unique_id=829787398 node_paths=PackedStringArray("level_layer") instance=ExtResource("3_hujxm")]
+level_layer = NodePath("../Level")

@@ -1,7 +1,10 @@
 class_name EnemyEntity extends CharacterBody2D
 
+signal died(enemy: EnemyEntity)
+
 @export var movement_speed : float = 100
 @export var health: int = 30
+@export var coins: int = 1
 
 var path_array : Array[Vector2i] = []
 var path_index := 0
@@ -37,4 +40,5 @@ func hit(damage: int):
 		death()
 		
 func death() -> void:
+	died.emit(self)
 	queue_free()

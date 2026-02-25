@@ -30,6 +30,7 @@ func start_next_wave() -> void:
 			
 	enemy_spawner.start_spawning(waves[wave_index])
 	wave_index += 1	
+	print_debug("Wave %d started" % wave_index)
 	
 func end_current_wave() -> void:
 	wave_done.emit(wave_index)
