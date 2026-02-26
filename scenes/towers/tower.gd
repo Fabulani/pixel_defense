@@ -1,6 +1,6 @@
 class_name Tower extends Node2D
 
-signal shoot(pos: Vector2, direction: float, bullet_enum: Data.Bullet)
+signal shoot(pos: Vector2, direction: float)
 
 var enemies: Array[Node2D] = []
 

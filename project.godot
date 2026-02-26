@@ -19,10 +19,6 @@ run/main_scene="uid://vmjwre7q0l4d"
 config/features=PackedStringArray("4.6", "Mobile")
 config/icon="res://icon.svg"
 
-[autoload]
-
-Data="*uid://b3pd8fjmh3o8u"
-
 [display]
 
 window/stretch/mode="viewport"
