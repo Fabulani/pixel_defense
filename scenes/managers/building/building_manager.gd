@@ -4,7 +4,6 @@ signal new_tower_built(tower: Tower, cell_position: Vector2i)
 
 @export var level_layer: Level
 
-const IS_BUILDABLE : String = "buildable"
 const CELL_SIZE : int = 16
 const TOWER_GROUP : String = "tower_group"
 
@@ -32,7 +31,4 @@ func place_tower(cell_position : Vector2i, tower_packed_scene : PackedScene) -> 
 func check_valid_tower_placement(cell_position : Vector2i) -> bool:
 	if used_tiles.has(cell_position):
 		return false
-		
-	var tile_map_layer = level_layer.get_node("TileMapLayer")
-	var is_buildable_tile = tile_map_layer.get_cell_tile_data(cell_position).get_custom_data(IS_BUILDABLE)
-	return is_buildable_tile
+	return level_layer.is_cell_buildable(cell_position)

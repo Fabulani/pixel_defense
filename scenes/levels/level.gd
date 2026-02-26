@@ -33,3 +33,9 @@ func _on_building_manager_new_tower_built(tower: Tower, cell_position: Vector2i)
 
 func _on_wave_manager_all_waves_done():
 	pass
+
+func is_cell_buildable(cell_position: Vector2i) -> bool:
+	var tile_data: TileData = $TileMapLayer.get_cell_tile_data(cell_position)
+	if tile_data == null:
+		return false
+	return tile_data.get_custom_data("buildable")
