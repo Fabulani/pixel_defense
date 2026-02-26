@@ -1,4 +1,4 @@
-class_name CurrencyManager extends Resource
+extends Node
 
 # TODO: connect this signal to HUD indicating amount of coins
 signal currency_changed(new_amount: int)

@@ -19,6 +19,11 @@ run/main_scene="uid://vmjwre7q0l4d"
 config/features=PackedStringArray("4.6", "Mobile")
 config/icon="res://icon.svg"
 
+[autoload]
+
+CurrencyManager="*uid://cgdw4qddg2v24"
+PathfindingManager="*uid://c8dcxxa4mxhwb"
+
 [display]
 
 window/stretch/mode="viewport"

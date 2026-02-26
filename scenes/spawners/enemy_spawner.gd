@@ -10,9 +10,7 @@ signal spawning_complete
 var current_spawn_delay : float = 0.0
 var spawn_list_index : int = 0
 
-var pathfinding : PathfindingManager
 var target_pos : Vector2
-var currency : CurrencyManager
 
 func _ready() -> void:
 	current_spawn_delay = default_spawn_delay
@@ -30,7 +28,6 @@ func spawn_next() -> void:
 		return
 
 	var enemy = current_spawn_list[spawn_list_index].instantiate()
-	enemy.pathfinding = pathfinding
 	enemy.target_pos = target_pos
 	enemy.died.connect(_on_enemy_died)
 	add_child(enemy)
@@ -38,7 +35,7 @@ func spawn_next() -> void:
 
 
 func _on_enemy_died(enemy: EnemyEntity) -> void:
-	currency.earn(enemy.stats.coins)
+	CurrencyManager.earn(enemy.stats.coins)
 
 func _on_enemy_spawn_timer_timeout() -> void:
 	spawn_next()

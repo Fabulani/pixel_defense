@@ -1,4 +1,4 @@
-class_name PathfindingManager extends Resource
+extends Node
 
 var astar_grid : AStarGrid2D = AStarGrid2D.new()
 

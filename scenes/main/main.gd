@@ -9,7 +9,6 @@ var tower_packed_scene := preload("res://scenes/towers/tower_basic.tscn")
 
 func _ready() -> void:
 	current_level.get_node("PlayerBase").game_over.connect(_on_game_over)
-	building_manager.currency = current_level.currency
 	building_manager.new_tower_built.connect(current_level._on_building_manager_new_tower_built)
 
 func _on_game_over() -> void:

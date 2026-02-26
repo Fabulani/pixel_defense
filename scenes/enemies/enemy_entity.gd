@@ -6,7 +6,6 @@ signal died(enemy: EnemyEntity)
 
 var path_array : Array[Vector2i] = []
 var path_index := 0
-var pathfinding : PathfindingManager
 var target_pos : Vector2
 
 var health: int
@@ -14,7 +13,7 @@ var health: int
 
 func _ready() -> void:
 	health = stats.max_health
-	path_array = pathfinding.get_valid_path(global_position / 16, target_pos / 16)
+	path_array = PathfindingManager.get_valid_path(global_position / 16, target_pos / 16)
 
 func _process(_delta: float) -> void:
 	get_path_to_position()
@@ -32,7 +31,7 @@ func get_path_to_position() -> void:
 		velocity = Vector2.ZERO
 
 func recalculate_path() -> void:
-	path_array = pathfinding.get_valid_path(global_position / 16, target_pos / 16)
+	path_array = PathfindingManager.get_valid_path(global_position / 16, target_pos / 16)
 	path_index = 0
 
 func hit(damage: int):

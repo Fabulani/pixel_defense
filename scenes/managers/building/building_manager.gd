@@ -10,7 +10,6 @@ const CELL_OFFSET := Vector2i(CELL_SIZE / 2, CELL_SIZE / 2)
 const TOWER_GROUP : String = "tower_group"
 
 var used_tiles : Array[Vector2i] = []
-var currency : CurrencyManager
 
 func place_tower(cell_position : Vector2i, tower_packed_scene : PackedScene) -> void:
 	if not check_valid_tower_placement(cell_position):
@@ -19,7 +18,7 @@ func place_tower(cell_position : Vector2i, tower_packed_scene : PackedScene) -> 
 	var new_tower : Tower = tower_packed_scene.instantiate()
 	
 	# Check if player can afford the tower
-	if not currency.spend(new_tower.stats.cost):
+	if not CurrencyManager.spend(new_tower.stats.cost):
 		new_tower.queue_free()
 		print_debug("Not enough coins")
 		return
