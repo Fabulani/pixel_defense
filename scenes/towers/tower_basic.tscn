@@ -3,6 +3,7 @@
 [ext_resource type="PackedScene" uid="uid://br8jx6eys5877" path="res://scenes/towers/tower.tscn" id="1_kruwa"]
 [ext_resource type="Script" uid="uid://300l41j501e5" path="res://scenes/towers/tower_basic.gd" id="2_4fgg7"]
 [ext_resource type="Texture2D" uid="uid://cad40gc5v100w" path="res://assets/tiles/tile_0029.png" id="3_6ku0u"]
+[ext_resource type="Resource" uid="uid://sx48riltl5xa" path="res://resources/components/stats/towers/basic_tower.tres" id="3_iqfda"]
 [ext_resource type="Texture2D" uid="uid://rfk0lmbvu1jc" path="res://assets/tiles/tile_0030.png" id="4_iqfda"]
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_4fgg7"]
@@ -10,6 +11,7 @@ radius = 200.0
 
 [node name="TowerBasic" unique_id=1298449892 instance=ExtResource("1_kruwa")]
 script = ExtResource("2_4fgg7")
+stats = ExtResource("3_iqfda")
 
 [node name="Base" parent="." index="0" unique_id=1746217729]
 texture = ExtResource("3_6ku0u")

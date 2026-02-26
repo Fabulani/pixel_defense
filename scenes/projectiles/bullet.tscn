@@ -1,18 +1,20 @@
 [gd_scene format=3 uid="uid://d2008onjxkgjl"]
 
-[ext_resource type="Script" uid="uid://c40xm0411l7s3" path="res://scenes/bullets/bullet.gd" id="1_5f1na"]
-[ext_resource type="Texture2D" uid="uid://dm42jtpke0j48" path="res://assets/tiles/tile_0000.png" id="2_5f1na"]
+[ext_resource type="Script" uid="uid://c40xm0411l7s3" path="res://scenes/projectiles/bullet.gd" id="1_k5ji7"]
+[ext_resource type="Resource" uid="uid://bpux28p0q1ovq" path="res://resources/components/stats/projectiles/basic_bullet.tres" id="2_k5ji7"]
+[ext_resource type="Texture2D" uid="uid://dm42jtpke0j48" path="res://assets/tiles/tile_0000.png" id="3_kxxn2"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_5f1na"]
 size = Vector2(8, 16)
 
 [node name="Bullet" type="Area2D" unique_id=381450757]
 collision_layer = 2
-script = ExtResource("1_5f1na")
+script = ExtResource("1_k5ji7")
+stats = ExtResource("2_k5ji7")
 
 [node name="Sprite2D" type="Sprite2D" parent="." unique_id=537331565]
 scale = Vector2(0.5, 0.5)
-texture = ExtResource("2_5f1na")
+texture = ExtResource("3_kxxn2")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=1037207422]
 scale = Vector2(0.5, 0.5)

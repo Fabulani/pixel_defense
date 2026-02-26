@@ -2,10 +2,9 @@ class_name Tower extends Node2D
 
 signal shoot(pos: Vector2, direction: float)
 
-var enemies: Array[Node2D] = []
+@export var stats: TowerStats
 
-# TODO: Replace with TowerStats resource when implemented
-var cost: int = 3
+var enemies: Array[Node2D] = []
 
 func _on_enemy_detection_area_body_entered(body: Node2D) -> void:
 	if body not in enemies:

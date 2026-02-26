@@ -2,17 +2,18 @@ class_name EnemyEntity extends CharacterBody2D
 
 signal died(enemy: EnemyEntity)
 
-@export var movement_speed : float = 100
-@export var health: int = 30
-@export var coins: int = 1
+@export var stats: EnemyStats
 
 var path_array : Array[Vector2i] = []
 var path_index := 0
 var pathfinding : PathfindingManager
 var target_pos : Vector2
 
+var health: int
+
 
 func _ready() -> void:
+	health = stats.max_health
 	path_array = pathfinding.get_valid_path(global_position / 16, target_pos / 16)
 
 func _process(_delta: float) -> void:
@@ -22,7 +23,7 @@ func _process(_delta: float) -> void:
 func get_path_to_position() -> void:
 	if path_array and path_index < path_array.size():
 		var direction : Vector2 = global_position.direction_to(path_array[path_index])
-		velocity = direction * movement_speed
+		velocity = direction * stats.movement_speed
 		rotation = velocity.angle()
 		
 		if global_position.distance_to(path_array[path_index]) <= 10:

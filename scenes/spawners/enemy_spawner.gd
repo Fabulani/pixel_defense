@@ -38,7 +38,7 @@ func spawn_next() -> void:
 
 
 func _on_enemy_died(enemy: EnemyEntity) -> void:
-	currency.earn(enemy.coins)
+	currency.earn(enemy.stats.coins)
 
 func _on_enemy_spawn_timer_timeout() -> void:
 	spawn_next()

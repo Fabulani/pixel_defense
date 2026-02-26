@@ -15,13 +15,10 @@ func place_tower(cell_position : Vector2i, tower_packed_scene : PackedScene) -> 
 	if not check_valid_tower_placement(cell_position):
 		return
 	
-	# # TODO: Replace with TowerStats resource when implemented
-	# For now, instantiate to check
-	# In future, check tower stats resource w/o instantiating
 	var new_tower : Tower = tower_packed_scene.instantiate()
 	
 	# Check if player can afford the tower
-	if not currency.spend(new_tower.cost):
+	if not currency.spend(new_tower.stats.cost):
 		new_tower.queue_free()
 		print_debug("Not enough coins")
 		return

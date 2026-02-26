@@ -2,13 +2,13 @@
 
 [ext_resource type="Script" uid="uid://iwqck7whgec3" path="res://scenes/enemies/enemy_entity.gd" id="1_vequf"]
 [ext_resource type="Texture2D" uid="uid://b0uyhu3tcesfm" path="res://assets/ships/ship_0023.png" id="2_35g40"]
+[ext_resource type="Resource" uid="uid://b854dj58gk8wt" path="res://resources/components/stats/enemies/basic_enemy.tres" id="2_re1xi"]
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_re1xi"]
 
 [node name="EnemyEntity" type="CharacterBody2D" unique_id=1178725513]
 script = ExtResource("1_vequf")
-movement_speed = 30.0
-health = 5
+stats = ExtResource("2_re1xi")
 
 [node name="Sprite2D" type="Sprite2D" parent="." unique_id=1385029781]
 rotation = 1.5707964
