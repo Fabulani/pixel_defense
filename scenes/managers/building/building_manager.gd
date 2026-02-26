@@ -5,6 +5,8 @@ signal new_tower_built(tower: Tower, cell_position: Vector2i)
 @export var level_layer: Level
 
 const CELL_SIZE : int = 16
+@warning_ignore("integer_division")
+const CELL_OFFSET := Vector2i(CELL_SIZE / 2, CELL_SIZE / 2)
 const TOWER_GROUP : String = "tower_group"
 
 var used_tiles : Array[Vector2i] = []
@@ -22,7 +24,7 @@ func place_tower(cell_position : Vector2i, tower_packed_scene : PackedScene) -> 
 		print_debug("Not enough coins")
 		return
 	
-	new_tower.position = cell_position * CELL_SIZE + Vector2i(CELL_SIZE/2, CELL_SIZE/2)
+	new_tower.position = cell_position * CELL_SIZE + CELL_OFFSET
 	new_tower.add_to_group(TOWER_GROUP)	
 	add_child(new_tower)
 	used_tiles.append(cell_position)

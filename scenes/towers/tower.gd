@@ -1,5 +1,6 @@
 class_name Tower extends Node2D
 
+@warning_ignore("unused_signal")
 signal shoot(pos: Vector2, direction: float)
 
 @export var stats: TowerStats
