@@ -2,9 +2,9 @@
 
 [ext_resource type="PackedScene" uid="uid://cfu7ww43adwlf" path="res://scenes/ui/highlight/highlight_tile.tscn" id="1_k2fmo"]
 [ext_resource type="Script" uid="uid://chavefiqa5na" path="res://scenes/main/main.gd" id="1_l3cfh"]
-[ext_resource type="PackedScene" uid="uid://cfa11hv32x4xj" path="res://scenes/managers/building_manager.tscn" id="3_hujxm"]
+[ext_resource type="PackedScene" uid="uid://cfa11hv32x4xj" path="res://scenes/managers/building/building_manager.tscn" id="3_hujxm"]
 [ext_resource type="PackedScene" uid="uid://c5ddo8e7h0slh" path="res://scenes/levels/level.tscn" id="3_k2fmo"]
-[ext_resource type="PackedScene" uid="uid://cspwgnxrwkpkb" path="res://scenes/ui/player_camera.tscn" id="4_yyfjg"]
+[ext_resource type="PackedScene" uid="uid://cspwgnxrwkpkb" path="res://scenes/ui/camera/player_camera.tscn" id="4_yyfjg"]
 
 [node name="Main" type="Node2D" unique_id=74125191 node_paths=PackedStringArray("building_manager")]
 script = ExtResource("1_l3cfh")

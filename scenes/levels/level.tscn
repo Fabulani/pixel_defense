@@ -3,7 +3,7 @@
 [ext_resource type="Script" uid="uid://cbb580k6c3i2j" path="res://scenes/levels/level.gd" id="1_377w7"]
 [ext_resource type="Texture2D" uid="uid://cwjyrtmf3ydng" path="res://assets/tilemap/tiles_packed.png" id="2_xb4v1"]
 [ext_resource type="PackedScene" uid="uid://dbkc22ud4e32" path="res://scenes/spawners/enemy_spawner.tscn" id="5_d4w6o"]
-[ext_resource type="PackedScene" uid="uid://bt8mmlvv2d08j" path="res://scenes/managers/wave_manager.tscn" id="5_mbbpy"]
+[ext_resource type="PackedScene" uid="uid://bt8mmlvv2d08j" path="res://scenes/managers/wave/wave_manager.tscn" id="5_mbbpy"]
 [ext_resource type="PackedScene" uid="uid://dnbq1t1oyn8fv" path="res://scenes/bases/player_base.tscn" id="5_urvlt"]
 [ext_resource type="PackedScene" uid="uid://cge3q31jgw6mr" path="res://scenes/managers/projectile/projectile_manager.tscn" id="6_d4w6o"]
 
