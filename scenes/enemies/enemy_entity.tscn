@@ -7,6 +7,7 @@
 [sub_resource type="CircleShape2D" id="CircleShape2D_re1xi"]
 
 [node name="EnemyEntity" type="CharacterBody2D" unique_id=1178725513]
+collision_mask = 0
 script = ExtResource("1_vequf")
 stats = ExtResource("2_re1xi")
 
