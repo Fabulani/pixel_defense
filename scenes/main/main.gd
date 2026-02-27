@@ -8,11 +8,13 @@ var tower_packed_scene := preload("res://scenes/towers/tower_basic.tscn")
 @onready var current_level := $Level
 @onready var hud: HUD = $HUD
 @onready var game_over_screen: GameOverScreen = $GameOverScreen
+@onready var start_menu: StartMenu = $StartMenu
 
 func _ready() -> void:
 	current_level.get_node("PlayerBase").game_over.connect(_on_game_over)
 	building_manager.new_tower_built.connect(current_level._on_building_manager_new_tower_built)
 	game_over_screen.restart_requested.connect(_on_restart)
+	start_menu.start_requested.connect(_on_start)
 	
 	# TODO: refactor this to avoid coupling. Signal bus or something?
 	var wave_manager: WaveManager = current_level.wave_manager
@@ -30,6 +32,9 @@ func _on_game_over() -> void:
 
 func _on_restart() -> void:
 	get_tree().reload_current_scene()
+
+func _on_start() -> void:
+	current_level.wave_manager.start_next_wave()
 
 func _unhandled_input(event: InputEvent) -> void:
 	if event.is_action_pressed("left_mouse"):

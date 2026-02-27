@@ -15,9 +15,6 @@ func _ready() -> void:
 	RenderingServer.set_default_clear_color('dff6f5')
 	
 	wave_manager.all_waves_done.connect(_on_wave_manager_all_waves_done)
-	
-	# Starts the waves
-	wave_manager.start_next_wave()
 
 func _on_building_manager_new_tower_built(tower: Tower, cell_position: Vector2i) -> void:
 	PathfindingManager.set_cell_solid(cell_position, true)
