@@ -5,6 +5,8 @@
 [ext_resource type="PackedScene" uid="uid://cfa11hv32x4xj" path="res://scenes/managers/building/building_manager.tscn" id="3_hujxm"]
 [ext_resource type="PackedScene" uid="uid://c5ddo8e7h0slh" path="res://scenes/levels/level.tscn" id="3_k2fmo"]
 [ext_resource type="PackedScene" uid="uid://cspwgnxrwkpkb" path="res://scenes/ui/camera/player_camera.tscn" id="4_yyfjg"]
+[ext_resource type="PackedScene" uid="uid://8e8h5tyneieh" path="res://scenes/ui/hud/hud.tscn" id="6_hujxm"]
+[ext_resource type="Script" uid="uid://dviylmcgi8ydp" path="res://scenes/ui/hud/hud.gd" id="7_yyfjg"]
 
 [node name="Main" type="Node2D" unique_id=74125191 node_paths=PackedStringArray("building_manager")]
 script = ExtResource("1_l3cfh")
@@ -21,3 +23,6 @@ level_layer = NodePath("../Level")
 [node name="PlayerCamera" parent="." unique_id=1926886031 instance=ExtResource("4_yyfjg")]
 position = Vector2(387, 218)
 zoom = Vector2(2.48, 2.48)
+
+[node name="HUD" parent="." unique_id=796709017 instance=ExtResource("6_hujxm")]
+script = ExtResource("7_yyfjg")

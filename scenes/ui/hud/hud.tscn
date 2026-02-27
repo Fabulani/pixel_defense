@@ -1,0 +1,41 @@
+[gd_scene format=3 uid="uid://8e8h5tyneieh"]
+
+[ext_resource type="Texture2D" uid="uid://c3qi8dlri4pv1" path="res://assets/tiles/tile_0019.png" id="1_bngdn"]
+
+[node name="CanvasLayer" type="CanvasLayer" unique_id=796709017]
+
+[node name="PanelContainer" type="PanelContainer" parent="." unique_id=986298596]
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -155.0
+offset_top = 32.0
+offset_right = -27.0
+offset_bottom = 97.0
+grow_horizontal = 0
+
+[node name="MarginContainer" type="MarginContainer" parent="PanelContainer" unique_id=1246599681]
+layout_mode = 2
+theme_override_constants/margin_left = 10
+theme_override_constants/margin_top = 10
+theme_override_constants/margin_right = 10
+theme_override_constants/margin_bottom = 10
+
+[node name="GridContainer" type="GridContainer" parent="PanelContainer/MarginContainer" unique_id=1340430744]
+layout_mode = 2
+columns = 3
+
+[node name="CoinIcon" type="TextureRect" parent="PanelContainer/MarginContainer/GridContainer" unique_id=1432811714]
+modulate = Color(1, 1, 0, 1)
+layout_mode = 2
+texture = ExtResource("1_bngdn")
+expand_mode = 2
+stretch_mode = 5
+
+[node name="CoinAmountXLabel" type="Label" parent="PanelContainer/MarginContainer/GridContainer" unique_id=1819280661]
+layout_mode = 2
+text = "x"
+
+[node name="CoinAmountLabel" type="Label" parent="PanelContainer/MarginContainer/GridContainer" unique_id=1726395946]
+layout_mode = 2
+text = "10"
