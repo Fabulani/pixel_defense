@@ -7,7 +7,7 @@
 [ext_resource type="Texture2D" uid="uid://rfk0lmbvu1jc" path="res://assets/tiles/tile_0030.png" id="4_iqfda"]
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_4fgg7"]
-radius = 200.0
+radius = 100.0
 
 [node name="TowerBasic" unique_id=1298449892 instance=ExtResource("1_kruwa")]
 script = ExtResource("2_4fgg7")
