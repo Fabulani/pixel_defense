@@ -27,7 +27,7 @@ func _on_building_manager_new_tower_built(tower: Tower, cell_position: Vector2i)
 	tower.shoot.connect(projectile_manager.create_bullet)
 
 func _on_wave_manager_all_waves_done():
-	pass
+	print_debug("All waves completed! Nice job!")
 
 func is_cell_buildable(cell_position: Vector2i) -> bool:
 	var tile_data: TileData = $TileMapLayer.get_cell_tile_data(cell_position)
