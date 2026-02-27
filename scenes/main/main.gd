@@ -7,10 +7,12 @@ var tower_packed_scene := preload("res://scenes/towers/tower_basic.tscn")
 
 @onready var current_level := $Level
 @onready var hud: HUD = $HUD
+@onready var game_over_screen: GameOverScreen = $GameOverScreen
 
 func _ready() -> void:
 	current_level.get_node("PlayerBase").game_over.connect(_on_game_over)
 	building_manager.new_tower_built.connect(current_level._on_building_manager_new_tower_built)
+	game_over_screen.restart_requested.connect(_on_restart)
 	
 	# TODO: refactor this to avoid coupling. Signal bus or something?
 	var wave_manager: WaveManager = current_level.wave_manager
@@ -18,7 +20,10 @@ func _ready() -> void:
 	hud.set_wave(wave_manager.wave_index)
 
 func _on_game_over() -> void:
-	# TODO: change to pause after user input is better handled (pause here freezes input as of now)
+	var waves_survived: int = current_level.wave_manager.wave_index
+	game_over_screen.show_game_over(waves_survived)
+
+func _on_restart() -> void:
 	get_tree().reload_current_scene()
 
 func _unhandled_input(event: InputEvent) -> void:

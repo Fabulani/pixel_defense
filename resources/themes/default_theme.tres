@@ -1,7 +1,11 @@
 [gd_resource type="Theme" format=3 uid="uid://3d73jd1xir1t"]
 
-[ext_resource type="FontFile" uid="uid://cnc783dgux1da" path="res://assets/fonts/Kenney Mini.ttf" id="1_cwxqa"]
+[ext_resource type="FontFile" uid="uid://cnc783dgux1da" path="res://assets/fonts/Kenney Mini.ttf" id="1_1ymaj"]
 
 [resource]
+Button/font_sizes/font_size = 24
+Button/fonts/font = ExtResource("1_1ymaj")
+HeaderLarge/font_sizes/font_size = 48
+HeaderLarge/fonts/font = ExtResource("1_1ymaj")
 Label/font_sizes/font_size = 32
-Label/fonts/font = ExtResource("1_cwxqa")
+Label/fonts/font = ExtResource("1_1ymaj")
