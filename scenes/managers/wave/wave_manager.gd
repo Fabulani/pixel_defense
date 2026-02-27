@@ -1,36 +1,55 @@
 class_name WaveManager extends Node
 
+signal wave_started(wave_index: int)
 signal wave_done(wave_index: int)
 signal all_waves_done
 
 @export var wave_delay : int = 3
 @export var enemy_spawner: EnemySpawner
-
-@onready var wave_timer: Timer = $WaveTimer
+@export var base_enemy_count: int = 3
+@export var max_waves: int = 99
 
 var enemy_basic = preload("res://scenes/enemies/enemy_entity.tscn")
-
-var waves: Array[Array] = [
-	[enemy_basic, enemy_basic, enemy_basic],
-	[enemy_basic, enemy_basic, enemy_basic, enemy_basic],
-	[enemy_basic, enemy_basic, enemy_basic, enemy_basic, enemy_basic],
-]
 var wave_index := 0
+
+@onready var wave_timer: Timer = $WaveTimer
 
 func _ready():
 	wave_timer.timeout.connect(_on_wave_timer_timeout)
 	enemy_spawner.spawning_complete.connect(_on_enemy_spawner_spawning_complete)
 
+func _generate_wave(index: int) -> Array:
+	# Using Fibonacci sequence for enemy count for fun.
+	var enemy_count := base_enemy_count + _fibonacci(index) * 3
+	var wave: Array = []
+	wave.resize(enemy_count)
+	wave.fill(enemy_basic)
+	return wave
+
+func _fibonacci(n: int) -> int:
+	""" Calculate the nth Fibonacci number. """
+	if n <= 0:
+		return 0
+	var a := 0
+	var b := 1
+	for i in range(n - 1):
+		var temp := a + b
+		a = b
+		b = temp
+	return b
+
 func start_next_wave() -> void:
 	wave_timer.stop()
 	
-	if wave_index >= waves.size():
+	if wave_index >= max_waves:
 		all_waves_done.emit()
 		return
-			
-	enemy_spawner.start_spawning(waves[wave_index])
-	wave_index += 1	
-	print_debug("Wave %d started" % wave_index)
+	
+	var wave := _generate_wave(wave_index)
+	enemy_spawner.start_spawning(wave)
+	wave_index += 1
+	wave_started.emit(wave_index)
+	print_debug("Wave %d started (%d enemies)" % [wave_index, wave.size()])
 	
 func end_current_wave() -> void:
 	wave_done.emit(wave_index)

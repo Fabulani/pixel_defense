@@ -7,14 +7,14 @@ signal spawning_complete
 
 @onready var spawn_timer: Timer = $EnemySpawnTimer
 
-var current_spawn_delay : float = 0.0
+var spawn_delay : float = 0.0
 var spawn_list_index : int = 0
 
 var target_pos : Vector2
 
 func _ready() -> void:
-	current_spawn_delay = default_spawn_delay
-	spawn_timer.wait_time = current_spawn_delay
+	spawn_delay = default_spawn_delay
+	spawn_timer.wait_time = spawn_delay
 	
 func start_spawning(spawn_list: Array) -> void:
 	current_spawn_list.assign(spawn_list)
@@ -25,6 +25,8 @@ func spawn_next() -> void:
 	if spawn_list_index >= current_spawn_list.size():
 		spawn_timer.stop()
 		spawning_complete.emit()
+		# Next time, spawn faster. For fun.
+		speedup_spawning()
 		return
 
 	var enemy = current_spawn_list[spawn_list_index].instantiate()
@@ -33,6 +35,9 @@ func spawn_next() -> void:
 	add_child(enemy)
 	enemy.add_to_group("enemy_group")
 
+func speedup_spawning() -> void:
+	spawn_delay = max(0.1, spawn_delay - 0.1)
+	spawn_timer.wait_time = spawn_delay
 
 func _on_enemy_died(enemy: EnemyEntity) -> void:
 	CurrencyManager.earn(enemy.stats.coins)
