@@ -10,7 +10,13 @@ signal all_waves_done
 @export var max_waves: int = 99
 
 var enemy_basic = preload("res://scenes/enemies/enemy_entity.tscn")
+var enemy_fast = preload("res://scenes/enemies/fast/enemy_fast.tscn")
+var enemy_heavy = preload("res://scenes/enemies/heavy/enemy_heavy.tscn")
 var wave_index := 0
+
+
+@export var fast_enemy_wave: int = 5
+@export var heavy_enemy_wave: int = 10
 
 @onready var wave_timer: Timer = $WaveTimer
 
@@ -24,6 +30,19 @@ func _generate_wave(index: int) -> Array:
 	var wave: Array = []
 	wave.resize(enemy_count)
 	wave.fill(enemy_basic)
+	
+	# After wave 5, ~30% will be fast enemies
+	if index >= fast_enemy_wave:
+		var fast_count := ceili(enemy_count * 0.3)
+		for i in range(fast_count):
+			wave[randi() % enemy_count] = enemy_fast
+	
+	# After wave 10, ~20% will be heavy enemies
+	if index >= heavy_enemy_wave:
+		var heavy_count := ceili(enemy_count * 0.2)
+		for i in range(heavy_count):
+			wave[randi() % enemy_count] = enemy_heavy
+	
 	return wave
 
 func _fibonacci(n: int) -> int:
