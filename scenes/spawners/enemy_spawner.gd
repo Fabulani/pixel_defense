@@ -36,7 +36,7 @@ func spawn_next() -> void:
 	enemy.add_to_group("enemy_group")
 
 func speedup_spawning() -> void:
-	spawn_delay = max(0.1, spawn_delay - 0.1)
+	spawn_delay = max(0.05, spawn_delay - 0.1)
 	spawn_timer.wait_time = spawn_delay
 
 func _on_enemy_died(enemy: EnemyEntity) -> void:
