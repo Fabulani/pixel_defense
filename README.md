@@ -33,5 +33,10 @@ git lfs install && git lfs pull
 # Thanks
 
 Some helpful tutorials helped me get this game up and running:
-- CoffeeCrow's ["How To Create A Tower Defence Game In Godot!"](https://www.youtube.com/playlist?list=PLhBqFleCVBkUo2ZFIZcFRBB4HMv7JjPWG)
-- Zenva's ["TOWER DEFENSE in Godot - Complete Mini-Course"](https://www.youtube.com/watch?v=qZp00LxXjWA)
+- CoffeeCrow
+	- [How To Create A Tower Defence Game In Godot!](https://youtube.com/playlist?list=PLhBqFleCVBkUo2ZFIZcFRBB4HMv7JjPWG&si=Asag0uhvkSEXF2If)
+- Zenva
+	- [TOWER DEFENSE in Godot - Complete Mini-Course](https://youtu.be/qZp00LxXjWA)
+- Godotneers
+	- [Godot UI Basics - how to build beautiful interfaces that work everywhere (Beginners)](https://youtu.be/1_OFJLyqlXI) 
+	- [Data models - using data to create extensible, maintainable games in Godot](https://youtu.be/4vAkTHeoORk)
