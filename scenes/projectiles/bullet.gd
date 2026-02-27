@@ -13,7 +13,6 @@ func setup(pos: Vector2, angle: float) -> void:
 func _process(_delta: float) -> void:
 	position += direction * stats.speed * _delta
 
-
 func _on_body_entered(body: Node2D) -> void:
 	if _hit:
 		return
@@ -21,3 +20,6 @@ func _on_body_entered(body: Node2D) -> void:
 		_hit = true
 		body.hit(stats.damage)
 		queue_free()
+		
+func _on_lifetime_timer_timeout() -> void:
+	queue_free() # Replace with function body.
