@@ -28,7 +28,7 @@ func _ready() -> void:
 
 func _on_game_over() -> void:
 	var waves_survived: int = current_level.wave_manager.wave_index
-	game_over_screen.show_game_over(waves_survived)
+	game_over_screen.show_game_over(waves_survived, CurrencyManager.coins)
 
 func _on_restart() -> void:
 	get_tree().reload_current_scene()

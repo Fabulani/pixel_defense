@@ -38,6 +38,7 @@ horizontal_alignment = 1
 
 [node name="HBoxContainer" type="HBoxContainer" parent="PanelContainer/MarginContainer/VBoxContainer" unique_id=624094848]
 layout_mode = 2
+alignment = 1
 
 [node name="Label" type="Label" parent="PanelContainer/MarginContainer/VBoxContainer/HBoxContainer" unique_id=1411333656]
 layout_mode = 2
@@ -51,6 +52,23 @@ theme_override_colors/font_color = Color(0, 1, 0, 1)
 text = "wave 0"
 horizontal_alignment = 1
 vertical_alignment = 1
+
+[node name="HBoxContainer2" type="HBoxContainer" parent="PanelContainer/MarginContainer/VBoxContainer" unique_id=986643639]
+layout_mode = 2
+alignment = 1
+
+[node name="Label" type="Label" parent="PanelContainer/MarginContainer/VBoxContainer/HBoxContainer2" unique_id=1864841456]
+layout_mode = 2
+text = "Saved "
+
+[node name="CoinsLabel" type="Label" parent="PanelContainer/MarginContainer/VBoxContainer/HBoxContainer2" unique_id=1087499296]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 1, 0.36078432, 1)
+text = "0"
+
+[node name="Label3" type="Label" parent="PanelContainer/MarginContainer/VBoxContainer/HBoxContainer2" unique_id=630663701]
+layout_mode = 2
+text = " coins"
 
 [node name="RestartButton" type="Button" parent="PanelContainer/MarginContainer/VBoxContainer" unique_id=714368738]
 layout_mode = 2
