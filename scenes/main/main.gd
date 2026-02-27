@@ -18,6 +18,11 @@ func _ready() -> void:
 	var wave_manager: WaveManager = current_level.wave_manager
 	wave_manager.wave_started.connect(hud.set_wave)
 	hud.set_wave(wave_manager.wave_index)
+	
+	# TODO: refactor this to avoid coupling
+	var enemy_spawner: EnemySpawner = current_level.enemy_spawner
+	enemy_spawner.enemy_count_changed.connect(hud.set_enemy_count)
+	hud.set_enemy_count(0)
 
 func _on_game_over() -> void:
 	var waves_survived: int = current_level.wave_manager.wave_index
