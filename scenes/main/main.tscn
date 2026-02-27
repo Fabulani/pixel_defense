@@ -7,7 +7,7 @@
 [ext_resource type="PackedScene" uid="uid://cspwgnxrwkpkb" path="res://scenes/ui/camera/player_camera.tscn" id="4_yyfjg"]
 [ext_resource type="PackedScene" uid="uid://8e8h5tyneieh" path="res://scenes/ui/hud/hud.tscn" id="6_hujxm"]
 [ext_resource type="PackedScene" uid="uid://c2pi1pdd0wfc4" path="res://scenes/ui/start_menu/start_menu.tscn" id="8_b1x3f"]
-[ext_resource type="PackedScene" uid="uid://be55v8ytmchi7" path="res://scenes/ui/game_over/GameOverScreen.tscn" id="8_yyfjg"]
+[ext_resource type="PackedScene" uid="uid://be55v8ytmchi7" path="res://scenes/ui/game_over/game_over_screen.tscn" id="8_yyfjg"]
 
 [node name="Main" type="Node2D" unique_id=74125191 node_paths=PackedStringArray("building_manager")]
 script = ExtResource("1_l3cfh")
