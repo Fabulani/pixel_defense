@@ -8,7 +8,7 @@ class_name Level extends Node2D
 
 func _ready() -> void:
 	# Starting currency
-	CurrencyManager.coins = 3
+	CurrencyManager.coins = 5
 	
 	PathfindingManager.setup($TileMapLayer)
 	enemy_spawner.target_pos = target_pos
