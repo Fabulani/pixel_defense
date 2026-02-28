@@ -1,6 +1,7 @@
 class_name EnemySpawner extends Node2D
 
 signal spawning_complete
+signal wave_cleared
 signal enemy_count_changed(count: int)
 
 @export var current_spawn_list: Array[PackedScene] = []
@@ -11,6 +12,7 @@ signal enemy_count_changed(count: int)
 var spawn_delay : float = 0.0
 var spawn_list_index : int = 0
 var alive_enemy_count : int = 0
+var spawning_in_progress : bool = false
 
 var target_pos : Vector2
 
@@ -21,11 +23,13 @@ func _ready() -> void:
 func start_spawning(spawn_list: Array) -> void:
 	current_spawn_list.assign(spawn_list)
 	spawn_list_index = 0
+	spawning_in_progress = true
 	spawn_timer.start()
 
 func spawn_next() -> void:
 	if spawn_list_index >= current_spawn_list.size():
 		spawn_timer.stop()
+		spawning_in_progress = false
 		spawning_complete.emit()
 		# Next time, spawn faster. For fun.
 		speedup_spawning()
@@ -50,6 +54,8 @@ func _on_enemy_died(enemy: EnemyEntity) -> void:
 func _on_enemy_removed() -> void:
 	alive_enemy_count -= 1
 	enemy_count_changed.emit(alive_enemy_count)
+	if alive_enemy_count == 0 and not spawning_in_progress:
+		wave_cleared.emit()
 
 func _on_enemy_spawn_timer_timeout() -> void:
 	spawn_next()

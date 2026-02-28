@@ -23,6 +23,7 @@ var wave_index := 0
 func _ready():
 	wave_timer.timeout.connect(_on_wave_timer_timeout)
 	enemy_spawner.spawning_complete.connect(_on_enemy_spawner_spawning_complete)
+	enemy_spawner.wave_cleared.connect(_on_enemy_spawner_wave_cleared)
 
 func _generate_wave(index: int) -> Array:
 	# Using Fibonacci sequence for enemy count for fun.
@@ -61,7 +62,7 @@ func start_next_wave() -> void:
 	wave_timer.stop()
 	
 	if wave_index >= max_waves:
-		all_waves_done.emit()
+		# Max wave reached. Stop sending waves.
 		return
 	
 	var wave := _generate_wave(wave_index)
@@ -75,7 +76,14 @@ func end_current_wave() -> void:
 	wave_timer.start(wave_delay)
 	
 func _on_wave_timer_timeout() -> void:
+	""" The next wave starts at (spawning_complete + timer_timeout). """
 	start_next_wave()
 
 func _on_enemy_spawner_spawning_complete() -> void:
+	""" End current wave as soon as spawning is complete. """
 	end_current_wave()
+
+func _on_enemy_spawner_wave_cleared() -> void:
+	""" Signal game win if all waves are done. """
+	if wave_index >= max_waves:
+		all_waves_done.emit()
