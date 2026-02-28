@@ -7,7 +7,7 @@ signal all_waves_done
 @export var wave_delay : int = 3
 @export var enemy_spawner: EnemySpawner
 @export var base_enemy_count: int = 3
-@export var max_waves: int = 99
+@export var max_waves: int = 20
 
 var enemy_basic = preload("res://scenes/enemies/enemy_entity.tscn")
 var enemy_fast = preload("res://scenes/enemies/fast/enemy_fast.tscn")

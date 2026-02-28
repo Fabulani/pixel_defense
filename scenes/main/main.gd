@@ -12,6 +12,7 @@ var tower_packed_scene := preload("res://scenes/towers/tower_basic.tscn")
 
 func _ready() -> void:
 	current_level.get_node("PlayerBase").game_over.connect(_on_game_over)
+	current_level.wave_manager.all_waves_done.connect(_on_game_win)
 	building_manager.new_tower_built.connect(current_level._on_building_manager_new_tower_built)
 	game_over_screen.restart_requested.connect(_on_restart)
 	start_menu.start_requested.connect(_on_start)
@@ -29,6 +30,10 @@ func _ready() -> void:
 func _on_game_over() -> void:
 	var waves_survived: int = current_level.wave_manager.wave_index
 	game_over_screen.show_game_over(waves_survived, CurrencyManager.coins)
+
+func _on_game_win() -> void:
+	var waves_survived: int = current_level.wave_manager.wave_index
+	game_over_screen.show_win(waves_survived, CurrencyManager.coins)
 
 func _on_restart() -> void:
 	get_tree().reload_current_scene()
