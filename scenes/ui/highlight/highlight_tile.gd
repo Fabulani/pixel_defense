@@ -8,5 +8,5 @@ func _process(_delta: float) -> void:
 func follow_mouse_position() -> void:
 	var mouse_position: Vector2i = get_global_mouse_position() / _TILE_SIZE
 	
-	self.position = mouse_position * _TILE_SIZE
+	position = mouse_position * _TILE_SIZE
 	
