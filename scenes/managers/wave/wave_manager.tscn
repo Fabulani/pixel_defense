@@ -4,5 +4,6 @@
 
 [node name="WaveManager" type="Node" unique_id=1967040178]
 script = ExtResource("1_28t5r")
+max_waves = 15
 
 [node name="WaveTimer" type="Timer" parent="." unique_id=1660207885]
