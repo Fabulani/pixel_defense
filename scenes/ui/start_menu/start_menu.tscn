@@ -15,4 +15,5 @@ grow_vertical = 2
 
 [node name="StartButton" type="Button" parent="CenterContainer" unique_id=258430698]
 layout_mode = 2
+theme_override_font_sizes/font_size = 46
 text = "Start"
