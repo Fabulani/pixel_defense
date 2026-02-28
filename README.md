@@ -40,3 +40,5 @@ Some helpful tutorials helped me get this game up and running:
 - Godotneers
 	- [Godot UI Basics - how to build beautiful interfaces that work everywhere (Beginners)](https://youtu.be/1_OFJLyqlXI) 
 	- [Data models - using data to create extensible, maintainable games in Godot](https://youtu.be/4vAkTHeoORk)
+- dandeliondino
+	- [godot-4-tileset-terrains-docs](https://github.com/dandeliondino/godot-4-tileset-terrains-docs)

@@ -18,6 +18,7 @@ func _input(event):
 				zoom = Vector2(max(zoom.x - zoom_speed, min_zoom), max(zoom.y - zoom_speed, min_zoom))
 	if event is InputEventMouseMotion:
 		if drag:
+			# TODO: dragged location moves with cursor, as if dragging the map itself
 			position -= event.relative * acceleration
 	if event is InputEventScreenDrag:
 		position -= event.relative * acceleration
