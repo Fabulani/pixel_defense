@@ -34,3 +34,11 @@ func _process(delta):
 		direction.x += 1
 	if direction != Vector2.ZERO:
 		position += direction.normalized() * keyboard_speed * delta
+
+
+func _on_hud_zoom_in_btn_pressed() -> void:
+	zoom = Vector2(min(zoom.x + zoom_speed*3, max_zoom), min(zoom.y + zoom_speed*3, max_zoom))
+
+
+func _on_hud_zoom_out_btn_pressed() -> void:
+	zoom = Vector2(max(zoom.x - zoom_speed*3, min_zoom), max(zoom.y - zoom_speed*3, min_zoom))
