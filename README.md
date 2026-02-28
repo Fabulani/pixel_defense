@@ -42,3 +42,5 @@ Some helpful tutorials helped me get this game up and running:
 	- [Data models - using data to create extensible, maintainable games in Godot](https://youtu.be/4vAkTHeoORk)
 - dandeliondino
 	- [godot-4-tileset-terrains-docs](https://github.com/dandeliondino/godot-4-tileset-terrains-docs)
+- Overshot Productions
+	- [Safe Area Dynamic Margins Setup in Godot 4: Mobile Device Orientation Tutorial](https://youtu.be/MeURXJij6PA)
