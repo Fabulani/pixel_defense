@@ -5,6 +5,7 @@ class_name Level extends Node2D
 @export var projectile_manager: ProjectileManager
 
 @onready var target_pos: Vector2 = $PlayerBase.global_position
+@onready var path_line: Line2D = $PathLine
 
 func _ready() -> void:
 	# Starting currency
@@ -15,6 +16,7 @@ func _ready() -> void:
 	RenderingServer.set_default_clear_color('dff6f5')
 	
 	wave_manager.all_waves_done.connect(_on_wave_manager_all_waves_done)
+	_update_path_line()
 
 func _on_building_manager_new_tower_built(tower: Tower, cell_position: Vector2i) -> void:
 	PathfindingManager.set_cell_solid(cell_position, true)
@@ -22,6 +24,16 @@ func _on_building_manager_new_tower_built(tower: Tower, cell_position: Vector2i)
 		enemy.recalculate_path()
 	
 	tower.shoot.connect(projectile_manager.create_bullet)
+	_update_path_line()
+
+func _update_path_line() -> void:
+	var spawn_pos := enemy_spawner.global_position
+	var path := PathfindingManager.get_valid_path(
+		Vector2i(spawn_pos) / 16, Vector2i(target_pos) / 16
+	)
+	path_line.clear_points()
+	for point in path:
+		path_line.add_point(Vector2(point))
 
 func _on_wave_manager_all_waves_done():
 	print_debug("All waves completed! Nice job!")
