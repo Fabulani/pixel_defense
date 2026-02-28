@@ -28,6 +28,7 @@ func _on_building_manager_new_tower_built(tower: Tower, cell_position: Vector2i)
 
 func _update_pathfinding_preview() -> void:
 	var spawn_pos := enemy_spawner.global_position
+	@warning_ignore("integer_division")
 	var path := PathfindingManager.get_valid_path(
 		Vector2i(spawn_pos) / 16, Vector2i(target_pos) / 16
 	)
