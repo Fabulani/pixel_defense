@@ -2,6 +2,8 @@
 
 Tower defense with randomly generated maps every wave.
 
+![Pixel Defense gameplay with towers shooting incoming enemies](docs/img/screenshot.png)
+
 # Install
 
 Clone:
@@ -14,21 +16,20 @@ Then open the project in Godot.
 
 ## Assets
 
-Either download them fron kenny.nl (<https://www.kenney.nl/assets/pixel-shmup>) and put them inside the `assets` folder:
-
-```
-pixel_defense
-- assets
--- ships
--- tilemap
--- tiles
-```
-
-Or download [Git LFS](https://git-lfs.com/) and, in the project folder, initialize and pull the assets:
+Download [Git LFS](https://git-lfs.com/) and, in the project folder, initialize and pull the assets:
 
 ```sh
 git lfs install && git lfs pull
 ```
+
+Alternatively download from Kenney (<www.kenney.nl>) and extract them in the asset folder:
+- Pixel Shmup
+- Kenney Fonts
+- Input Prompts Pixel 16×
+
+# Gallery
+
+![Game Over screen](docs/img/game_over.png)
 
 # Thanks
 
