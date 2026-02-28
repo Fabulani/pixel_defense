@@ -8,6 +8,7 @@
 [ext_resource type="PackedScene" uid="uid://8e8h5tyneieh" path="res://scenes/ui/hud/hud.tscn" id="6_hujxm"]
 [ext_resource type="PackedScene" uid="uid://c2pi1pdd0wfc4" path="res://scenes/ui/start_menu/start_menu.tscn" id="8_b1x3f"]
 [ext_resource type="PackedScene" uid="uid://be55v8ytmchi7" path="res://scenes/ui/game_over/game_over_screen.tscn" id="8_yyfjg"]
+[ext_resource type="Script" uid="uid://ot1k4hgx0pkp" path="res://scenes/ui/mobile/mobile_display_handler.gd" id="9_b1x3f"]
 
 [node name="Main" type="Node2D" unique_id=74125191 node_paths=PackedStringArray("building_manager")]
 script = ExtResource("1_l3cfh")
@@ -30,6 +31,11 @@ zoom = Vector2(2.48, 2.48)
 [node name="GameOverScreen" parent="." unique_id=1345433108 instance=ExtResource("8_yyfjg")]
 
 [node name="StartMenu" parent="." unique_id=336456624 instance=ExtResource("8_b1x3f")]
+
+[node name="MobileDisplayHandler" type="MarginContainer" parent="." unique_id=2072527440]
+offset_right = 40.0
+offset_bottom = 40.0
+script = ExtResource("9_b1x3f")
 
 [connection signal="zoom_in_btn_pressed" from="HUD" to="PlayerCamera" method="_on_hud_zoom_in_btn_pressed"]
 [connection signal="zoom_out_btn_pressed" from="HUD" to="PlayerCamera" method="_on_hud_zoom_out_btn_pressed"]
