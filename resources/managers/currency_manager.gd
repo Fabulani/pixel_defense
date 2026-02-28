@@ -5,7 +5,6 @@ signal currency_changed(new_amount: int)
 var coins := 0:
 	set(value):
 		coins = value
-		print_debug("Coins: %d" % coins)
 		currency_changed.emit(coins)
 
 func can_afford(amount: int) -> bool:
