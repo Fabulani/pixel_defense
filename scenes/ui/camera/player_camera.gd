@@ -5,7 +5,7 @@ var drag: bool
 @export var keyboard_speed: float = 300
 @export var zoom_speed: float = 0.1
 @export var min_zoom: float = 2
-@export var max_zoom: float = 5.0
+@export var max_zoom: float = 6
 
 func _input(event):
 	if event is InputEventMouseButton:
@@ -19,6 +19,8 @@ func _input(event):
 	if event is InputEventMouseMotion:
 		if drag:
 			position -= event.relative * acceleration
+	if event is InputEventScreenDrag:
+		position -= event.relative * acceleration
 
 func _process(delta):
 	var direction = Vector2.ZERO
