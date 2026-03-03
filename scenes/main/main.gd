@@ -9,11 +9,13 @@ var tower_packed_scene := preload("res://scenes/towers/tower_basic.tscn")
 @onready var hud: HUD = $HUD
 @onready var game_over_screen: GameOverScreen = $GameOverScreen
 @onready var start_menu: StartMenu = $StartMenu
+@onready var highlight_tile: HighlightTile = $HighlightTile
 
 func _ready() -> void:
 	current_level.get_node("PlayerBase").game_over.connect(_on_game_over)
 	current_level.wave_manager.all_waves_done.connect(_on_game_win)
 	building_manager.new_tower_built.connect(current_level._on_building_manager_new_tower_built)
+	building_manager.tower_placement_denied.connect(_on_tower_placement_denied)
 	game_over_screen.restart_requested.connect(_on_restart)
 	start_menu.start_requested.connect(_on_start)
 	
@@ -40,6 +42,13 @@ func _on_restart() -> void:
 
 func _on_start() -> void:
 	current_level.wave_manager.start_next_wave()
+
+func _on_tower_placement_denied() -> void:
+	# TODO: shouldn't this be in a UI manager or something? As of now, it's coupled to Main
+	var sprite: Sprite2D = highlight_tile.get_node("Sprite2D")
+	sprite.modulate = Color(1, 0, 0, 0.7)
+	var tween := create_tween()
+	tween.tween_property(sprite, "modulate", Color(1, 1, 1, 0.5), 0.4)
 
 func _unhandled_input(event: InputEvent) -> void:
 	# TODO: fix mobile touch input: when trying to drag camera, builds tower as well
