@@ -16,11 +16,11 @@ building_manager = NodePath("BuildingManager")
 
 [node name="Level" parent="." unique_id=1663716660 instance=ExtResource("3_k2fmo")]
 
-[node name="HighlightTile" parent="." unique_id=1118327556 instance=ExtResource("1_k2fmo")]
-top_level = true
-
 [node name="BuildingManager" parent="." unique_id=829787398 node_paths=PackedStringArray("level_layer") instance=ExtResource("3_hujxm")]
 level_layer = NodePath("../Level")
+
+[node name="HighlightTile" parent="." unique_id=1118327556 instance=ExtResource("1_k2fmo")]
+top_level = true
 
 [node name="PlayerCamera" parent="." unique_id=1926886031 instance=ExtResource("4_yyfjg")]
 position = Vector2(387, 218)
