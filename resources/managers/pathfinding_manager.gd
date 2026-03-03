@@ -39,7 +39,8 @@ func set_cell_solid(cell_position: Vector2i, solid: bool) -> void:
 
 func would_block_path(cell_position: Vector2i, start_position: Vector2i, end_position: Vector2i) -> bool:
 	# Temporarily mark cell as solid and check if a path still exists
+	var was_solid := astar_grid.is_point_solid(cell_position)
 	astar_grid.set_point_solid(cell_position, true)
 	var path := astar_grid.get_point_path(start_position, end_position)
-	astar_grid.set_point_solid(cell_position, false)
+	astar_grid.set_point_solid(cell_position, was_solid)
 	return path.is_empty()
