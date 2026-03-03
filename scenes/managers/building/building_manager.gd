@@ -1,6 +1,7 @@
 class_name BuildingManager extends Node
 
 signal new_tower_built(tower: Tower, cell_position: Vector2i)
+signal tower_placement_denied()
 
 @export var level_layer: Level
 
@@ -13,6 +14,7 @@ var used_tiles : Array[Vector2i] = []
 
 func place_tower(cell_position : Vector2i, tower_packed_scene : PackedScene) -> void:
 	if not check_valid_tower_placement(cell_position):
+		tower_placement_denied.emit()
 		return
 	
 	var new_tower : Tower = tower_packed_scene.instantiate()
@@ -20,7 +22,7 @@ func place_tower(cell_position : Vector2i, tower_packed_scene : PackedScene) -> 
 	# Check if player can afford the tower
 	if not CurrencyManager.spend(new_tower.stats.cost):
 		new_tower.queue_free()
-		print_debug("Not enough coins")
+		tower_placement_denied.emit()
 		return
 	
 	new_tower.position = cell_position * CELL_SIZE + CELL_OFFSET
@@ -32,6 +34,7 @@ func place_tower(cell_position : Vector2i, tower_packed_scene : PackedScene) -> 
 func check_valid_tower_placement(cell_position : Vector2i) -> bool:
 	if used_tiles.has(cell_position):
 		return false
+
 	if not level_layer.is_cell_buildable(cell_position):
 		return false
 	
@@ -40,7 +43,6 @@ func check_valid_tower_placement(cell_position : Vector2i) -> bool:
 	var spawn_cell := Vector2i(level_layer.enemy_spawner.global_position) / CELL_SIZE
 	var target_cell := Vector2i(level_layer.target_pos) / CELL_SIZE
 	if PathfindingManager.would_block_path(cell_position, spawn_cell, target_cell):
-		print_debug("Cannot build here: would block enemy path")
 		return false
 	
 	return true
