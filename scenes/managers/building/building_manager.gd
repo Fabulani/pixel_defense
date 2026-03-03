@@ -32,4 +32,15 @@ func place_tower(cell_position : Vector2i, tower_packed_scene : PackedScene) -> 
 func check_valid_tower_placement(cell_position : Vector2i) -> bool:
 	if used_tiles.has(cell_position):
 		return false
-	return level_layer.is_cell_buildable(cell_position)
+	if not level_layer.is_cell_buildable(cell_position):
+		return false
+	
+	# Prevent placement if it would block all paths from enemy spawn to base
+	# TODO: this should support multiple spawn points and bases
+	var spawn_cell := Vector2i(level_layer.enemy_spawner.global_position) / CELL_SIZE
+	var target_cell := Vector2i(level_layer.target_pos) / CELL_SIZE
+	if PathfindingManager.would_block_path(cell_position, spawn_cell, target_cell):
+		print_debug("Cannot build here: would block enemy path")
+		return false
+	
+	return true
