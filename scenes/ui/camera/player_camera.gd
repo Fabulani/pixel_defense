@@ -1,29 +1,41 @@
-extends Camera2D
+class_name PanningCamera extends Camera2D
 
-var drag: bool
-@export var acceleration: float = 1
-@export var keyboard_speed: float = 300
-@export var zoom_speed: float = 0.1
-@export var min_zoom: float = 2
-@export var max_zoom: float = 6
+# TODO: finish fixing up the zooming buttons
+# ZOOM_BTN_INCREMENT should be higher so the buttons feel good to use
+# maybe add the increment as a paramenter to zoom_in/_out?
 
-func _input(event):
-	if event is InputEventMouseButton:
-		if event.button_index == 3:
-			drag = event.pressed
-		if event.pressed:
-			if event.button_index == MOUSE_BUTTON_WHEEL_UP:
-				zoom = Vector2(min(zoom.x + zoom_speed, max_zoom), min(zoom.y + zoom_speed, max_zoom))
-			if event.button_index == MOUSE_BUTTON_WHEEL_DOWN:
-				zoom = Vector2(max(zoom.x - zoom_speed, min_zoom), max(zoom.y - zoom_speed, min_zoom))
+const MIN_ZOOM: float = 1.0
+const MAX_ZOOM: float = 5.0
+const ZOOM_INCREMENT: float = 0.25
+const ZOOM_BTN_INCREMENT: float = 0.5
+const ZOOM_RATE: float = 8.0
+const KEYBOARD_PAN_SPEED: float = 300
+
+var _target_zoom: float = 2.0
+
+func _unhandled_input(event: InputEvent) -> void:
+	_handle_mouse_input(event)
+
+func _handle_mouse_input(event: InputEvent) -> void:
+	# Panning
 	if event is InputEventMouseMotion:
-		if drag:
-			# TODO: dragged location moves with cursor, as if dragging the map itself
-			position -= event.relative * acceleration
-	if event is InputEventScreenDrag:
-		position -= event.relative * acceleration
+		if event.button_mask == MOUSE_BUTTON_MASK_MIDDLE:
+			position -= event.relative / zoom
+			
+	# Zooming
+	if event is InputEventMouseButton:
+		if event.is_pressed():
+			if event.button_index == MOUSE_BUTTON_WHEEL_UP:
+				zoom_in()
+			if event.button_index == MOUSE_BUTTON_WHEEL_DOWN:
+				zoom_out()
 
-func _process(delta):
+func _handle_touch_input(event: InputEvent) -> void:
+	if event is InputEventScreenDrag:
+		position -= event.relative / zoom
+
+func _handle_keyboard_input(_delta: float) -> void:
+	# Panning with WASD or arrow keys
 	var direction = Vector2.ZERO
 	if Input.is_key_pressed(KEY_UP) or Input.is_key_pressed(KEY_W):
 		direction.y -= 1
@@ -34,12 +46,25 @@ func _process(delta):
 	if Input.is_key_pressed(KEY_RIGHT) or Input.is_key_pressed(KEY_D):
 		direction.x += 1
 	if direction != Vector2.ZERO:
-		position += direction.normalized() * keyboard_speed * delta
+		position += direction.normalized() * KEYBOARD_PAN_SPEED * _delta
 
+func zoom_in() -> void:
+	_target_zoom = min(_target_zoom + ZOOM_INCREMENT, MAX_ZOOM)
+	set_physics_process(true)
+
+func zoom_out() -> void:
+	_target_zoom = max(_target_zoom - ZOOM_INCREMENT, MIN_ZOOM)
+	set_physics_process(true)
+	
+func _physics_process(_delta: float) -> void:
+	zoom = lerp(zoom, _target_zoom * Vector2.ONE, ZOOM_RATE * _delta)
+	set_physics_process(not is_equal_approx(zoom.x, _target_zoom))
+
+func _process(_delta: float) -> void:
+	_handle_keyboard_input(_delta)
 
 func _on_hud_zoom_in_btn_pressed() -> void:
-	zoom = Vector2(min(zoom.x + zoom_speed*3, max_zoom), min(zoom.y + zoom_speed*3, max_zoom))
-
+	zoom_in() 
 
 func _on_hud_zoom_out_btn_pressed() -> void:
-	zoom = Vector2(max(zoom.x - zoom_speed*3, min_zoom), max(zoom.y - zoom_speed*3, min_zoom))
+	zoom_out()
