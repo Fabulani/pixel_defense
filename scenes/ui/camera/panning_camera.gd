@@ -1,5 +1,19 @@
 class_name PanningCamera extends Camera2D
 
+# Touch controls config
+@export var rotation_speed: float = 1.0
+@export var pan_speed: float = 1.0
+@export var can_pan: bool = true
+@export var can_zoom: bool = true
+@export var can_rotate: bool = true
+
+var touch_points: Dictionary = {}
+var start_distance: float = 0.0
+var start_zoom: float = 1.0
+var start_angle: float = 0.0
+var start_rotation: float = 0.0
+
+# Mouse + KB controls
 const MIN_ZOOM: float = 1.0
 const MAX_ZOOM: float = 5.0
 const ZOOM_INCREMENT: float = 0.25
@@ -14,12 +28,12 @@ func _unhandled_input(event: InputEvent) -> void:
 	_handle_touch_input(event)
 
 func _handle_mouse_input(event: InputEvent) -> void:
-	# Panning
+	# Pan
 	if event is InputEventMouseMotion:
 		if event.button_mask == MOUSE_BUTTON_MASK_MIDDLE:
 			position -= event.relative / zoom
 			
-	# Zooming
+	# Zoom
 	if event is InputEventMouseButton:
 		if event.is_pressed():
 			if event.button_index == MOUSE_BUTTON_WHEEL_UP:
@@ -28,8 +42,40 @@ func _handle_mouse_input(event: InputEvent) -> void:
 				zoom_out(ZOOM_INCREMENT)
 
 func _handle_touch_input(event: InputEvent) -> void:
-	# Panning
+	# Register touch points for later
+	if event is InputEventScreenTouch:
+		if event.pressed:
+			touch_points[event.index] = event.position
+		else:
+			touch_points.erase(event.index)
+
+	# Zoom
+	if event is InputEventScreenTouch:
+		if touch_points.size() == 2:
+			# Two fingers on the screen. Register start distance for zoom calculation
+			var touch_points_positions = touch_points.values()
+			start_distance = touch_points_positions[0].distance_to(touch_points_positions[1])
+			start_zoom = zoom.x
+		elif touch_points.size() < 2:
+			# One or no finger on the screen. Reset zoom start distance
+			start_distance = 0.0
 	if event is InputEventScreenDrag:
+		touch_points[event.index] = event.position
+		if touch_points.size() == 2:
+			# Two fingers on the screen. Calculate zoom based on distance ratio
+			var touch_points_positions = touch_points.values()
+			var current_distance = touch_points_positions[0].distance_to(touch_points_positions[1])
+			var desired_zoom = clamp(start_zoom * (current_distance / start_distance), MIN_ZOOM, MAX_ZOOM)
+			var delta = desired_zoom - _target_zoom
+			if can_zoom:
+				if delta > 0:
+					zoom_in(delta)
+				elif delta < 0:
+					zoom_out(-delta)
+			
+	
+	# Pan
+	if event is InputEventScreenDrag and touch_points.size() == 1:
 		position -= event.relative / zoom
 		
 	# TODO: zooming with pinching, and double-tab + drag up/down
