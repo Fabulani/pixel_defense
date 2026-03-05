@@ -7,6 +7,7 @@ var tower_packed_scene := preload("res://scenes/towers/tower_basic.tscn")
 
 @onready var current_level := $Level
 @onready var hud: HUD = $HUD
+@onready var camera: PanningCamera = $PanningCamera
 @onready var game_over_screen: GameOverScreen = $GameOverScreen
 @onready var start_menu: StartMenu = $StartMenu
 @onready var highlight_tile: HighlightTile = $HighlightTile
