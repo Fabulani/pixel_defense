@@ -161,12 +161,13 @@ func _smooth_damp(state: Array[Vector2], target: Vector2, smooth_time: float, de
 	var output := target + (change + temp) * expo
 
 	# Prevent overshooting
-	if (original_to.x > current.x) == (output.x > original_to.x):
-		output.x = original_to.x
-		velocity.x = (output.x - original_to.x) / delta
-	if (original_to.y > current.y) == (output.y > original_to.y):
-		output.y = original_to.y
-		velocity.y = (output.y - original_to.y) / delta
+	if delta > 0:
+		if (original_to.x > current.x) == (output.x > original_to.x):
+			output.x = original_to.x
+			velocity.x = (output.x - original_to.x) / delta
+		if (original_to.y > current.y) == (output.y > original_to.y):
+			output.y = original_to.y
+			velocity.y = (output.y - original_to.y) / delta
 
 	state[0] = output
 	state[1] = velocity
