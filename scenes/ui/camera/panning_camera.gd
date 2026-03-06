@@ -50,8 +50,11 @@ func _ready() -> void:
 
 
 func _unhandled_input(event: InputEvent) -> void:
-	_handle_mouse_input(event)
-	_handle_touch_input(event)
+	_track_touch_points(event)  # Always track touch points before handling touch gestures
+	_handle_pan_touch(event)
+	_handle_zoom_touch(event)
+	_handle_pan_mouse(event)
+	_handle_zoom_scroll_fallback(event)
 
 
 func _process(delta: float) -> void:
@@ -63,8 +66,7 @@ func _process(delta: float) -> void:
 func _apply_smooth_zoom_and_pan(delta: float) -> void:
 	_smooth_damp(_damped_zoom, _zoom_goal, zoom_smoothing, delta)
 
-	# Zoom in and determine camera offset to keep
-	# the view under the mouse cursor stationary
+	# Shift position to keep the zoom anchor point stationary on screen
 	var pre := to_local(get_canvas_transform().affine_inverse() * _zoom_mouse)
 	zoom = _damped_zoom[0]
 	var post := to_local(get_canvas_transform().affine_inverse() * _zoom_mouse)
@@ -76,70 +78,87 @@ func _apply_smooth_zoom_and_pan(delta: float) -> void:
 	position = _damped_pan[0]
 
 
-func _handle_mouse_input(event: InputEvent) -> void:
-	# Pan with middle mouse button or action
-	if event is InputEventMouseMotion:
-		var pan_active: bool = (not _fallback_pan and Input.is_action_pressed(pan_action)) \
-			or (_fallback_pan and event.button_mask == MOUSE_BUTTON_MASK_MIDDLE)
-		if pan_active:
-			_position_goal -= event.relative / zoom
+# -- Pan -----------------------------------------------------------------------
 
-	# Zoom with scroll wheel (fallback in case actions are undefined)
-	if can_zoom and event is InputEventMouseButton and event.is_pressed():
-		var zoom_in: bool = _fallback_zoom_in and event.button_index == MOUSE_BUTTON_WHEEL_UP
-		var zoom_out: bool = _fallback_zoom_out and event.button_index == MOUSE_BUTTON_WHEEL_DOWN
-		if zoom_in or zoom_out:
-			_zoom_mouse = get_viewport().get_mouse_position()
-			_zoom_goal *= (1.0 / (1.0 - zoom_step_ratio)) if zoom_in else (1.0 - zoom_step_ratio)
-			_zoom_goal = _zoom_goal.clamp(min_zoom * Vector2.ONE, max_zoom * Vector2.ONE)
+func _handle_pan_mouse(event: InputEvent) -> void:
+	if not event is InputEventMouseMotion:
+		return
+	var pan_active: bool = (not _fallback_pan and Input.is_action_pressed(pan_action)) \
+		or (_fallback_pan and event.button_mask == MOUSE_BUTTON_MASK_MIDDLE)
+	if pan_active:
+		_position_goal -= event.relative / zoom
 
 
-func _handle_touch_input(event: InputEvent) -> void:
-	# Track touch points; snapshot pinch start state when second finger lands
-	if event is InputEventScreenTouch:
-		if event.pressed:
-			_touch_points[event.index] = event.position
-		else:
-			_touch_points.erase(event.index)
-
-		if _touch_points.size() == 2:
-			var positions: Array[Vector2] = _touch_points.values()
-			_start_distance = positions[0].distance_to(positions[1])
-			_start_zoom = zoom.x
-		else:
-			_start_distance = 0.0
-
-	# Pinch to zoom (two fingers, anchored to finger midpoint)
-	if can_zoom and event is InputEventScreenDrag:
-		_touch_points[event.index] = event.position
-		if _touch_points.size() == 2 and _start_distance > 0.0:
-			var positions: Array[Vector2] = _touch_points.values()
-			var current_distance := positions[0].distance_to(positions[1])
-			var new_zoom: float = clamp(_start_zoom * (current_distance / _start_distance), min_zoom, max_zoom)
-			_zoom_mouse = (positions[0] + positions[1]) * 0.5
-			_zoom_goal = new_zoom * Vector2.ONE
-
-	# Pan (single finger)
+func _handle_pan_touch(event: InputEvent) -> void:
 	if event is InputEventScreenDrag and _touch_points.size() == 1:
 		_position_goal -= event.relative / zoom
 
 
+func _handle_directional_input(delta: float) -> void:
+	var direction: Vector2 = Input.get_vector(
+		"camera>pan_left", 
+		"camera>pan_right", 
+		"camera>pan_up", 
+		"camera>pan_down"
+	)
+	if direction != Vector2.ZERO:
+		_position_goal += direction * keyboard_pan_speed / zoom.x * delta
+
+
+# -- Zoom ----------------------------------------------------------------------
+
 func _handle_zoom_input() -> void:
-	if not can_zoom or _fallback_zoom_in and _fallback_zoom_out:
+	if not can_zoom or (_fallback_zoom_in and _fallback_zoom_out):
 		return
-	var zoom_in := Input.is_action_just_pressed(zoom_in_action)
-	var zoom_out := Input.is_action_just_pressed(zoom_out_action)
+	var zoom_in: bool = not _fallback_zoom_in and Input.is_action_just_pressed(zoom_in_action)
+	var zoom_out: bool = not _fallback_zoom_out and Input.is_action_just_pressed(zoom_out_action)
 	if zoom_in or zoom_out:
 		_zoom_mouse = get_viewport().get_mouse_position()
 		_zoom_goal *= (1.0 / (1.0 - zoom_step_ratio)) if zoom_in else (1.0 - zoom_step_ratio)
 		_zoom_goal = _zoom_goal.clamp(min_zoom * Vector2.ONE, max_zoom * Vector2.ONE)
 
 
-func _handle_directional_input(delta: float) -> void:
-	var direction := Input.get_vector("camera>pan_left", "camera>pan_right", "camera>pan_up", "camera>pan_down")
-	if direction != Vector2.ZERO:
-		_position_goal += direction * keyboard_pan_speed / zoom.x * delta
+func _handle_zoom_scroll_fallback(event: InputEvent) -> void:
+	if not can_zoom or not event is InputEventMouseButton or not event.is_pressed():
+		return
+	var zoom_in: bool = _fallback_zoom_in and event.button_index == MOUSE_BUTTON_WHEEL_UP
+	var zoom_out: bool = _fallback_zoom_out and event.button_index == MOUSE_BUTTON_WHEEL_DOWN
+	if zoom_in or zoom_out:
+		_zoom_mouse = get_viewport().get_mouse_position()
+		_zoom_goal *= (1.0 / (1.0 - zoom_step_ratio)) if zoom_in else (1.0 - zoom_step_ratio)
+		_zoom_goal = _zoom_goal.clamp(min_zoom * Vector2.ONE, max_zoom * Vector2.ONE)
 
+
+func _handle_zoom_touch(event: InputEvent) -> void:
+	if not can_zoom or not event is InputEventScreenDrag:
+		return
+	if _touch_points.size() == 2 and _start_distance > 0.0:
+		var positions: Array[Vector2] = _touch_points.values()
+		var current_distance := positions[0].distance_to(positions[1])
+		var new_zoom: float= clamp(_start_zoom * (current_distance / _start_distance), min_zoom, max_zoom)
+		_zoom_mouse = (positions[0] + positions[1]) * 0.5
+		_zoom_goal = new_zoom * Vector2.ONE
+
+
+# -- Touch point tracking ------------------------------------------------------
+
+func _track_touch_points(event: InputEvent) -> void:
+	if event is InputEventScreenTouch:
+		if event.pressed:
+			_touch_points[event.index] = event.position
+		else:
+			_touch_points.erase(event.index)
+		if _touch_points.size() == 2:
+			var positions: Array[Vector2] = _touch_points.values()
+			_start_distance = positions[0].distance_to(positions[1])
+			_start_zoom = zoom.x
+		else:
+			_start_distance = 0.0
+	elif event is InputEventScreenDrag:
+		_touch_points[event.index] = event.position
+
+
+# -- Other ---------------------------------------------------------------------
 
 ## Zoom by an absolute amount. Anchors to viewport center so zoom_to_cursor
 ## does not cause unexpected shifts when called programmatically.
