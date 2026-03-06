@@ -3,8 +3,6 @@
 [ext_resource type="Script" uid="uid://dviylmcgi8ydp" path="res://scenes/ui/hud/hud.gd" id="1_as3gr"]
 [ext_resource type="Texture2D" uid="uid://c3qi8dlri4pv1" path="res://assets/tiles/tile_0019.png" id="1_bngdn"]
 [ext_resource type="Texture2D" uid="uid://bbntvb0npfhix" path="res://assets/ships/ship_0016.png" id="2_qao66"]
-[ext_resource type="Texture2D" uid="uid://cg3k2uil287nn" path="res://assets/input_prompts/tile_0062.png" id="4_2wu1p"]
-[ext_resource type="Texture2D" uid="uid://dn4c2q6yf2llw" path="res://assets/input_prompts/tile_0061.png" id="5_4m4yb"]
 
 [node name="CanvasLayer" type="CanvasLayer" unique_id=796709017]
 script = ExtResource("1_as3gr")
@@ -87,39 +85,3 @@ layout_mode = 2
 text = "0"
 horizontal_alignment = 2
 vertical_alignment = 1
-
-[node name="VBoxContainer" type="VBoxContainer" parent="." unique_id=361930300]
-anchors_preset = 3
-anchor_left = 1.0
-anchor_top = 1.0
-anchor_right = 1.0
-anchor_bottom = 1.0
-offset_left = -154.0
-offset_top = -220.0
-offset_right = -46.0
-offset_bottom = -36.0
-grow_horizontal = 0
-grow_vertical = 0
-alignment = 1
-
-[node name="ZoomInButton" type="Button" parent="VBoxContainer" unique_id=1595527945]
-layout_mode = 2
-size_flags_vertical = 3
-icon = ExtResource("4_2wu1p")
-icon_alignment = 1
-expand_icon = true
-
-[node name="Spacer" type="Control" parent="VBoxContainer" unique_id=1712390927]
-layout_mode = 2
-size_flags_vertical = 3
-size_flags_stretch_ratio = 0.2
-
-[node name="ZoomOutButton" type="Button" parent="VBoxContainer" unique_id=640146484]
-layout_mode = 2
-size_flags_vertical = 3
-icon = ExtResource("5_4m4yb")
-icon_alignment = 1
-expand_icon = true
-
-[connection signal="pressed" from="VBoxContainer/ZoomInButton" to="." method="_on_zoom_in_button_pressed"]
-[connection signal="pressed" from="VBoxContainer/ZoomOutButton" to="." method="_on_zoom_out_button_pressed"]
