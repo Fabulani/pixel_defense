@@ -90,8 +90,12 @@ func _handle_pan_mouse(event: InputEvent) -> void:
 
 
 func _handle_pan_touch(event: InputEvent) -> void:
-	if event is InputEventScreenDrag and _touch_points.size() == 1:
+	if not event is InputEventScreenDrag:
+		return
+	if _touch_points.size() == 1:
 		_position_goal -= event.relative / zoom
+	elif _touch_points.size() == 2:
+		_position_goal -= event.relative * 0.5 / zoom
 
 
 func _handle_directional_input(delta: float) -> void:
