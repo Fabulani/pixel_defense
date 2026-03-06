@@ -33,7 +33,7 @@ Alternatively download from Kenney (<www.kenney.nl>) and extract them in the ass
 
 # Thanks
 
-Some helpful tutorials helped me get this game up and running:
+Some helpful resources helped me get this game up and running:
 - CoffeeCrow
 	- [How To Create A Tower Defence Game In Godot!](https://youtube.com/playlist?list=PLhBqFleCVBkUo2ZFIZcFRBB4HMv7JjPWG&si=Asag0uhvkSEXF2If)
 - Zenva
@@ -45,3 +45,9 @@ Some helpful tutorials helped me get this game up and running:
 	- [godot-4-tileset-terrains-docs](https://github.com/dandeliondino/godot-4-tileset-terrains-docs)
 - Overshot Productions
 	- [Safe Area Dynamic Margins Setup in Godot 4: Mobile Device Orientation Tutorial](https://youtu.be/MeURXJij6PA)
+- Bramwell
+	- [Drag Camera: Godot Guide](https://youtu.be/gpvLqLggJuk)
+- FinePointCGI
+	- [Creating a Flexible Touch Screen Camera Controller In Godot | Basics With Godot](https://youtu.be/vnAkooGCLDA)
+- thygrrr
+	- [Godot Zoom and Pan, smooth & cursor-centric Camera2D motion](https://gist.github.com/thygrrr/8288cabeb5cd25031ce6132c4a886311)
