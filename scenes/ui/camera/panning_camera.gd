@@ -56,6 +56,7 @@ func _unhandled_input(event: InputEvent) -> void:
 
 func _process(delta: float) -> void:
 	_handle_directional_input(delta)
+	_handle_zoom_input()
 	_apply_smooth_zoom_and_pan(delta)
 
 
@@ -83,13 +84,10 @@ func _handle_mouse_input(event: InputEvent) -> void:
 		if pan_active:
 			_position_goal -= event.relative / zoom
 
-	# Zoom with scroll wheel or action
+	# Zoom with scroll wheel (fallback in case actions are undefined)
 	if can_zoom and event is InputEventMouseButton and event.is_pressed():
-		var zoom_in: bool = Input.is_action_just_pressed(zoom_in_action) \
-			or (_fallback_zoom_in and event.button_index == MOUSE_BUTTON_WHEEL_UP)
-		var zoom_out: bool = Input.is_action_just_pressed(zoom_out_action) \
-			or (_fallback_zoom_out and event.button_index == MOUSE_BUTTON_WHEEL_DOWN)
-
+		var zoom_in: bool = _fallback_zoom_in and event.button_index == MOUSE_BUTTON_WHEEL_UP
+		var zoom_out: bool = _fallback_zoom_out and event.button_index == MOUSE_BUTTON_WHEEL_DOWN
 		if zoom_in or zoom_out:
 			_zoom_mouse = get_viewport().get_mouse_position()
 			_zoom_goal *= (1.0 / (1.0 - zoom_step_ratio)) if zoom_in else (1.0 - zoom_step_ratio)
@@ -124,6 +122,17 @@ func _handle_touch_input(event: InputEvent) -> void:
 	# Pan (single finger)
 	if event is InputEventScreenDrag and _touch_points.size() == 1:
 		_position_goal -= event.relative / zoom
+
+
+func _handle_zoom_input() -> void:
+	if not can_zoom or _fallback_zoom_in and _fallback_zoom_out:
+		return
+	var zoom_in := Input.is_action_just_pressed(zoom_in_action)
+	var zoom_out := Input.is_action_just_pressed(zoom_out_action)
+	if zoom_in or zoom_out:
+		_zoom_mouse = get_viewport().get_mouse_position()
+		_zoom_goal *= (1.0 / (1.0 - zoom_step_ratio)) if zoom_in else (1.0 - zoom_step_ratio)
+		_zoom_goal = _zoom_goal.clamp(min_zoom * Vector2.ONE, max_zoom * Vector2.ONE)
 
 
 func _handle_directional_input(delta: float) -> void:
