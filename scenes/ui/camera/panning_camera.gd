@@ -132,8 +132,10 @@ func _handle_directional_input(delta: float) -> void:
 		_position_goal += direction * keyboard_pan_speed / zoom.x * delta
 
 
-## Zoom by an absolute amount with no anchoring.
+## Zoom by an absolute amount. Anchors to viewport center so zoom_to_cursor
+## does not cause unexpected shifts when called programmatically.
 func zoom_by(amount: float) -> void:
+	_zoom_mouse = get_viewport().get_visible_rect().size * 0.5
 	_zoom_goal = (_zoom_goal + amount * Vector2.ONE).clamp(min_zoom * Vector2.ONE, max_zoom * Vector2.ONE)
 
 
