@@ -1,6 +1,6 @@
 class_name HUD extends CanvasLayer
 
-@onready var coin_amount_label: Label = $PanelContainer/MarginContainer/VBoxContainer/CoinContainer/CoinAmountLabel
+@onready var coin_amount_label: Label = %CoinAmountLabel
 @onready var wave_index_label: Label = $PanelContainer/MarginContainer/VBoxContainer/WaveContainer/WaveIndexLabel
 @onready var enemy_count_label: Label = $PanelContainer/MarginContainer/VBoxContainer/EnemyCountContainer/EnemyCount
 
