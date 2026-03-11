@@ -1,9 +1,0 @@
-[gd_resource type="Resource" script_class="EnemyStats" format=3 uid="uid://cfw02juunpfer"]
-
-[ext_resource type="Script" uid="uid://c2pkska5ungt1" path="res://resources/components/stats/enemies/enemy_stats.gd" id="1_hcnxq"]
-
-[resource]
-script = ExtResource("1_hcnxq")
-max_health = 1
-coins = 0
-metadata/_custom_type_script = "uid://c2pkska5ungt1"

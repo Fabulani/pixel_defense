@@ -1,0 +1,10 @@
+[gd_resource type="Resource" script_class="EnemyStats" format=3 uid="uid://b854dj58gk8wt"]
+
+[ext_resource type="Script" uid="uid://c2pkska5ungt1" path="res://entities/enemies/enemy_stats.gd" id="1_hmfid"]
+
+[resource]
+script = ExtResource("1_hmfid")
+movement_speed = 50.0
+max_health = 3
+coins = 1
+metadata/_custom_type_script = "uid://c2pkska5ungt1"
