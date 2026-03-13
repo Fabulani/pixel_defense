@@ -3,14 +3,16 @@
 [ext_resource type="Script" uid="uid://iwqck7whgec3" path="res://entities/enemies/enemy_entity.gd" id="1_i8gw2"]
 [ext_resource type="Resource" uid="uid://b854dj58gk8wt" path="res://entities/enemies/basic/basic_enemy.tres" id="2_7ubcb"]
 [ext_resource type="Texture2D" uid="uid://b0uyhu3tcesfm" path="res://entities/enemies/basic/gray_ship_1.png" id="3_ose1q"]
+[ext_resource type="PackedScene" uid="uid://csjsdajn2nafn" path="res://entities/enemies/components/pathfinding/pathfinding.tscn" id="4_7ubcb"]
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_re1xi"]
 radius = 8.235294
 
-[node name="BasicEnemy" type="CharacterBody2D" unique_id=1178725513]
+[node name="BasicEnemy" type="CharacterBody2D" unique_id=1178725513 node_paths=PackedStringArray("pathfinding")]
 collision_mask = 0
 script = ExtResource("1_i8gw2")
 stats = ExtResource("2_7ubcb")
+pathfinding = NodePath("Pathfinding")
 
 [node name="Sprite2D" type="Sprite2D" parent="." unique_id=1385029781]
 rotation = 1.5707964
@@ -20,3 +22,5 @@ texture = ExtResource("3_ose1q")
 [node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=1444159112]
 scale = Vector2(0.85, 0.85)
 shape = SubResource("CircleShape2D_re1xi")
+
+[node name="Pathfinding" parent="." unique_id=1123776030 instance=ExtResource("4_7ubcb")]

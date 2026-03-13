@@ -19,8 +19,8 @@ func _ready() -> void:
 
 func _on_building_manager_new_tower_built(tower: Tower, cell_position: Vector2i) -> void:
 	PathfindingManager.set_cell_solid(cell_position, true)
-	for enemy in get_tree().get_nodes_in_group("enemy_group"):
-		enemy.recalculate_path()
+	for enemy in get_tree().get_nodes_in_group("enemies"):
+		enemy.pathfinding.recalculate_path()
 	
 	tower.shoot.connect(projectile_manager.create_bullet)
 	_update_pathfinding_preview()

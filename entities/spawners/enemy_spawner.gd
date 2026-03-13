@@ -36,11 +36,10 @@ func spawn_next() -> void:
 		return
 
 	var enemy = current_spawn_list[spawn_list_index].instantiate()
-	enemy.target_pos = target_pos
+	enemy.pathfinding.target_pos = target_pos
 	enemy.died.connect(_on_enemy_died)
 	enemy.tree_exiting.connect(_on_enemy_removed)
 	add_child(enemy)
-	enemy.add_to_group("enemy_group")
 	alive_enemy_count += 1
 	enemy_count_changed.emit(alive_enemy_count)
 
