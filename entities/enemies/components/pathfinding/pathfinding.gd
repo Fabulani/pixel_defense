@@ -20,7 +20,7 @@ func _follow_path() -> void:
 	if _path and _path_index < _path.size():
 		var global_pos: Vector2 = _entity.global_position
 		var direction : Vector2 = global_pos.direction_to(_path[_path_index])
-		_entity.velocity = direction * _entity.stats.movement_speed
+		_entity.velocity = direction * _entity.stats.speed
 		_entity.rotation = _entity.velocity.angle()
 
 		if global_pos.distance_to(_path[_path_index]) <= 10:
