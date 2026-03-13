@@ -1,4 +1,7 @@
-""" Add Pathfinding capabilities to the owner entity. """
+## Add Pathfinding capabilities to a CharacterBody2D.
+##
+## Add A* Pathfinding to a CharacterBody2D.
+## Expects a PathfindingManager autoload with the A* implementation.
 
 class_name Pathfinding extends Node
 
@@ -12,8 +15,8 @@ func _ready() -> void:
 	_entity = owner as CharacterBody2D
 	recalculate_path()
 
+## Update the entity velocity and rotation such that it follows the path.
 func _follow_path() -> void:
-	""" Update the entity velocity and rotation such that it follows the path. """
 	if _path and _path_index < _path.size():
 		var global_pos: Vector2 = _entity.global_position
 		var direction : Vector2 = global_pos.direction_to(_path[_path_index])
@@ -25,14 +28,13 @@ func _follow_path() -> void:
 	else:
 		_entity.velocity = Vector2.ZERO
 
+## Get a new path from the entity current position to the target position.
 func recalculate_path() -> void:
-	""" Get a new path from the entity current position to the target position. """
 	var global_pos: Vector2 = _entity.global_position
-	var grid_size: Vector2 = PathfindingManager.astar_grid.cell_size
-	_path = PathfindingManager.get_valid_path(global_pos / PathfindingManager.astar_grid.cell_size, target_pos / grid_size)
+	_path = PathfindingManager.get_valid_path_world(global_pos, target_pos)
 	_path_index = 0
-	
+
+## Move entity along the calculated path.
 func move() -> void:
-	""" Move entity along the calculated path. """
 	_follow_path()
 	_entity.move_and_slide()
