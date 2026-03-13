@@ -41,7 +41,7 @@ func check_valid_tower_placement(cell_position : Vector2i) -> bool:
 	# Prevent placement if it would block all paths from enemy spawn to base
 	# TODO: this should support multiple spawn points and bases
 	var spawn_cell := Vector2i(level_layer.enemy_spawner.global_position) / CELL_SIZE
-	var target_cell := Vector2i(level_layer.target_pos) / CELL_SIZE
+	var target_cell := Vector2i(level_layer.player_base.global_position) / CELL_SIZE
 	if PathfindingManager.would_block_path(cell_position, spawn_cell, target_cell):
 		return false
 	
