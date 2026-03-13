@@ -3,7 +3,13 @@
 [ext_resource type="Script" uid="uid://iwqck7whgec3" path="res://entities/enemies/enemy_entity.gd" id="1_i8gw2"]
 [ext_resource type="Resource" uid="uid://b854dj58gk8wt" path="res://entities/enemies/basic/basic_enemy.tres" id="2_7ubcb"]
 [ext_resource type="Texture2D" uid="uid://b0uyhu3tcesfm" path="res://entities/enemies/basic/gray_ship_1.png" id="3_ose1q"]
+[ext_resource type="Script" uid="uid://dr6joirhgvifb" path="res://entities/enemies/components/health/health.gd" id="3_ur1ql"]
 [ext_resource type="PackedScene" uid="uid://csjsdajn2nafn" path="res://entities/enemies/components/pathfinding/pathfinding.tscn" id="4_7ubcb"]
+
+[sub_resource type="Resource" id="Resource_pnbnr"]
+resource_local_to_scene = true
+script = ExtResource("3_ur1ql")
+metadata/_custom_type_script = "uid://dr6joirhgvifb"
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_re1xi"]
 radius = 8.235294
@@ -13,6 +19,7 @@ collision_mask = 0
 script = ExtResource("1_i8gw2")
 stats = ExtResource("2_7ubcb")
 pathfinding = NodePath("Pathfinding")
+health = SubResource("Resource_pnbnr")
 
 [node name="Sprite2D" type="Sprite2D" parent="." unique_id=1385029781]
 rotation = 1.5707964

@@ -18,7 +18,7 @@ func _on_body_entered(body: Node2D) -> void:
 		return
 	if body is EnemyEntity:
 		_hit = true
-		body.hit(stats.damage)
+		body.take_damage(stats.damage)
 		queue_free()
 		
 func _on_lifetime_timer_timeout() -> void:
