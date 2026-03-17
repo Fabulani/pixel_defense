@@ -48,7 +48,7 @@ func speedup_spawning() -> void:
 	spawn_timer.wait_time = spawn_delay
 
 func _on_enemy_died(enemy: EnemyEntity) -> void:
-	CurrencyManager.earn(enemy.stats.coins)
+	CurrencyManager.earn(enemy.drops.coins)
 
 func _on_enemy_removed() -> void:
 	alive_enemy_count -= 1
