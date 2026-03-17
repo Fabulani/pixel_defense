@@ -1,0 +1,13 @@
+[gd_scene format=3 uid="uid://c6m2o7v3qht87"]
+
+[ext_resource type="PackedScene" uid="uid://csjsdajn2nafn" path="res://entities/enemies/components/pathfinding/pathfinding.tscn" id="1_fh6k3"]
+
+[node name="EnemyEntity" type="CharacterBody2D" unique_id=614257391]
+collision_mask = 0
+
+[node name="Sprite2D" type="Sprite2D" parent="." unique_id=408957957]
+rotation = 1.5707964
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=1984160634]
+
+[node name="Pathfinding" parent="." unique_id=1240193856 instance=ExtResource("1_fh6k3")]
