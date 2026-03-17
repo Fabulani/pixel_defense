@@ -26,7 +26,7 @@ func _ready() -> void:
 	
 	# TODO: refactor this to avoid coupling
 	var enemy_spawner: EnemySpawner = current_level.enemy_spawner
-	enemy_spawner.enemy_count_changed.connect(hud.set_enemy_count)
+	enemy_spawner.alive_count_changed.connect(hud.set_enemy_count)
 	hud.set_enemy_count(0)
 
 func _on_game_over() -> void:

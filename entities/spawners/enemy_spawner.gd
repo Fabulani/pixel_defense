@@ -2,7 +2,7 @@ class_name EnemySpawner extends Node2D
 
 signal spawning_complete
 signal wave_cleared
-signal enemy_count_changed(count: int)
+signal alive_count_changed(count: int)
 
 @export var current_spawn_list: Array[PackedScene] = []
 @export var default_spawn_delay : float = 1.0
@@ -11,8 +11,8 @@ signal enemy_count_changed(count: int)
 
 var spawn_delay : float = 0.0
 var spawn_list_index : int = 0
-var alive_enemy_count : int = 0
-var spawning_in_progress : bool = false
+var alive_count : int = 0
+var is_spawning : bool = false
 
 var target_pos : Vector2
 
@@ -23,13 +23,13 @@ func _ready() -> void:
 func start_spawning(spawn_list: Array) -> void:
 	current_spawn_list.assign(spawn_list)
 	spawn_list_index = 0
-	spawning_in_progress = true
+	is_spawning = true
 	spawn_timer.start()
 
 func spawn_next() -> void:
 	if spawn_list_index >= current_spawn_list.size():
 		spawn_timer.stop()
-		spawning_in_progress = false
+		is_spawning = false
 		spawning_complete.emit()
 		# Next time, spawn faster. For fun.
 		speedup_spawning()
@@ -40,8 +40,8 @@ func spawn_next() -> void:
 	enemy.died.connect(_on_enemy_died)
 	enemy.tree_exiting.connect(_on_enemy_removed)
 	add_child(enemy)
-	alive_enemy_count += 1
-	enemy_count_changed.emit(alive_enemy_count)
+	alive_count += 1
+	alive_count_changed.emit(alive_count)
 
 func speedup_spawning() -> void:
 	spawn_delay = max(0.01, spawn_delay - 0.1)
@@ -51,9 +51,9 @@ func _on_enemy_died(enemy: EnemyEntity) -> void:
 	CurrencyManager.earn(enemy.drops.coins)
 
 func _on_enemy_removed() -> void:
-	alive_enemy_count -= 1
-	enemy_count_changed.emit(alive_enemy_count)
-	if alive_enemy_count == 0 and not spawning_in_progress:
+	alive_count -= 1
+	alive_count_changed.emit(alive_count)
+	if alive_count == 0 and not is_spawning:
 		wave_cleared.emit()
 
 func _on_enemy_spawn_timer_timeout() -> void:
