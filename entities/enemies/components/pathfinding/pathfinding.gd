@@ -7,7 +7,14 @@ class_name Pathfinding extends Node
 
 var _path: Array[Vector2i] = []
 var _path_index := 0
-var target_pos := Vector2.ZERO
+var target_pos := Vector2.ZERO:
+	set(value):
+		if target_pos == value:
+			return
+		target_pos = value
+		if _entity:
+			# Recalculate only if _entity is initialized
+			recalculate_path()
 
 var _entity: CharacterBody2D
 
