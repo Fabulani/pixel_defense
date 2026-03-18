@@ -5,18 +5,18 @@
 
 class_name Pathfinding extends Node
 
+var _entity: CharacterBody2D
 var _path: Array[Vector2i] = []
 var _path_index := 0
-var target_pos := Vector2.ZERO:
+var target_position := Vector2.ZERO:
 	set(value):
-		if target_pos == value:
+		if target_position == value:
 			return
-		target_pos = value
+		target_position = value
 		if _entity:
 			# Recalculate only if _entity is initialized
 			recalculate_path()
 
-var _entity: CharacterBody2D
 
 func _ready() -> void:
 	_entity = owner as CharacterBody2D
@@ -38,7 +38,7 @@ func _follow_path() -> void:
 ## Get a new path from the entity current position to the target position.
 func recalculate_path() -> void:
 	var global_pos: Vector2 = _entity.global_position
-	_path = PathfindingManager.get_valid_path_world(global_pos, target_pos)
+	_path = PathfindingManager.get_valid_path_world(global_pos, target_position)
 	_path_index = 0
 
 ## Move entity along the calculated path.

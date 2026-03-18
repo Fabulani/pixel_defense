@@ -17,6 +17,9 @@ func _process(_delta: float) -> void:
 
 func take_damage(amount: float) -> void:
 	health.take_damage(amount)
+
+func set_target_position(pos: Vector2) -> void:
+	pathfinding.target_position = pos
 		
 func die() -> void:
 	died.emit(self)
