@@ -16,7 +16,8 @@ func _process(_delta: float) -> void:
 func _on_body_entered(body: Node2D) -> void:
 	if _hit:
 		return
-	if body is EnemyEntity:
+	# TODO: decouple Enemy by checking if body has take_damage method
+	if body is Enemy:
 		_hit = true
 		body.take_damage(stats.damage)
 		queue_free()

@@ -1,0 +1,8 @@
+[gd_resource type="Resource" script_class="Drops" format=3 uid="uid://b67texh8pqbti"]
+
+[ext_resource type="Script" uid="uid://c7uv0djehjllk" path="res://entities/enemies/components/drops/drops.gd" id="1_sbeke"]
+
+[resource]
+script = ExtResource("1_sbeke")
+coins = 3
+metadata/_custom_type_script = "uid://c7uv0djehjllk"

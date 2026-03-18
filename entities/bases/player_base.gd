@@ -4,8 +4,9 @@ signal game_over
 
 var _health = 1
 
-func _on_body_entered(body: EnemyEntity) -> void:
-	if body is EnemyEntity:
+func _on_body_entered(body: Enemy) -> void:
+	# TODO: decouple by checking if entity has a damage method
+	if body is Enemy:
 		_health -= 1
 		body.queue_free()
 		if _health <= 0:

@@ -1,35 +1,21 @@
 [gd_scene format=3 uid="uid://dnwd6vi1t3f5d"]
 
-[ext_resource type="Script" uid="uid://iwqck7whgec3" path="res://entities/enemies/enemy_entity.gd" id="1_d604s"]
-[ext_resource type="Resource" uid="uid://cfw02juunpfer" path="res://entities/enemies/fast/fast_enemy.tres" id="2_d604s"]
-[ext_resource type="Texture2D" uid="uid://ct3qspnjf7rnq" path="res://entities/enemies/fast/ship_blue_1.png" id="3_d604s"]
-[ext_resource type="Script" uid="uid://c7uv0djehjllk" path="res://entities/enemies/components/drops/enemy_drops.gd" id="3_imqxe"]
-[ext_resource type="Script" uid="uid://dr6joirhgvifb" path="res://entities/enemies/components/health/health.gd" id="4_jc25c"]
+[ext_resource type="PackedScene" uid="uid://dw4n2dmih5uxd" path="res://entities/enemies/enemy.tscn" id="1_base"]
+[ext_resource type="Resource" uid="uid://cfw02juunpfer" path="res://entities/enemies/fast/fast_enemy_stats.tres" id="2_stats"]
+[ext_resource type="Resource" uid="uid://etst3o306quk" path="res://entities/enemies/fast/fast_enemy_drops.tres" id="3_imqxe"]
+[ext_resource type="Texture2D" uid="uid://ct3qspnjf7rnq" path="res://entities/enemies/fast/ship_blue_1.png" id="3_texture"]
 
-[sub_resource type="Resource" id="Resource_44muo"]
-script = ExtResource("3_imqxe")
-metadata/_custom_type_script = "uid://c7uv0djehjllk"
-
-[sub_resource type="Resource" id="Resource_cwmi2"]
-resource_local_to_scene = true
-script = ExtResource("4_jc25c")
-metadata/_custom_type_script = "uid://dr6joirhgvifb"
-
-[sub_resource type="CircleShape2D" id="CircleShape2D_re1xi"]
+[sub_resource type="CircleShape2D" id="Hitbox_fast"]
 radius = 5.8823533
 
-[node name="FastEnemy" type="CharacterBody2D" unique_id=1178725513]
-collision_mask = 0
-script = ExtResource("1_d604s")
-stats = ExtResource("2_d604s")
-drops = SubResource("Resource_44muo")
-health = SubResource("Resource_cwmi2")
+[node name="FastEnemy" unique_id=806520150 instance=ExtResource("1_base")]
+stats = ExtResource("2_stats")
+drops = ExtResource("3_imqxe")
 
-[node name="Sprite2D" type="Sprite2D" parent="." unique_id=1385029781]
-rotation = 1.5707964
+[node name="Sprite2D" parent="." index="0" unique_id=177971911]
 scale = Vector2(0.4, 0.4)
-texture = ExtResource("3_d604s")
+texture = ExtResource("3_texture")
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=1444159112]
+[node name="CollisionShape2D" parent="." index="1" unique_id=2005179287]
 scale = Vector2(0.85, 0.85)
-shape = SubResource("CircleShape2D_re1xi")
+shape = SubResource("Hitbox_fast")

@@ -1,40 +1,21 @@
 [gd_scene format=3 uid="uid://b1mg352s1f4mt"]
 
-[ext_resource type="Script" uid="uid://iwqck7whgec3" path="res://entities/enemies/enemy_entity.gd" id="1_i8gw2"]
-[ext_resource type="Resource" uid="uid://b854dj58gk8wt" path="res://entities/enemies/basic/basic_enemy.tres" id="2_7ubcb"]
-[ext_resource type="Texture2D" uid="uid://b0uyhu3tcesfm" path="res://entities/enemies/basic/gray_ship_1.png" id="3_ose1q"]
-[ext_resource type="Script" uid="uid://c7uv0djehjllk" path="res://entities/enemies/components/drops/enemy_drops.gd" id="3_pnbnr"]
-[ext_resource type="Script" uid="uid://dr6joirhgvifb" path="res://entities/enemies/components/health/health.gd" id="3_ur1ql"]
-[ext_resource type="PackedScene" uid="uid://csjsdajn2nafn" path="res://entities/enemies/components/pathfinding/pathfinding.tscn" id="4_7ubcb"]
+[ext_resource type="PackedScene" uid="uid://dw4n2dmih5uxd" path="res://entities/enemies/enemy.tscn" id="1_base"]
+[ext_resource type="Resource" uid="uid://b854dj58gk8wt" path="res://entities/enemies/basic/basic_enemy_stats.tres" id="2_stats"]
+[ext_resource type="Resource" uid="uid://b85t0id043enb" path="res://entities/enemies/basic/basic_enemy_drops.tres" id="3_ose1q"]
+[ext_resource type="Texture2D" uid="uid://b0uyhu3tcesfm" path="res://entities/enemies/basic/gray_ship_1.png" id="3_texture"]
 
-[sub_resource type="Resource" id="Resource_7o52u"]
-script = ExtResource("3_pnbnr")
-coins = 1
-metadata/_custom_type_script = "uid://c7uv0djehjllk"
-
-[sub_resource type="Resource" id="Resource_pnbnr"]
-resource_local_to_scene = true
-script = ExtResource("3_ur1ql")
-metadata/_custom_type_script = "uid://dr6joirhgvifb"
-
-[sub_resource type="CircleShape2D" id="CircleShape2D_re1xi"]
+[sub_resource type="CircleShape2D" id="Hitbox_basic"]
 radius = 8.235294
 
-[node name="BasicEnemy" type="CharacterBody2D" unique_id=1178725513 node_paths=PackedStringArray("pathfinding")]
-collision_mask = 0
-script = ExtResource("1_i8gw2")
-stats = ExtResource("2_7ubcb")
-drops = SubResource("Resource_7o52u")
-pathfinding = NodePath("Pathfinding")
-health = SubResource("Resource_pnbnr")
+[node name="BasicEnemy" unique_id=547286089 instance=ExtResource("1_base")]
+stats = ExtResource("2_stats")
+drops = ExtResource("3_ose1q")
 
-[node name="Sprite2D" type="Sprite2D" parent="." unique_id=1385029781]
-rotation = 1.5707964
+[node name="Sprite2D" parent="." index="0" unique_id=177971911]
 scale = Vector2(0.6, 0.6)
-texture = ExtResource("3_ose1q")
+texture = ExtResource("3_texture")
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=1444159112]
+[node name="CollisionShape2D" parent="." index="1" unique_id=2005179287]
 scale = Vector2(0.85, 0.85)
-shape = SubResource("CircleShape2D_re1xi")
-
-[node name="Pathfinding" parent="." unique_id=1123776030 instance=ExtResource("4_7ubcb")]
+shape = SubResource("Hitbox_basic")

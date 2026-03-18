@@ -1,9 +1,9 @@
-class_name EnemyEntity extends CharacterBody2D
+class_name Enemy extends CharacterBody2D
 
-signal died(enemy: EnemyEntity)
+signal died(enemy: Enemy)
 
 @export var stats: EnemyStats
-@export var drops: EnemyDrops
+@export var drops: Drops
 @export var pathfinding: Pathfinding
 @export var health: Health
 
