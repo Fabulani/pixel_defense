@@ -3,6 +3,17 @@
 [ext_resource type="Script" uid="uid://iwqck7whgec3" path="res://entities/enemies/enemy_entity.gd" id="1_d604s"]
 [ext_resource type="Resource" uid="uid://cfw02juunpfer" path="res://entities/enemies/fast/fast_enemy.tres" id="2_d604s"]
 [ext_resource type="Texture2D" uid="uid://ct3qspnjf7rnq" path="res://entities/enemies/fast/ship_blue_1.png" id="3_d604s"]
+[ext_resource type="Script" uid="uid://c7uv0djehjllk" path="res://entities/enemies/components/drops/enemy_drops.gd" id="3_imqxe"]
+[ext_resource type="Script" uid="uid://dr6joirhgvifb" path="res://entities/enemies/components/health/health.gd" id="4_jc25c"]
+
+[sub_resource type="Resource" id="Resource_44muo"]
+script = ExtResource("3_imqxe")
+metadata/_custom_type_script = "uid://c7uv0djehjllk"
+
+[sub_resource type="Resource" id="Resource_cwmi2"]
+resource_local_to_scene = true
+script = ExtResource("4_jc25c")
+metadata/_custom_type_script = "uid://dr6joirhgvifb"
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_re1xi"]
 radius = 5.8823533
@@ -11,6 +22,8 @@ radius = 5.8823533
 collision_mask = 0
 script = ExtResource("1_d604s")
 stats = ExtResource("2_d604s")
+drops = SubResource("Resource_44muo")
+health = SubResource("Resource_cwmi2")
 
 [node name="Sprite2D" type="Sprite2D" parent="." unique_id=1385029781]
 rotation = 1.5707964
