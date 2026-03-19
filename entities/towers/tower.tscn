@@ -1,34 +1,16 @@
 [gd_scene format=3 uid="uid://br8jx6eys5877"]
 
 [ext_resource type="Script" uid="uid://300l41j501e5" path="res://entities/towers/tower.gd" id="1_by3tn"]
-[ext_resource type="Resource" uid="uid://sx48riltl5xa" path="res://entities/towers/tower.tres" id="2_4p4bm"]
+[ext_resource type="Resource" uid="uid://sx48riltl5xa" path="res://entities/towers/stats/tower_stats.tres" id="2_4p4bm"]
 [ext_resource type="Texture2D" uid="uid://dv637d1ugre8m" path="res://entities/towers/tower_base.png" id="2_xb23s"]
-[ext_resource type="Texture2D" uid="uid://ulqmo2r1ivep" path="res://entities/towers/tower_turret.png" id="3_4p4bm"]
+[ext_resource type="PackedScene" uid="uid://qyc2jvdh6gsb" path="res://entities/towers/turret/turret_component.tscn" id="5_igp14"]
 
-[sub_resource type="CircleShape2D" id="CircleShape2D_xb23s"]
-radius = 100.0
-
-[node name="Tower" type="Node2D" unique_id=1298449892 node_paths=PackedStringArray("turret")]
+[node name="Tower" type="Node2D" unique_id=1298449892 node_paths=PackedStringArray("_turret")]
 script = ExtResource("1_by3tn")
 stats = ExtResource("2_4p4bm")
-turret = NodePath("Turret")
+_turret = NodePath("TurretComponent")
 
 [node name="Base" type="Sprite2D" parent="." unique_id=1746217729]
 texture = ExtResource("2_xb23s")
 
-[node name="Turret" type="Sprite2D" parent="." unique_id=2044774637]
-texture = ExtResource("3_4p4bm")
-
-[node name="EnemyDetectionArea" type="Area2D" parent="." unique_id=486785899]
-collision_layer = 0
-
-[node name="CollisionShape2D" type="CollisionShape2D" parent="EnemyDetectionArea" unique_id=532155974]
-shape = SubResource("CircleShape2D_xb23s")
-
-[node name="ReloadTimer" type="Timer" parent="." unique_id=561375537]
-wait_time = 0.5
-autostart = true
-
-[connection signal="body_entered" from="EnemyDetectionArea" to="." method="_on_enemy_detection_area_body_entered"]
-[connection signal="body_exited" from="EnemyDetectionArea" to="." method="_on_enemy_detection_area_body_exited"]
-[connection signal="timeout" from="ReloadTimer" to="." method="_on_reload_timer_timeout"]
+[node name="TurretComponent" parent="." unique_id=1374270267 instance=ExtResource("5_igp14")]

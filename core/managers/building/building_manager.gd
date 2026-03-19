@@ -1,14 +1,9 @@
 class_name BuildingManager extends Node
 
-signal new_tower_built(tower: Tower, cell_position: Vector2i)
+signal tower_built(tower: Tower, cell_position: Vector2i)
 signal tower_placement_denied()
 
 @export var level_layer: Level
-
-const CELL_SIZE : int = 16
-@warning_ignore("integer_division")
-const CELL_OFFSET := Vector2i(CELL_SIZE / 2, CELL_SIZE / 2)
-const TOWER_GROUP : String = "tower_group"
 
 var used_tiles : Array[Vector2i] = []
 
@@ -25,11 +20,12 @@ func place_tower(cell_position : Vector2i, tower_packed_scene : PackedScene) -> 
 		tower_placement_denied.emit()
 		return
 	
-	new_tower.position = cell_position * CELL_SIZE + CELL_OFFSET
-	new_tower.add_to_group(TOWER_GROUP)	
+	var cell_size := PathfindingManager.astar_grid.cell_size[0] as int
+	var cell_offset := Vector2i(cell_size / 2, cell_size / 2)
+	new_tower.position = cell_position * cell_size + cell_offset
 	add_child(new_tower)
 	used_tiles.append(cell_position)
-	new_tower_built.emit(new_tower, cell_position) 
+	tower_built.emit(new_tower, cell_position) 
 
 func check_valid_tower_placement(cell_position : Vector2i) -> bool:
 	if used_tiles.has(cell_position):
@@ -40,8 +36,11 @@ func check_valid_tower_placement(cell_position : Vector2i) -> bool:
 	
 	# Prevent placement if it would block all paths from enemy spawn to base
 	# TODO: this should support multiple spawn points and bases
-	var spawn_cell := Vector2i(level_layer.enemy_spawner.global_position) / CELL_SIZE
-	var target_cell := Vector2i(level_layer.player_base.global_position) / CELL_SIZE
+	# TODO: this should be a function. BuildingManager shouldn't need to know about
+	# spawners and bases
+	var cell_size := PathfindingManager.astar_grid.cell_size[0] as int
+	var spawn_cell := Vector2i(level_layer.enemy_spawner.global_position) / cell_size
+	var target_cell := Vector2i(level_layer.player_base.global_position) / cell_size
 	if PathfindingManager.would_block_path(cell_position, spawn_cell, target_cell):
 		return false
 	

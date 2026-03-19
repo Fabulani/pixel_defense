@@ -16,16 +16,14 @@ func _ready() -> void:
 	
 	_update_pathfinding_preview()
 
-func _on_building_manager_new_tower_built(tower: Tower, cell_position: Vector2i) -> void:
+func _on_building_manager_tower_built(tower: Tower, cell_position: Vector2i) -> void:
 	# TODO: move this to PathfindingManager
 	PathfindingManager.set_cell_solid(cell_position, true)
 	# TODO: research if there is a better way to handle groups other than get_tree()...
 	for enemy in get_tree().get_nodes_in_group("enemies"):
 		enemy.pathfinding.recalculate_path()
 	
-	# TODO: put this in the building manager. It builds towers, then should also set them up
-	# TODO2: make projectile manager an auload
-	tower.shoot.connect(projectile_manager.create_bullet)
+	projectile_manager.connect_tower(tower)
 	_update_pathfinding_preview()
 
 func _update_pathfinding_preview() -> void:

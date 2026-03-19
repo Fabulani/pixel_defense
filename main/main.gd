@@ -14,7 +14,7 @@ class_name Main extends Node2D
 func _ready() -> void:
 	current_level.get_node("PlayerBase").game_over.connect(_on_game_over)
 	current_level.wave_manager.all_waves_done.connect(_on_game_win)
-	building_manager.new_tower_built.connect(current_level._on_building_manager_new_tower_built)
+	building_manager.tower_built.connect(current_level._on_building_manager_tower_built)
 	building_manager.tower_placement_denied.connect(_on_tower_placement_denied)
 	game_over_screen.restart_requested.connect(_on_restart)
 	start_menu.start_requested.connect(_on_start)
@@ -51,6 +51,7 @@ func _on_tower_placement_denied() -> void:
 	tween.tween_property(sprite, "modulate", Color(1, 1, 1, 0.5), 0.4)
 
 func _unhandled_input(event: InputEvent) -> void:
+	# TODO: move this to an InputController or something
 	# TODO: fix mobile touch input: when trying to drag camera, builds tower as well
 	if event.is_action_pressed("left_mouse") or (event is InputEventScreenTouch and event.pressed):
 		var cell_position : Vector2i = tile_map_layer.local_to_map(tile_map_layer.get_local_mouse_position())

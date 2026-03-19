@@ -1,0 +1,26 @@
+[gd_scene format=3 uid="uid://qyc2jvdh6gsb"]
+
+[ext_resource type="Script" uid="uid://celjm658yh5hi" path="res://entities/towers/turret/turret_component.gd" id="1_f316t"]
+[ext_resource type="Texture2D" uid="uid://ulqmo2r1ivep" path="res://entities/towers/tower_turret.png" id="2_nj3xa"]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_xb23s"]
+radius = 100.0
+
+[node name="TurretComponent" type="Node2D" unique_id=756218752]
+script = ExtResource("1_f316t")
+
+[node name="Turret" type="Sprite2D" parent="." unique_id=528687253]
+unique_name_in_owner = true
+texture = ExtResource("2_nj3xa")
+
+[node name="DetectionArea" type="Area2D" parent="." unique_id=747049682]
+unique_name_in_owner = true
+collision_layer = 0
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="DetectionArea" unique_id=1516595044]
+shape = SubResource("CircleShape2D_xb23s")
+
+[node name="ReloadTimer" type="Timer" parent="." unique_id=471683106]
+unique_name_in_owner = true
+wait_time = 0.5
+autostart = true
