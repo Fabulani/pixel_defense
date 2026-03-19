@@ -11,7 +11,7 @@ func _ready() -> void:
 	CurrencyManager.coins = 5
 	
 	PathfindingManager.setup($TileMapLayer)
-	enemy_spawner.target_pos = player_base.global_position
+	enemy_spawner.target_position = player_base.global_position
 	RenderingServer.set_default_clear_color('dff6f5')
 	
 	_update_pathfinding_preview()

@@ -26,10 +26,10 @@ func _ready():
 	enemy_spawner.spawning_complete.connect(_on_enemy_spawner_spawning_complete)
 	enemy_spawner.wave_cleared.connect(_on_enemy_spawner_wave_cleared)
 
-func _generate_wave(index: int) -> Array:
+func _generate_wave(index: int) -> Array[PackedScene]:
 	# Using Fibonacci sequence for enemy count for fun.
 	var enemy_count := base_enemy_count + _fibonacci(index) * 3
-	var wave: Array = []
+	var wave: Array[PackedScene] = []
 	wave.resize(enemy_count)
 	wave.fill(enemy_basic)
 	
