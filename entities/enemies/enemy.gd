@@ -12,7 +12,7 @@ func _ready() -> void:
 	health.depleted.connect(_on_health_depleted)
 	add_to_group("enemies")
 
-func _process(_delta: float) -> void:
+func _physics_process(_delta: float) -> void:
 	pathfinding.move()
 
 func take_damage(amount: float) -> void:
