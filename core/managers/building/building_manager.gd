@@ -20,8 +20,8 @@ func place_tower(cell_position : Vector2i, tower_packed_scene : PackedScene) -> 
 		tower_placement_denied.emit()
 		return
 	
-	var cell_size := PathfindingManager.astar_grid.cell_size[0] as int
-	var cell_offset := Vector2i(cell_size / 2, cell_size / 2)
+	var cell_size: float = PathfindingManager.astar_grid.cell_size[0]
+	var cell_offset := Vector2(cell_size / 2, cell_size / 2)
 	new_tower.position = cell_position * cell_size + cell_offset
 	add_child(new_tower)
 	used_tiles.append(cell_position)

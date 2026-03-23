@@ -1,29 +1,28 @@
-[gd_scene format=3 uid="uid://d2008onjxkgjl"]
+[gd_scene format=3 uid="uid://gi4teyw68var"]
 
 [ext_resource type="Script" uid="uid://c40xm0411l7s3" path="res://entities/projectiles/bullet/bullet.gd" id="1_k5ji7"]
-[ext_resource type="Resource" uid="uid://bpux28p0q1ovq" path="res://entities/projectiles/bullet/bullet.tres" id="2_k5ji7"]
 [ext_resource type="Texture2D" uid="uid://dm42jtpke0j48" path="res://entities/projectiles/bullet/bullet.png" id="3_kxxn2"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_5f1na"]
 size = Vector2(8, 16)
 
-[node name="Bullet" type="Area2D" unique_id=381450757]
-collision_layer = 2
+[node name="Bullet" type="Node2D" unique_id=1566084636]
 script = ExtResource("1_k5ji7")
-stats = ExtResource("2_k5ji7")
 
 [node name="Sprite2D" type="Sprite2D" parent="." unique_id=537331565]
 scale = Vector2(0.5, 0.5)
 texture = ExtResource("3_kxxn2")
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=1037207422]
+[node name="Hitbox" type="Area2D" parent="." unique_id=381450757]
+unique_name_in_owner = true
+collision_layer = 2
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Hitbox" unique_id=1037207422]
 scale = Vector2(0.5, 0.5)
 shape = SubResource("RectangleShape2D_5f1na")
 
 [node name="LifetimeTimer" type="Timer" parent="." unique_id=1600400537]
+unique_name_in_owner = true
 wait_time = 3.0
 one_shot = true
 autostart = true
-
-[connection signal="body_entered" from="." to="." method="_on_body_entered"]
-[connection signal="timeout" from="LifetimeTimer" to="." method="_on_lifetime_timer_timeout"]

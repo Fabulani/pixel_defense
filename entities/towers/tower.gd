@@ -1,7 +1,7 @@
 class_name Tower extends Node2D
 
 ## Relay for internal signal. Indicate that a projectile should be spawned.
-signal shot(pos: Vector2, direction: float)
+signal shot(data: ProjectileData)
 
 @export var stats: TowerStats  ## Data container for tower stats
 @export var _turret: TurretComponent  ## Component for detection, aiming, and firing
@@ -11,6 +11,17 @@ func _ready():
 	_turret.configure(stats)
 	add_to_group("towers")	
 	
-## Signal relay.
-func _on_shot(pos: Vector2, direction: float) -> void:
-	shot.emit(pos, direction)
+## Create a ProjectileData object using TowerStats
+func _package_projectile(origin: Vector2, angle: float) -> ProjectileData:
+	var projectile_data := ProjectileData.new(
+		origin,
+		angle,
+		stats.damage,
+		stats.penetration
+	)
+	return projectile_data
+	
+## Signal relay that packages projectile data
+func _on_shot(origin: Vector2, angle: float) -> void:
+	var projectile_data: ProjectileData = _package_projectile(origin, angle)
+	shot.emit(projectile_data)
