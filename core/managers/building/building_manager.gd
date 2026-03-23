@@ -38,9 +38,9 @@ func check_valid_tower_placement(cell_position : Vector2i) -> bool:
 	# TODO: this should support multiple spawn points and bases
 	# TODO: this should be a function. BuildingManager shouldn't need to know about
 	# spawners and bases
-	var cell_size := PathfindingManager.astar_grid.cell_size[0] as int
-	var spawn_cell := Vector2i(level_layer.enemy_spawner.global_position) / cell_size
-	var target_cell := Vector2i(level_layer.player_base.global_position) / cell_size
+	var cell_size := PathfindingManager.astar_grid.cell_size[0]
+	var spawn_cell := Vector2i(level_layer.enemy_spawner.global_position / cell_size)
+	var target_cell := Vector2i(level_layer.player_base.global_position / cell_size)
 	if PathfindingManager.would_block_path(cell_position, spawn_cell, target_cell):
 		return false
 	
