@@ -1,12 +1,16 @@
 class_name TurretComponent extends Node2D
 
+## Indicate that a projectile should be spawned at given position with given direction
 signal shot(pos: Vector2, direction: float)
-signal target_acquired(pos: Vector2)
 
 var _targets: Array[Enemy] = []
+var _damage: float
+var _shots_per_second: float
+var _range: float
 
 @onready var _turret: Sprite2D = %Turret
 @onready var _detection_area: Area2D = %DetectionArea
+@onready var _detection_shape: CollisionShape2D = %CollisionShape2D
 @onready var _reload_timer: Timer = %ReloadTimer
 
 func _ready() -> void:
@@ -19,11 +23,22 @@ func _process(_delta: float) -> void:
 		return
 	var target = _get_priority_target(_targets)
 	_aim(target.global_position)
-		
+
+## Update turret stats with the given TowerStats
+func configure(stats: TowerStats) -> void:
+	_damage = stats.damage
+	_shots_per_second = stats.shots_per_second
+	_range = stats.range
+	
+	_reload_timer.wait_time = 1.0 / _shots_per_second
+	_detection_shape.shape.radius = _range
+
+## Return the priority target
 func _get_priority_target(targets: Array[Enemy]) -> Enemy:
 	# TODO: implement filters for different target priorization
 	return targets[0]
 	
+## Rotate turret sprite so it points to given position
 func _aim(pos: Vector2) -> void:
 	_turret.look_at(pos)
 	_turret.rotation -= PI/2

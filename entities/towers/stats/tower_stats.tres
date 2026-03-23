@@ -3,6 +3,7 @@
 [ext_resource type="Script" uid="uid://c24eh8ud422ty" path="res://entities/towers/stats/tower_stats.gd" id="1_u3wh4"]
 
 [resource]
+resource_local_to_scene = true
 script = ExtResource("1_u3wh4")
 cost = 5
 metadata/_custom_type_script = "uid://c24eh8ud422ty"
