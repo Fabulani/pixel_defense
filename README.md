@@ -68,3 +68,5 @@ Some helpful resources helped me get this game up and running:
 	- [How I Organize My 10k+ Line Godot Project!](https://youtu.be/4az0VX9ApcA)
 - Oskar Dudycz
 	- [My thoughts on Vertical Slices, CQRS, Semantic Diffusion and other fancy words](https://www.architecture-weekly.com/p/my-thoughts-on-vertical-slices-cqrs)
+- Daniel Bologna & Federico Belluci
+	- [Godot Signals Architecture: Best Practices & Event Bus [2026 Guide]](https://blog.febucci.com/2024/12/godot-signals-architecture/)
