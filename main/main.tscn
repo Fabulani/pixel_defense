@@ -5,7 +5,7 @@
 [ext_resource type="PackedScene" uid="uid://br8jx6eys5877" path="res://entities/towers/tower.tscn" id="2_0i4oc"]
 [ext_resource type="PackedScene" uid="uid://cfa11hv32x4xj" path="res://core/managers/building/building_manager.tscn" id="3_hujxm"]
 [ext_resource type="PackedScene" uid="uid://c5ddo8e7h0slh" path="res://levels/level.tscn" id="3_k2fmo"]
-[ext_resource type="PackedScene" uid="uid://cspwgnxrwkpkb" path="res://ui/camera/panning_camera.tscn" id="4_yyfjg"]
+[ext_resource type="PackedScene" uid="uid://cspwgnxrwkpkb" path="res://core/controls/panning_camera.tscn" id="4_yyfjg"]
 [ext_resource type="PackedScene" uid="uid://8e8h5tyneieh" path="res://ui/hud/hud.tscn" id="6_hujxm"]
 [ext_resource type="PackedScene" uid="uid://c2pi1pdd0wfc4" path="res://ui/start_menu/start_menu.tscn" id="8_b1x3f"]
 [ext_resource type="PackedScene" uid="uid://be55v8ytmchi7" path="res://ui/game_over/game_over_screen.tscn" id="8_yyfjg"]
