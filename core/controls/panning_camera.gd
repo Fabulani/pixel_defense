@@ -2,6 +2,7 @@ class_name PanningCamera extends Camera2D
 
 
 @export var smooth_damp: SmoothDamp
+@export var touch_controls: TouchControls
 
 @export_group("Zoom")
 @export var can_zoom: bool = true
@@ -10,17 +11,13 @@ class_name PanningCamera extends Camera2D
 @export_range(0.01, 0.5, 0.01) var zoom_step_ratio: float = 0.1
 
 @export_group("Pan")
-@export_range(0.1, 1000, 0.1) var keyboard_pan_speed: float = 500
+@export_range(0.1, 1000, 0.1) var pan_speed: float = 500
 
 @export_group("Actions")
 @export var pan_action: String = "camera>pan"
 @export var zoom_in_action: String = "camera>zoom+"
 @export var zoom_out_action: String = "camera>zoom-"
 
-# Touch
-var _touch_points: Dictionary[int, Vector2] = {}
-var _start_distance: float = 0.0
-var _start_zoom: float = 1.0
 
 # Action fallbacks (used when actions aren't defined in the InputMap)
 var _fallback_pan: bool
@@ -28,10 +25,16 @@ var _fallback_zoom_in: bool
 var _fallback_zoom_out: bool
 
 ## Viewport-space position used as zoom anchor for zoom-to-mouse behavior.
-var _cursor_viewport_position: Vector2  
+var _anchor_viewport_position: Vector2  
+## Zoom value when pinch gesture starts
+var _pinch_start_zoom: float = zoom.x
 
 func _ready() -> void:
 	smooth_damp.initialize(zoom, position)
+	
+	touch_controls.pan_changed.connect(_on_pan_changed)
+	touch_controls.pinch_changed.connect(_on_pinch_changed)
+	touch_controls.pinch_started.connect(_on_pinch_started)
 
 	var actions := InputMap.get_actions()
 	_fallback_pan = pan_action not in actions
@@ -40,9 +43,7 @@ func _ready() -> void:
 
 
 func _unhandled_input(event: InputEvent) -> void:
-	_track_touch_points(event)  # Always track touch points before handling touch gestures
-	_handle_pan_touch(event)
-	_handle_zoom_touch(event)
+	touch_controls.handle_input(event)
 	_handle_pan_mouse(event)
 	_handle_zoom_scroll_fallback(event)
 
@@ -55,10 +56,10 @@ func _process(delta: float) -> void:
 
 func _apply_smooth_damp(delta: float) -> void:
 	# Shift position to keep the zoom anchor point stationary on screen
-	var pre := _calculate_zoom_anchor(_cursor_viewport_position)
+	var pre := _calculate_zoom_anchor(_anchor_viewport_position)
 	
 	zoom = smooth_damp.smooth_zoom(delta)
-	var post := _calculate_zoom_anchor(_cursor_viewport_position)
+	var post := _calculate_zoom_anchor(_anchor_viewport_position)
 	var anchor_offset := pre - post
 	
 	position = smooth_damp.smooth_pan(delta, anchor_offset)
@@ -80,15 +81,6 @@ func _handle_pan_mouse(event: InputEvent) -> void:
 		smooth_damp.position_goal -= event.relative / zoom
 
 
-func _handle_pan_touch(event: InputEvent) -> void:
-	if not event is InputEventScreenDrag:
-		return
-	if _touch_points.size() == 1:
-		smooth_damp.position_goal -= event.relative / zoom
-	elif _touch_points.size() == 2:
-		smooth_damp.position_goal -= event.relative * 0.5 / zoom
-
-
 func _handle_directional_input(delta: float) -> void:
 	var direction: Vector2 = Input.get_vector(
 		"camera>pan_left", 
@@ -97,7 +89,7 @@ func _handle_directional_input(delta: float) -> void:
 		"camera>pan_down"
 	)
 	if direction != Vector2.ZERO:
-		smooth_damp.position_goal += direction * keyboard_pan_speed / zoom.x * delta
+		smooth_damp.position_goal += direction * pan_speed / zoom.x * delta
 
 
 # -- Zoom ----------------------------------------------------------------------
@@ -108,7 +100,7 @@ func _handle_zoom_input() -> void:
 	var zoom_in: bool = not _fallback_zoom_in and Input.is_action_just_pressed(zoom_in_action)
 	var zoom_out: bool = not _fallback_zoom_out and Input.is_action_just_pressed(zoom_out_action)
 	if zoom_in or zoom_out:
-		_cursor_viewport_position = get_viewport().get_mouse_position()
+		_anchor_viewport_position = get_viewport().get_mouse_position()
 		smooth_damp.zoom_goal *= (1.0 / (1.0 - zoom_step_ratio)) if zoom_in else (1.0 - zoom_step_ratio)
 		smooth_damp.zoom_goal = smooth_damp.zoom_goal.clamp(min_zoom * Vector2.ONE, max_zoom * Vector2.ONE)
 
@@ -119,43 +111,25 @@ func _handle_zoom_scroll_fallback(event: InputEvent) -> void:
 	var zoom_in: bool = _fallback_zoom_in and event.button_index == MOUSE_BUTTON_WHEEL_UP
 	var zoom_out: bool = _fallback_zoom_out and event.button_index == MOUSE_BUTTON_WHEEL_DOWN
 	if zoom_in or zoom_out:
-		_cursor_viewport_position = get_viewport().get_mouse_position()
+		_anchor_viewport_position = get_viewport().get_mouse_position()
 		smooth_damp.zoom_goal *= (1.0 / (1.0 - zoom_step_ratio)) if zoom_in else (1.0 - zoom_step_ratio)
 		smooth_damp.zoom_goal = smooth_damp.zoom_goal.clamp(min_zoom * Vector2.ONE, max_zoom * Vector2.ONE)
-
-
-func _handle_zoom_touch(event: InputEvent) -> void:
-	if not can_zoom or not event is InputEventScreenDrag:
-		return
-	if _touch_points.size() == 2 and _start_distance > 0.0:
-		var positions: Array[Vector2] = _touch_points.values()
-		var current_distance := positions[0].distance_to(positions[1])
-		var new_zoom: float= clamp(_start_zoom * (current_distance / _start_distance), min_zoom, max_zoom)
-		_cursor_viewport_position = (positions[0] + positions[1]) * 0.5
-		smooth_damp.zoom_goal = new_zoom * Vector2.ONE
-
-
-# -- Touch point tracking ------------------------------------------------------
-
-func _track_touch_points(event: InputEvent) -> void:
-	if event is InputEventScreenTouch:
-		if event.pressed:
-			_touch_points[event.index] = event.position
-		else:
-			_touch_points.erase(event.index)
-		if _touch_points.size() == 2:
-			var positions: Array[Vector2] = _touch_points.values()
-			_start_distance = positions[0].distance_to(positions[1])
-			_start_zoom = zoom.x
-		else:
-			_start_distance = 0.0
-	elif event is InputEventScreenDrag:
-		_touch_points[event.index] = event.position
 
 
 # -- Other ---------------------------------------------------------------------
 
 ## Zoom by an absolute amount.
 func zoom_by(amount: float) -> void:
-	_cursor_viewport_position = get_viewport().get_visible_rect().size * 0.5
+	_anchor_viewport_position = get_viewport().get_visible_rect().size * 0.5
 	smooth_damp.zoom_goal = (smooth_damp.zoom_goal + amount * Vector2.ONE).clamp(min_zoom * Vector2.ONE, max_zoom * Vector2.ONE)
+
+func _on_pan_changed(screen_delta: Vector2) -> void:
+	smooth_damp.position_goal -= screen_delta / zoom
+
+func _on_pinch_started():
+	_pinch_start_zoom = zoom.x
+	
+func _on_pinch_changed(pinch_factor: float, anchor_viewport_pos: Vector2) -> void:
+	var new_zoom: float = clamp(_pinch_start_zoom * pinch_factor, min_zoom, max_zoom)
+	_anchor_viewport_position = anchor_viewport_pos
+	smooth_damp.zoom_goal = new_zoom * Vector2.ONE
