@@ -8,6 +8,7 @@ const OBSTACLE_COST := 255
 func setup(tile_map: TileMapLayer) -> void:
 	astar_grid.region = tile_map.get_used_rect()
 	astar_grid.cell_size = tile_map.tile_set.tile_size
+	GameData.grid_cell_size = tile_map.tile_set.tile_size
 	astar_grid.diagonal_mode = AStarGrid2D.DIAGONAL_MODE_ONLY_IF_NO_OBSTACLES
 	astar_grid.update()
 	astar_grid.fill_solid_region(astar_grid.region, false)

@@ -1,5 +1,7 @@
 class_name Level extends Node2D
 
+@onready var tile_map_layer: TileMapLayer = $TileMapLayer
+
 @export var player_base: PlayerBase
 @export var enemy_spawner: EnemySpawner
 @export var wave_manager: WaveManager
@@ -10,7 +12,7 @@ func _ready() -> void:
 	# Starting currency
 	CurrencyManager.coins = 5
 	
-	PathfindingManager.setup($TileMapLayer)
+	PathfindingManager.setup(tile_map_layer)
 	enemy_spawner.target_position = player_base.global_position
 	RenderingServer.set_default_clear_color('dff6f5')
 	
@@ -34,7 +36,7 @@ func _update_pathfinding_preview() -> void:
 		pathfinding_preview.add_point(Vector2(point))
 
 func is_cell_buildable(cell_position: Vector2i) -> bool:
-	var tile_data: TileData = $TileMapLayer.get_cell_tile_data(cell_position)
+	var tile_data: TileData = tile_map_layer.get_cell_tile_data(cell_position)
 	if tile_data == null:
 		return false
 	return tile_data.get_custom_data("buildable")

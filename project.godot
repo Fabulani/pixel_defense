@@ -23,6 +23,7 @@ config/icon="res://icon.svg"
 
 CurrencyManager="*uid://cgdw4qddg2v24"
 PathfindingManager="*uid://c8dcxxa4mxhwb"
+GameData="*uid://bgkh7ksd2upb4"
 
 [display]
 
