@@ -2,9 +2,9 @@ name: Godot Export
 
 on:
   push:
-    branches: [ main ]
+    branches: [ main, github-actions ]
   pull_request:
-    branches: [ main ]
+    branches: [ main, github-actions ]
 
 env:
   GODOT_VERSION: 4.3
