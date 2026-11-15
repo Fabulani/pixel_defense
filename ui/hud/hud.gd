@@ -3,8 +3,11 @@ class_name HUD extends CanvasLayer
 @onready var coin_amount_label: Label = $PanelContainer/MarginContainer/VBoxContainer/CoinContainer/CoinAmountLabel
 @onready var wave_index_label: Label = $PanelContainer/MarginContainer/VBoxContainer/WaveContainer/WaveIndexLabel
 @onready var enemy_count_label: Label = $PanelContainer/MarginContainer/VBoxContainer/EnemyCountContainer/EnemyCount
+@onready var _debug_coins_button: Button = %DebugCoinsButton
 
 func _ready() -> void:
+	_debug_coins_button.visible = OS.is_debug_build()
+	_debug_coins_button.pressed.connect(_on_debug_coins_button_pressed)
 	CurrencyManager.currency_changed.connect(set_coin_amount)
 	set_coin_amount(CurrencyManager.coins)
 
@@ -16,3 +19,7 @@ func set_wave(wave_index: int) -> void:
 
 func set_enemy_count(count: int) -> void:
 	enemy_count_label.text = str(count)
+
+## Debug builds only: grant coins for testing.
+func _on_debug_coins_button_pressed() -> void:
+	CurrencyManager.earn(9999)

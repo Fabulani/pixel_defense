@@ -50,6 +50,13 @@ func register_tower(tower: Tower, cell_position: Vector2i) -> void:
 	projectile_manager.connect_tower(tower)
 
 
+## Unregister a sold tower: free its cell for pathfinding again.
+func unregister_tower(tower: Tower, cell_position: Vector2i) -> void:
+	if tower.shot.is_connected(projectile_manager.create_bullet):
+		tower.shot.disconnect(projectile_manager.create_bullet)
+	PathfindingManager.set_cell_solid(cell_position, false)
+
+
 ## Whether the tile at the cell allows building.
 func is_cell_buildable(cell_position: Vector2i) -> bool:
 	var tile_data: TileData = tile_map_layer.get_cell_tile_data(cell_position)

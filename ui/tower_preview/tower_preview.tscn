@@ -7,5 +7,6 @@
 script = ExtResource("1_tp")
 
 [node name="Sprite2D" type="Sprite2D" parent="."]
+unique_name_in_owner = true
 modulate = Color(1, 1, 1, 0.5)
 texture = ExtResource("2_tp")

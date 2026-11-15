@@ -1,0 +1,23 @@
+[gd_scene format=3 uid="uid://c7k2m9xq4wdhe"]
+
+[ext_resource type="Script" path="res://ui/tower_menu/tower_menu.gd" id="1_menu"]
+[ext_resource type="Theme" uid="uid://3d73jd1xir1t" path="res://ui/themes/default/default_theme.tres" id="2_theme"]
+
+[node name="TowerMenu" type="CanvasLayer" unique_id=1204518331]
+layer = 1
+script = ExtResource("1_menu")
+
+[node name="Panel" type="PanelContainer" parent="." unique_id=1204518332]
+unique_name_in_owner = true
+theme = ExtResource("2_theme")
+
+[node name="Margin" type="MarginContainer" parent="Panel" unique_id=1204518334]
+layout_mode = 2
+theme_override_constants/margin_left = 8
+theme_override_constants/margin_top = 8
+theme_override_constants/margin_right = 8
+theme_override_constants/margin_bottom = 8
+
+[node name="Buttons" type="HBoxContainer" parent="Panel/Margin" unique_id=1204518333]
+unique_name_in_owner = true
+theme_override_constants/separation = 8

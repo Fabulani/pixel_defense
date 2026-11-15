@@ -11,6 +11,7 @@
 [ext_resource type="Script" uid="uid://ot1k4hgx0pkp" path="res://ui/mobile/mobile_display_handler.gd" id="9_b1x3f"]
 [ext_resource type="Script" uid="uid://db1y5qpjh5jg5" path="res://core/controls/input_controller.gd" id="10_ic"]
 [ext_resource type="PackedScene" path="res://ui/tower_preview/tower_preview.tscn" id="11_tp"]
+[ext_resource type="PackedScene" uid="uid://c7k2m9xq4wdhe" path="res://ui/tower_menu/tower_menu.tscn" id="12_tm"]
 
 [node name="Main" type="Node2D" unique_id=74125191]
 script = ExtResource("1_l3cfh")
@@ -36,6 +37,8 @@ zoom = Vector2(1, 1)
 [node name="HUD" parent="." unique_id=796709017 instance=ExtResource("6_hujxm")]
 
 [node name="GameEndScreen" parent="." unique_id=1345433108 instance=ExtResource("8_yyfjg")]
+
+[node name="TowerMenu" parent="." unique_id=1204518400 instance=ExtResource("12_tm")]
 
 [node name="StartMenu" parent="." unique_id=336456624 instance=ExtResource("8_b1x3f")]
 

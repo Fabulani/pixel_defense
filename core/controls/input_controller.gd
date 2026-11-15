@@ -2,6 +2,8 @@ class_name InputController extends Node
 
 signal build_requested(cell_position: Vector2i)
 signal placement_invalid(cell_position: Vector2i)
+signal tower_selected(tower: Tower)
+signal tower_deselected()
 
 @export var tile_map_layer: TileMapLayer
 @export var touch_controls: TouchControls
@@ -32,6 +34,14 @@ func _on_kbm_controls_clicked(position: Vector2) -> void:
 
 
 func _handle_cell_input(cell: Vector2i) -> void:
+	var tower: Tower = building_manager.get_tower_at(cell)
+	if tower != null:
+		cancel_preview()
+		tower_selected.emit(tower)
+		return
+
+	tower_deselected.emit()
+
 	if _preview_cell == cell:
 		build_requested.emit(cell)
 		# Ghost stays until build is confirmed or until user taps a different tile.

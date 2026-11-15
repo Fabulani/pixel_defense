@@ -4,13 +4,36 @@
 [ext_resource type="Resource" uid="uid://sx48riltl5xa" path="res://entities/towers/stats/tower_stats.tres" id="2_4p4bm"]
 [ext_resource type="Texture2D" uid="uid://dv637d1ugre8m" path="res://entities/towers/tower_base.png" id="2_xb23s"]
 [ext_resource type="PackedScene" uid="uid://qyc2jvdh6gsb" path="res://entities/towers/turret/turret_component.tscn" id="5_igp14"]
+[ext_resource type="Script" uid="uid://d2ujisyl2bpa4" path="res://entities/towers/upgrades/major_upgrade.gd" id="6_mu"]
+[ext_resource type="Resource" uid="uid://bo3dncsbsnase" path="res://entities/towers/upgrades/rapid_fire.tres" id="7_rf"]
+[ext_resource type="Resource" uid="uid://ce1lami263b55" path="res://entities/towers/upgrades/long_shot.tres" id="8_ls"]
+[ext_resource type="Resource" uid="uid://ccdnv6kywmeli" path="res://entities/towers/upgrades/big_boy.tres" id="9_bb"]
+[ext_resource type="FontFile" uid="uid://cnc783dgux1da" path="res://ui/themes/default/Kenney Mini.ttf" id="10_font"]
 
 [node name="Tower" type="Node2D" unique_id=1298449892 node_paths=PackedStringArray("_turret")]
 script = ExtResource("1_by3tn")
 stats = ExtResource("2_4p4bm")
 _turret = NodePath("TurretComponent")
+major_upgrades = Array[ExtResource("6_mu")]([ExtResource("7_rf"), ExtResource("8_ls"), ExtResource("9_bb")])
 
 [node name="Base" type="Sprite2D" parent="." unique_id=1746217729]
+unique_name_in_owner = true
 texture = ExtResource("2_xb23s")
 
 [node name="TurretComponent" parent="." unique_id=1374270267 instance=ExtResource("5_igp14")]
+
+[node name="LevelLabel" type="Label" parent="." unique_id=1930571263]
+unique_name_in_owner = true
+z_index = 1
+offset_left = -1.4
+offset_top = -7.0000005
+offset_right = 38.6
+offset_bottom = 33.0
+scale = Vector2(0.2, 0.2)
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
+theme_override_constants/outline_size = 6
+theme_override_fonts/font = ExtResource("10_font")
+theme_override_font_sizes/font_size = 24
+text = "1"
+horizontal_alignment = 2

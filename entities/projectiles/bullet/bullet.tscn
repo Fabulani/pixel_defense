@@ -10,8 +10,10 @@ size = Vector2(8, 16)
 script = ExtResource("1_k5ji7")
 
 [node name="Sprite2D" type="Sprite2D" parent="." unique_id=537331565]
+unique_name_in_owner = true
 scale = Vector2(0.5, 0.5)
 texture = ExtResource("3_kxxn2")
+flip_v = true
 
 [node name="Hitbox" type="Area2D" parent="." unique_id=381450757]
 unique_name_in_owner = true

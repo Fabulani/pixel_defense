@@ -23,8 +23,21 @@ func _process(_delta: float) -> void:
 
 ## Update turret stats with the given TowerStats
 func configure(stats: TowerStats) -> void:
-	_reload_timer.wait_time = 1.0 / stats.shots_per_second
+	var period: float = 1.0 / stats.shots_per_second
+	_reload_timer.wait_time = period
+	if not _reload_timer.is_stopped():
+		# An upgrade never delays the pending shot. start(time) overwrites wait_time,
+		# so restore the period right after; it only applies from the next cycle on.
+		_reload_timer.start(minf(_reload_timer.time_left, period))
+		_reload_timer.wait_time = period
 	_detection_shape.shape.radius = stats.detection_range
+
+## Swap the cannon sprite, its material and its scale. A null texture keeps the current one; a null material clears it.
+func set_appearance(texture: Texture2D, sprite_material: Material, sprite_scale: float = 1.0) -> void:
+	if texture != null:
+		_turret.texture = texture
+	_turret.material = sprite_material
+	_turret.scale = Vector2(sprite_scale, sprite_scale)
 
 ## Return the priority target
 func _get_priority_target(targets: Array[Enemy]) -> Enemy:
