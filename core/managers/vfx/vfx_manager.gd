@@ -6,6 +6,8 @@ const _FONT: FontFile = preload("res://ui/themes/default/Kenney Mini.ttf")
 const _SAFETY_MARGIN: float = 0.5
 ## Same label scale as the tower level number.
 const _POPUP_SCALE: float = 0.2
+## Above towers and their level label (z_index 1), so bursts and pop-ups are never hidden.
+const _Z_INDEX: int = 2
 
 @export_group("Limits")
 @export var max_live_bursts: int = 64
@@ -66,6 +68,7 @@ var _live_popups: int = 0
 
 
 func _ready() -> void:
+	z_index = _Z_INDEX
 	# Bursts and pop-ups keep playing behind the pause-time end screen.
 	process_mode = Node.PROCESS_MODE_ALWAYS
 
