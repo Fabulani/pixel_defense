@@ -1,0 +1,37 @@
+[gd_scene format=3 uid="uid://dw4n2dmih5uxd"]
+
+[ext_resource type="Script" uid="uid://iwqck7whgec3" path="res://entities/enemies/enemy.gd" id="1_twyc1"]
+[ext_resource type="Script" uid="uid://c2pkska5ungt1" path="res://entities/enemies/components/stats/enemy_stats.gd" id="2_stats"]
+[ext_resource type="Script" uid="uid://c7uv0djehjllk" path="res://entities/enemies/components/drops/drops.gd" id="3_drops"]
+[ext_resource type="Script" uid="uid://dr6joirhgvifb" path="res://entities/enemies/components/health/health.gd" id="4_health"]
+[ext_resource type="PackedScene" uid="uid://csjsdajn2nafn" path="res://entities/enemies/components/pathfinding/pathfinding.tscn" id="5_pathfinding"]
+
+[sub_resource type="Resource" id="Resource_w4yt1"]
+script = ExtResource("2_stats")
+speed = 50.0
+max_health = 3
+metadata/_custom_type_script = "uid://c2pkska5ungt1"
+
+[sub_resource type="Resource" id="Resource_ipr6v"]
+script = ExtResource("3_drops")
+metadata/_custom_type_script = "uid://c7uv0djehjllk"
+
+[sub_resource type="Resource" id="Resource_gj3y3"]
+resource_local_to_scene = true
+script = ExtResource("4_health")
+metadata/_custom_type_script = "uid://dr6joirhgvifb"
+
+[node name="Enemy" type="CharacterBody2D" unique_id=185585840 node_paths=PackedStringArray("pathfinding")]
+collision_mask = 0
+script = ExtResource("1_twyc1")
+stats = SubResource("Resource_w4yt1")
+drops = SubResource("Resource_ipr6v")
+pathfinding = NodePath("Pathfinding")
+health = SubResource("Resource_gj3y3")
+
+[node name="Sprite2D" type="Sprite2D" parent="." unique_id=177971911]
+rotation = 1.5707964
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=2005179287]
+
+[node name="Pathfinding" parent="." unique_id=182294777 instance=ExtResource("5_pathfinding")]

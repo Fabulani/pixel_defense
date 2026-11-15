@@ -1,0 +1,16 @@
+[gd_scene format=3 uid="uid://br8jx6eys5877"]
+
+[ext_resource type="Script" uid="uid://300l41j501e5" path="res://entities/towers/tower.gd" id="1_by3tn"]
+[ext_resource type="Resource" uid="uid://sx48riltl5xa" path="res://entities/towers/stats/tower_stats.tres" id="2_4p4bm"]
+[ext_resource type="Texture2D" uid="uid://dv637d1ugre8m" path="res://entities/towers/tower_base.png" id="2_xb23s"]
+[ext_resource type="PackedScene" uid="uid://qyc2jvdh6gsb" path="res://entities/towers/turret/turret_component.tscn" id="5_igp14"]
+
+[node name="Tower" type="Node2D" unique_id=1298449892 node_paths=PackedStringArray("_turret")]
+script = ExtResource("1_by3tn")
+stats = ExtResource("2_4p4bm")
+_turret = NodePath("TurretComponent")
+
+[node name="Base" type="Sprite2D" parent="." unique_id=1746217729]
+texture = ExtResource("2_xb23s")
+
+[node name="TurretComponent" parent="." unique_id=1374270267 instance=ExtResource("5_igp14")]

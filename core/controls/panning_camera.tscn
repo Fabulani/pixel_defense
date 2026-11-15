@@ -1,0 +1,15 @@
+[gd_scene format=3 uid="uid://cspwgnxrwkpkb"]
+
+[ext_resource type="Script" uid="uid://dxbktsevihu6x" path="res://core/controls/panning_camera.gd" id="1_ekya4"]
+[ext_resource type="Script" uid="uid://b8c3cof43q0jb" path="res://core/controls/touch/touch_controls.gd" id="2_cfdah"]
+[ext_resource type="Script" uid="uid://ctr8dkbt056ed" path="res://core/controls/kbm/kbm_controls.gd" id="3_kbm"]
+
+[node name="PanningCamera" type="Camera2D" unique_id=1926886031]
+zoom = Vector2(0.5, 0.5)
+script = ExtResource("1_ekya4")
+
+[node name="TouchControls" type="Node" parent="." unique_id=746184126]
+script = ExtResource("2_cfdah")
+
+[node name="KBMControls" type="Node" parent="." unique_id=1117471208]
+script = ExtResource("3_kbm")

@@ -1,0 +1,6 @@
+[gd_scene format=3 uid="uid://csjsdajn2nafn"]
+
+[ext_resource type="Script" uid="uid://c21scate7wlrb" path="res://entities/enemies/components/pathfinding/pathfinding.gd" id="1_hs8hp"]
+
+[node name="Pathfinding" type="Node" unique_id=1240193856]
+script = ExtResource("1_hs8hp")

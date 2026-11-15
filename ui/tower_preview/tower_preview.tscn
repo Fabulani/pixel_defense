@@ -1,0 +1,11 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://ui/tower_preview/tower_preview.gd" id="1_tp"]
+[ext_resource type="Texture2D" uid="uid://dv637d1ugre8m" path="res://entities/towers/tower_base.png" id="2_tp"]
+
+[node name="TowerPreview" type="Node2D"]
+script = ExtResource("1_tp")
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+modulate = Color(1, 1, 1, 0.5)
+texture = ExtResource("2_tp")

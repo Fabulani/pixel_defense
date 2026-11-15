@@ -22,10 +22,23 @@ Download [Git LFS](https://git-lfs.com/) and, in the project folder, initialize 
 git lfs install && git lfs pull
 ```
 
-Alternatively download from Kenney (<www.kenney.nl>) and extract them in the asset folder:
+Alternatively download from Kenney (<www.kenney.nl>) and extract them next to the scenes that use them, in their feature folders (e.g. `entities/`, `ui/`):
 - Pixel Shmup
 - Kenney Fonts
 - Input Prompts Pixel 16×
+
+# Structure
+
+The project is organized as follows:
+
+```
+core/            # core mechanics and features
+docs/            # documentation
+entities/        # game-domain elements
+levels/          # tileset maps and wave data
+main/            # game entrypoint
+ui/              # everything ui related
+```
 
 # Gallery
 
@@ -51,3 +64,9 @@ Some helpful resources helped me get this game up and running:
 	- [Creating a Flexible Touch Screen Camera Controller In Godot | Basics With Godot](https://youtu.be/vnAkooGCLDA)
 - thygrrr
 	- [Godot Zoom and Pan, smooth & cursor-centric Camera2D motion](https://gist.github.com/thygrrr/8288cabeb5cd25031ce6132c4a886311)
+- DevDuck
+	- [How I Organize My 10k+ Line Godot Project!](https://youtu.be/4az0VX9ApcA)
+- Oskar Dudycz
+	- [My thoughts on Vertical Slices, CQRS, Semantic Diffusion and other fancy words](https://www.architecture-weekly.com/p/my-thoughts-on-vertical-slices-cqrs)
+- Daniel Bologna & Federico Belluci
+	- [Godot Signals Architecture: Best Practices & Event Bus [2026 Guide]](https://blog.febucci.com/2024/12/godot-signals-architecture/)
