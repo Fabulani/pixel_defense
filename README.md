@@ -4,6 +4,11 @@ Tower defense with randomly generated maps every wave.
 
 ![Pixel Defense gameplay with towers shooting incoming enemies](docs/img/screenshot.png)
 
+# Play / Download
+
+- [Play in the browser](https://fabulani.github.io/pixel_defense/)
+- Windows, Linux and Android builds are on the [Releases page](https://github.com/Fabulani/pixel_defense/releases) (`SHA256SUMS.txt` included).
+
 # Install
 
 Clone:
@@ -39,6 +44,51 @@ levels/          # tileset maps and wave data
 main/            # game entrypoint
 ui/              # everything ui related
 ```
+
+# Releasing
+
+Releases are built by GitHub Actions (`.github/workflows/release.yml`) when a `vMAJOR.MINOR.PATCH` tag on `main` is pushed:
+
+```sh
+git switch main && git pull
+git tag v0.1.0 && git push origin v0.1.0
+```
+
+The workflow exports Windows, Linux, Android and Web, creates the GitHub release (notes are generated from the merged PRs since the previous tag) and deploys the web build to GitHub Pages. Tags not on `main` or not of the form `v1.2.3` are rejected; the first release must be at least `v0.0.1`. The "play in the browser" link in the release notes works only after the first release has deployed Pages.
+
+## One-time setup
+
+Run once, with admin rights on the repo (needs `gh auth login`).
+
+1. Enable GitHub Pages with the "GitHub Actions" source (or Settings > Pages > Source: GitHub Actions):
+
+   ```sh
+   gh api -X POST repos/Fabulani/pixel_defense/pages -f build_type=workflow
+   ```
+
+2. Allow tags to deploy to the `github-pages` environment. By default only `main` may, and a tag-triggered run fails with "Tag ... is not allowed to deploy to github-pages due to environment protection rules". The environment exists only after step 1. (UI: Settings > Environments > github-pages > Deployment branches and tags > add rule, type Tag, pattern `v[0-9]*`.)
+
+   ```sh
+   # make sure the environment uses custom branch/tag rules (keeps the existing `main` rule)
+   gh api repos/Fabulani/pixel_defense/environments/github-pages/deployment-branch-policies
+   # if that returns 404, run first:
+   # gh api -X PUT repos/Fabulani/pixel_defense/environments/github-pages \
+   #   -F 'deployment_branch_policy[protected_branches]=false' -F 'deployment_branch_policy[custom_branch_policies]=true'
+   gh api -X POST repos/Fabulani/pixel_defense/environments/github-pages/deployment-branch-policies \
+     -f name='v[0-9]*' -f type=tag
+   ```
+
+3. Create the Android release keystore and store it as secrets. Back the keystore up somewhere safe (losing it means players cannot update the app) and never commit it (`*.keystore` and `*.jks` are git-ignored).
+
+   ```sh
+   keytool -genkeypair -v -keystore release.keystore -alias pixel_defense \
+     -keyalg RSA -keysize 2048 -validity 10000
+   gh secret set ANDROID_KEYSTORE_BASE64 < <(base64 -w0 release.keystore)
+   gh secret set ANDROID_KEYSTORE_USER --body pixel_defense   # the alias
+   gh secret set ANDROID_KEYSTORE_PASSWORD                    # prompts; use the keystore password
+   ```
+
+   The key password must equal the keystore password (the Godot export takes one password).
 
 # Gallery
 

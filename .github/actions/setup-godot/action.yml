@@ -1,0 +1,109 @@
+# Shared CI setup: LFS assets (cached, saves LFS bandwidth), Godot binary
+# (cached), optional export templates (cached, only the requested platforms),
+# project .godot import cache. Caller sets env GODOT_VERSION (e.g. "4.7.2")
+# and runs actions/checkout first (local action lives in the repo).
+# Importing itself is left to the workflow (it runs --import twice).
+name: Setup Godot
+description: LFS pull, Godot, optional export templates, import cache.
+inputs:
+  templates:
+    description: >-
+      Space-separated platforms whose release export templates to install:
+      any of windows linux android web. Empty = none.
+    default: ""
+runs:
+  using: composite
+  steps:
+    - name: Check inputs
+      id: in
+      shell: bash
+      env:
+        TEMPLATES: ${{ inputs.templates }}
+      run: |
+        if [ -z "$GODOT_VERSION" ]; then
+          echo "::error::GODOT_VERSION must be set in the caller's env"; exit 1
+        fi
+        # Normalise (sorted, deduped, "-"-joined) -> stable cache key, order-independent.
+        list=""
+        for p in $TEMPLATES; do
+          case "$p" in
+            windows|linux|android|web) ;;
+            *) echo "::error::Unknown template platform '$p' (windows linux android web)"; exit 1 ;;
+          esac
+          list+="$p"$'\n'
+        done
+        key=$(printf '%s' "$list" | sort -u | paste -sd- -)
+        echo "key=$key" >> "$GITHUB_OUTPUT"
+    - name: LFS file list
+      shell: bash
+      # Pointer ids only (no download yet); used as cache key.
+      run: git lfs ls-files -l | cut -d' ' -f1 | sort > .lfs-assets-id
+    - name: LFS cache
+      uses: actions/cache@v6
+      with:
+        path: .git/lfs
+        key: lfs-${{ hashFiles('.lfs-assets-id') }}
+        restore-keys: lfs-
+    - name: LFS pull
+      shell: bash
+      run: git lfs pull && git lfs checkout
+    - name: Godot cache
+      id: godot-cache
+      uses: actions/cache@v6
+      with:
+        path: ~/godot
+        key: godot-${{ env.GODOT_VERSION }}
+    - name: Download Godot
+      if: steps.godot-cache.outputs.cache-hit != 'true'
+      shell: bash
+      run: |
+        mkdir -p ~/godot && cd ~/godot
+        curl -fsSL --retry 3 -o godot.zip "https://github.com/godotengine/godot/releases/download/${GODOT_VERSION}-stable/Godot_v${GODOT_VERSION}-stable_linux.x86_64.zip"
+        unzip -q godot.zip && rm godot.zip
+        mv "Godot_v${GODOT_VERSION}-stable_linux.x86_64" godot
+    - name: Godot on PATH
+      shell: bash
+      run: |
+        mkdir -p ~/.local/bin && ln -sf ~/godot/godot ~/.local/bin/godot
+        echo "$HOME/.local/bin" >> "$GITHUB_PATH"
+    - name: Templates cache
+      if: steps.in.outputs.key != ''
+      id: tpl-cache
+      uses: actions/cache@v6
+      with:
+        path: ~/.local/share/godot/export_templates/${{ env.GODOT_VERSION }}.stable
+        # -v1: bump when the extracted file list below changes (stale cache otherwise).
+        key: templates-${{ env.GODOT_VERSION }}-${{ steps.in.outputs.key }}-v1
+    - name: Download export templates
+      if: steps.in.outputs.key != '' && steps.tpl-cache.outputs.cache-hit != 'true'
+      shell: bash
+      env:
+        TEMPLATES: ${{ inputs.templates }}
+      run: |
+        # Full .tpz is ~1.3 GB unpacked (all platforms, debug + release): extract
+        # only the release templates we export with (cache bloat otherwise).
+        # Android also needs the debug apk: unsigned-fallback builds use --export-debug.
+        # (Non-gradle Android export uses only android_{release,debug}.apk, not android_source.zip.)
+        files=("templates/version.txt")
+        for p in $TEMPLATES; do
+          case "$p" in
+            windows) files+=("templates/windows_release_x86_64.exe" "templates/windows_release_x86_64_console.exe") ;;
+            linux)   files+=("templates/linux_release.x86_64") ;;
+            web)     files+=("templates/web_nothreads_release.zip") ;;
+            android) files+=("templates/android_release.apk" "templates/android_debug.apk") ;;
+          esac
+        done
+        dest=~/.local/share/godot/export_templates/${GODOT_VERSION}.stable
+        mkdir -p "$dest"
+        work=$(mktemp -d) && cd "$work"
+        curl -fsSL --retry 3 -o tpl.tpz "https://github.com/godotengine/godot/releases/download/${GODOT_VERSION}-stable/Godot_v${GODOT_VERSION}-stable_export_templates.tpz"
+        unzip -q tpl.tpz "${files[@]}"
+        mv templates/* "$dest/"
+        cd / && rm -rf "$work"
+        ls -l "$dest"
+    - name: Import cache
+      uses: actions/cache@v6
+      with:
+        path: .godot
+        key: import-${{ env.GODOT_VERSION }}-${{ hashFiles('**/*.import', '.lfs-assets-id') }}
+        restore-keys: import-${{ env.GODOT_VERSION }}-
