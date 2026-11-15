@@ -41,6 +41,8 @@ func spawn_next() -> void:
 		spawn_timer.stop()
 		_is_spawning = false
 		spawning_complete.emit()
+		if _alive_count == 0:
+			wave_cleared.emit()
 		# Next time, spawn faster. For fun.
 		speedup_spawning()
 		return
