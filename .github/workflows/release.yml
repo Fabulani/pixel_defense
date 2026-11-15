@@ -1,0 +1,145 @@
+# Release: push a tag vMAJOR.MINOR.PATCH on main -> build all platforms (build.yml),
+# publish a GitHub release with the files + SHA256SUMS, deploy the web build to Pages.
+# One-time setup (Pages, environment tag rule, signing keystore): see README "Releasing".
+name: Release
+on:
+  push:
+    tags:
+      - "v[0-9]+.[0-9]+.[0-9]+"  # glob only; `meta` does the strict check
+concurrency:
+  # Per tag, never cancel: a half-finished release must not be killed by a re-push.
+  group: release-${{ github.ref_name }}
+  cancel-in-progress: false
+# A called reusable workflow cannot exceed the caller's permissions.
+permissions:
+  contents: read
+defaults:
+  run:
+    shell: bash  # explicit bash = -eo pipefail
+jobs:
+  meta:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    outputs:
+      version: ${{ steps.parse.outputs.version }}
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+      - name: Validate tag
+        id: parse
+        env:
+          TAG: ${{ github.ref_name }}
+        run: |
+          # No leading zeros, no suffixes (v1.2.3-rc1): the tag globs above cannot express that.
+          re='^v(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)$'
+          if ! [[ "$TAG" =~ $re ]]; then
+            echo "::error::Tag '$TAG' is not vMAJOR.MINOR.PATCH (e.g. v0.1.0)"
+            exit 1
+          fi
+          if [ "$TAG" = "v0.0.0" ]; then
+            echo "::error::Tag v0.0.0 is invalid (Android version code would be 0): start at v0.0.1"
+            exit 1
+          fi
+          echo "version=${TAG#v}" >> "$GITHUB_OUTPUT"
+      - name: Require tagged commit on main
+        env:
+          TAG: ${{ github.ref_name }}
+        run: |
+          # A stray tag on a feature branch must not publish.
+          git fetch --no-tags origin main
+          if ! git merge-base --is-ancestor "$GITHUB_SHA" origin/main; then
+            echo "::error::Tag '$TAG' ($GITHUB_SHA) is not reachable from main; merge first, then tag main"
+            exit 1
+          fi
+
+  build:
+    needs: meta
+    uses: ./.github/workflows/build.yml
+    with:
+      version: ${{ needs.meta.outputs.version }}
+      require_signing: true
+    secrets:
+      ANDROID_KEYSTORE_BASE64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
+      ANDROID_KEYSTORE_USER: ${{ secrets.ANDROID_KEYSTORE_USER }}
+      ANDROID_KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+
+  release:
+    needs: [meta, build]
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    permissions:
+      contents: write
+    env:
+      GH_TOKEN: ${{ github.token }}
+      GH_REPO: ${{ github.repository }}
+      TAG: ${{ github.ref_name }}
+    steps:
+      - uses: actions/download-artifact@v8
+        with:
+          pattern: export-*
+          path: dist
+          merge-multiple: true
+      - name: Checksums
+        working-directory: dist
+        run: |
+          # Exactly four files expected (windows, linux, android, web).
+          [ "$(ls | wc -l)" -eq 4 ] || { echo "::error::Expected 4 artifacts"; ls -l; exit 1; }
+          sha256sum -- * > SHA256SUMS.txt
+          cat SHA256SUMS.txt
+      - name: Notes header
+        run: |
+          # `gh --notes` is PREPENDED to the --generate-notes changelog (see `gh release create --help`).
+          cat > header.md <<'MD'
+          ## Downloads
+
+          | Platform | File |
+          | --- | --- |
+          | Windows (64-bit) | `*-windows-x86_64.zip`: unzip and run the `.exe` |
+          | Linux (64-bit) | `*-linux-x86_64.tar.gz`: extract and run the binary |
+          | Android (arm64) | `*-android-arm64.apk`: sideload it |
+          | Web | `*-web.zip` (self-hosting), or [play in the browser](https://fabulani.github.io/pixel_defense/) |
+
+          Verify downloads with `SHA256SUMS.txt` (`sha256sum -c SHA256SUMS.txt`).
+          MD
+      - name: Publish release
+        run: |
+          if gh release view "$TAG" >/dev/null 2>&1; then
+            # Re-run: keep the existing release and notes, replace the assets.
+            gh release upload "$TAG" dist/* --clobber
+          else
+            gh release create "$TAG" dist/* --verify-tag \
+              --title "Pixel Defense $TAG" \
+              --notes-file header.md --generate-notes
+          fi
+
+  pages:
+    # After `release`: Pages and the release page go live together, and only if the build passed.
+    needs: [meta, build, release]
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    permissions:
+      pages: write
+      id-token: write
+    concurrency:
+      group: pages
+      cancel-in-progress: false  # never abort a deploy midway
+    environment:
+      name: github-pages
+      url: ${{ steps.deploy.outputs.page_url }}
+    steps:
+      - uses: actions/download-artifact@v8
+        with:
+          name: export-web
+          path: web-zip
+      - name: Unpack web build
+        run: |
+          mkdir site
+          unzip -q web-zip/*.zip -d site
+          [ -f site/index.html ] || { echo "::error::index.html missing at zip root"; ls -R site; exit 1; }
+      - uses: actions/configure-pages@v6
+      - uses: actions/upload-pages-artifact@v5
+        with:
+          path: site
+      - id: deploy
+        uses: actions/deploy-pages@v5
