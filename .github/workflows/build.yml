@@ -1,0 +1,339 @@
+# Build CI: script check (import + headless boot) and release exports for
+# Windows / Linux / Android / Web, uploaded as artifacts. PR + push main + manual.
+# Also reusable (workflow_call) by release.yml, which passes the tag's version.
+name: Build
+on:
+  pull_request:
+  push:
+    branches: [main]
+  workflow_dispatch:
+  workflow_call:
+    inputs:
+      version:
+        description: Semantic version without leading v (e.g. 0.1.0). Empty = dev build.
+        type: string
+        default: ""
+      require_signing:
+        description: Fail the Android job when the keystore secrets are missing.
+        type: boolean
+        default: false
+    secrets:
+      ANDROID_KEYSTORE_BASE64:
+        description: Base64 of the release keystore file.
+        required: false
+      ANDROID_KEYSTORE_USER:
+        description: Key alias in the keystore.
+        required: false
+      ANDROID_KEYSTORE_PASSWORD:
+        description: Keystore + key password (Godot uses one for both).
+        required: false
+concurrency:
+  # PR: one group per ref, new push cancels old run. Push/manual: group per sha ->
+  # never cancelled by a later commit. Version suffix keeps a workflow_call from a
+  # tag push (same sha as a main push; github.* is the caller's) out of the caller's
+  # and the main-push run's groups -> no deadlock/cancel.
+  group: build-${{ github.event_name }}-${{ github.event_name == 'pull_request' && github.ref || github.sha }}-${{ inputs.version }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+permissions:
+  contents: read
+env:
+  GODOT_VERSION: "4.7.2"
+defaults:
+  run:
+    shell: bash  # explicit bash = -eo pipefail (`| tee` keeps exit code)
+jobs:
+  check:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v7
+      - uses: ./.github/actions/setup-godot
+      - name: Import
+        run: |
+          # First run on a clean checkout prints a bogus parse error (autoloads not
+          # registered yet), so it is not judged; only the second one is.
+          godot --headless --import 2>&1 | tee import1.log || true
+          godot --headless --import 2>&1 | tee import2.log
+          if grep -E 'SCRIPT ERROR|Parse Error' import2.log; then
+            echo "::error::Script errors on second import"; exit 1
+          fi
+      - name: Boot main scene
+        run: |
+          godot --headless --quit-after 120 2>&1 | tee boot.log
+          if grep -q 'SCRIPT ERROR' boot.log; then
+            echo "::error::SCRIPT ERROR while booting the main scene"; exit 1
+          fi
+      - name: Logs
+        if: failure()
+        uses: actions/upload-artifact@v7
+        with:
+          name: logs-check
+          overwrite: true
+          path: |
+            import1.log
+            import2.log
+            boot.log
+          if-no-files-found: ignore
+
+  export:
+    needs: check
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    strategy:
+      fail-fast: false
+      matrix:
+        platform: [windows, linux, android, web]
+        include:
+          - platform: windows
+            preset: Windows Desktop
+          - platform: linux
+            preset: Linux
+          - platform: android
+            preset: Android
+          - platform: web
+            preset: Web
+    env:
+      PLATFORM: ${{ matrix.platform }}
+      PRESET: ${{ matrix.preset }}
+    steps:
+      - uses: actions/checkout@v7
+      - uses: ./.github/actions/setup-godot
+        with:
+          templates: ${{ matrix.platform }}
+      - name: Version and label
+        id: meta
+        env:
+          VERSION: ${{ inputs.version }}
+          SHA: ${{ github.event.pull_request.head.sha || github.sha }}  # PR head, not the synthetic merge commit
+        run: |
+          if [ -n "$VERSION" ]; then
+            if ! [[ "$VERSION" =~ ^([0-9]+)\.([0-9]+)\.([0-9]+)$ ]]; then
+              echo "::error::version must be MAJOR.MINOR.PATCH without leading v, got '$VERSION'"; exit 1
+            fi
+            if [ "$VERSION" = "0.0.0" ]; then
+              echo "::error::version 0.0.0 is invalid (Android version code 0; Godot's minimum is 1): start at 0.0.1"; exit 1
+            fi
+            if [ "${BASH_REMATCH[2]}" -gt 99 ] || [ "${BASH_REMATCH[3]}" -gt 99 ]; then
+              echo "::error::minor/patch must be <= 99 (Android version code = major*10000+minor*100+patch)"; exit 1
+            fi
+            label="v$VERSION"
+          else
+            label="dev-${SHA:0:7}"
+          fi
+          echo "label=$label" >> "$GITHUB_OUTPUT"
+          echo "Label: $label"
+      - name: Stamp version
+        # Edits only this job's working copy.
+        if: inputs.version != ''
+        env:
+          VERSION: ${{ inputs.version }}
+        run: |
+          python3 - <<'PY'
+          import os, re, sys
+
+          version = os.environ["VERSION"]
+          major, minor, patch = map(int, version.split("."))
+          code = major * 10000 + minor * 100 + patch
+
+          def sub_once(text, pattern, repl, name):
+              # repl may reference group 1 as {1}; everything else is literal.
+              new, n = re.subn(pattern, lambda m: repl.replace("{1}", m.group(1) if m.groups() else ""), text, flags=re.M)
+              if n != 1:
+                  sys.exit(f"::error::{name}: expected exactly 1 match for {pattern!r}, got {n}")
+              return new
+
+          with open("export_presets.cfg", encoding="utf-8") as f:
+              presets = f.read()
+          presets = sub_once(presets, r"^version/name=.*$", f'version/name="{version}"', "Android version/name")
+          presets = sub_once(presets, r"^version/code=.*$", f"version/code={code}", "Android version/code")
+          presets = sub_once(presets, r"^application/file_version=.*$", f'application/file_version="{version}.0"', "Windows file_version")
+          presets = sub_once(presets, r"^application/product_version=.*$", f'application/product_version="{version}.0"', "Windows product_version")
+          with open("export_presets.cfg", "w", encoding="utf-8") as f:
+              f.write(presets)
+
+          with open("project.godot", encoding="utf-8") as f:
+              project = f.read()
+          if re.search(r"^config/version=", project, flags=re.M):
+              project = sub_once(project, r"^config/version=.*$", f'config/version="{version}"', "config/version")
+          else:
+              # New key goes right after config/name in [application].
+              project = sub_once(project, r"^(config/name=.*)$", "{1}" + f'\nconfig/version="{version}"', "config/name")
+          with open("project.godot", "w", encoding="utf-8") as f:
+              f.write(project)
+          PY
+          git diff --stat -- export_presets.cfg project.godot
+          git diff -U0 -- export_presets.cfg project.godot | grep -E '^[+-][^+-]'
+      - name: Import
+        run: |
+          # See check job: only the second run is trustworthy on a clean checkout.
+          godot --headless --import 2>&1 | tee import1.log || true
+          godot --headless --import 2>&1 | tee import2.log
+          if grep -E 'SCRIPT ERROR|Parse Error' import2.log; then
+            echo "::error::Script errors on second import"; exit 1
+          fi
+
+      # Android: Godot (non-gradle) only needs SDK build-tools (apksigner), platform-tools
+      # and a JDK; ubuntu-24.04 ships them ($ANDROID_HOME incl. build-tools 36 = Godot's
+      # default target SDK, JDK 17). Paths go in editor settings (no CLI flag exists).
+      - name: Android SDK paths
+        if: matrix.platform == 'android'
+        run: |
+          sdk="${ANDROID_HOME:-$ANDROID_SDK_ROOT}"
+          jdk="$JAVA_HOME_17_X64"
+          for p in "$sdk/platform-tools" "$sdk/build-tools" "$jdk/bin/java" "$jdk/bin/keytool"; do
+            [ -e "$p" ] || { echo "::error::Missing $p on the runner image"; exit 1; }
+          done
+          ls "$sdk/build-tools"
+          mkdir -p ~/.config/godot
+          cat > ~/.config/godot/editor_settings-4.7.tres <<EOT
+          [gd_resource type="EditorSettings" format=3]
+
+          [resource]
+          export/android/android_sdk_path = "$sdk"
+          export/android/java_sdk_path = "$jdk"
+          EOT
+          cat ~/.config/godot/editor_settings-4.7.tres
+      - name: Android signing
+        if: matrix.platform == 'android'
+        id: sign
+        env:
+          # Secrets can't be tested in `if:`; map to env and decide here. The release
+          # key is only ever read for release.yml (require_signing); everything else is
+          # debug-signed, so a PR/main/manual run cannot sign with it. `inputs` is null
+          # when triggered directly -> falls through to ''.
+          KS_B64: ${{ inputs.require_signing && secrets.ANDROID_KEYSTORE_BASE64 || '' }}
+          KS_USER: ${{ inputs.require_signing && secrets.ANDROID_KEYSTORE_USER || '' }}
+          KS_PASS: ${{ inputs.require_signing && secrets.ANDROID_KEYSTORE_PASSWORD || '' }}
+          REQUIRE_SIGNING: ${{ inputs.require_signing }}
+        run: |
+          set=0
+          [ -n "$KS_B64" ] && set=$((set + 1))
+          [ -n "$KS_USER" ] && set=$((set + 1))
+          [ -n "$KS_PASS" ] && set=$((set + 1))
+          if [ "$set" -eq 3 ]; then
+            printf '%s' "$KS_B64" | base64 -d > "$RUNNER_TEMP/release.keystore"
+            [ -s "$RUNNER_TEMP/release.keystore" ] || { echo "::error::ANDROID_KEYSTORE_BASE64 decoded to an empty file"; exit 1; }
+            echo "GODOT_ANDROID_KEYSTORE_RELEASE_PATH=$RUNNER_TEMP/release.keystore" >> "$GITHUB_ENV"
+            echo "mode=release" >> "$GITHUB_OUTPUT"
+          elif [ "$set" -ne 0 ]; then
+            echo "::error::Android keystore secrets partially set: need all of ANDROID_KEYSTORE_BASE64, ANDROID_KEYSTORE_USER, ANDROID_KEYSTORE_PASSWORD"; exit 1
+          elif [ "$REQUIRE_SIGNING" = "true" ]; then
+            echo "::error::Android release signing required but ANDROID_KEYSTORE_BASE64, ANDROID_KEYSTORE_USER and ANDROID_KEYSTORE_PASSWORD secrets are not set"; exit 1
+          else
+            echo "::warning::Non-release build: APK is signed with a throwaway debug key and cannot update a release-signed install"
+            # Throwaway key (well-known debug credentials; nothing secret). Godot reads
+            # the debug keystore from these env vars when the preset field is empty.
+            "$JAVA_HOME_17_X64/bin/keytool" -genkeypair -keystore "$RUNNER_TEMP/debug.keystore" \
+              -storepass android -keypass android -alias androiddebugkey \
+              -keyalg RSA -keysize 2048 -validity 10000 -dname "CN=Android Debug,O=Android,C=US"
+            {
+              echo "GODOT_ANDROID_KEYSTORE_DEBUG_PATH=$RUNNER_TEMP/debug.keystore"
+              echo "GODOT_ANDROID_KEYSTORE_DEBUG_USER=androiddebugkey"
+              echo "GODOT_ANDROID_KEYSTORE_DEBUG_PASSWORD=android"
+            } >> "$GITHUB_ENV"
+            echo "mode=debug" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Export
+        id: export
+        env:
+          # Only the release-signed Android path (release.yml) reads these (empty otherwise).
+          GODOT_ANDROID_KEYSTORE_RELEASE_USER: ${{ inputs.require_signing && matrix.platform == 'android' && secrets.ANDROID_KEYSTORE_USER || '' }}
+          GODOT_ANDROID_KEYSTORE_RELEASE_PASSWORD: ${{ inputs.require_signing && matrix.platform == 'android' && secrets.ANDROID_KEYSTORE_PASSWORD || '' }}
+          SIGN_MODE: ${{ steps.sign.outputs.mode }}
+        run: |
+          case "$PLATFORM" in
+            windows) out=build/windows/pixel_defense.exe ;;
+            linux)   out=build/linux/pixel_defense.x86_64 ;;
+            android) out=build/android/pixel_defense.apk ;;
+            web)     out=build/web/index.html ;;  # index.html -> deployable as-is (GitHub Pages)
+          esac
+          mkdir -p "$(dirname "$out")"
+          flag=--export-release
+          [ "$SIGN_MODE" = debug ] && flag=--export-debug  # non-release fallback: debug template + debug key
+          godot --headless "$flag" "$PRESET" "$out" 2>&1 | tee export.log
+          # Godot can exit 0 after a failed export; failures are `ERROR:` lines
+          # (missing template, bad preset, config errors), `WARNING:`s are tolerated.
+          if grep -E '^(ERROR|SCRIPT ERROR):' export.log; then
+            echo "::error::Godot reported errors while exporting $PRESET"; exit 1
+          fi
+          grep -E '^WARNING:' export.log | while read -r l; do echo "::warning::$l"; done || true
+      - name: Verify and package
+        env:
+          LABEL: ${{ steps.meta.outputs.label }}
+          VERSION: ${{ inputs.version }}
+        run: |
+          nonempty() { for f in "$@"; do [ -s "$f" ] || { echo "::error::Missing or empty export output: $f"; exit 1; }; done; }
+          mkdir -p dist
+          case "$PLATFORM" in
+            windows)
+              d="build/windows"
+              nonempty "$d/pixel_defense.exe" "$d/pixel_defense.pck"
+              dir="pixel_defense-$LABEL-windows-x86_64"
+              mkdir -p "pkg/$dir"
+              cp "$d/pixel_defense.exe" "$d/pixel_defense.pck" "pkg/$dir/"
+              if [ -n "$VERSION" ]; then
+                # Godot writes the version resource natively (no rcedit); make sure the stamp landed.
+                strings -el "$d/pixel_defense.exe" | grep -Fx -- "$VERSION.0" >/dev/null \
+                  || { echo "::error::Version $VERSION.0 not found in exe resources"; exit 1; }
+              fi
+              # Console wrapper is only built when the preset asks for it (currently debug only).
+              [ -s "$d/pixel_defense.console.exe" ] && cp "$d/pixel_defense.console.exe" "pkg/$dir/"
+              (cd pkg && zip -qr "../dist/$dir.zip" "$dir")
+              out="dist/$dir.zip"
+              ;;
+            linux)
+              d="build/linux"
+              nonempty "$d/pixel_defense.x86_64" "$d/pixel_defense.pck"
+              dir="pixel_defense-$LABEL-linux-x86_64"
+              mkdir -p "pkg/$dir"
+              cp "$d/pixel_defense.x86_64" "$d/pixel_defense.pck" "pkg/$dir/"
+              chmod +x "pkg/$dir/pixel_defense.x86_64"
+              tar -C pkg -czf "dist/$dir.tar.gz" "$dir"  # tar keeps the exec bit
+              out="dist/$dir.tar.gz"
+              ;;
+            android)
+              apk=build/android/pixel_defense.apk
+              nonempty "$apk"
+              # Godot only warns (exit 0) if apksigner fails -> check the signature ourselves.
+              bt="$ANDROID_HOME/build-tools/$(find "$ANDROID_HOME/build-tools" -mindepth 1 -maxdepth 1 -printf '%f\n' | sort -V | tail -n1)"
+              "$bt/apksigner" verify --print-certs "$apk"
+              unzip -l "$apk" | grep 'lib/arm64-v8a/libgodot_android.so' >/dev/null || { echo "::error::arm64-v8a library missing from APK"; exit 1; }
+              if [ -n "$VERSION" ]; then
+                IFS=. read -r ma mi pa <<< "$VERSION"
+                "$bt/aapt2" dump badging "$apk" | grep -E "^package:.*versionCode='$((ma * 10000 + mi * 100 + pa))' versionName='$VERSION'" \
+                  || { echo "::error::APK version does not match $VERSION"; exit 1; }
+              fi
+              out="dist/pixel_defense-$LABEL-android-arm64.apk"
+              cp "$apk" "$out"
+              ;;
+            web)
+              d="build/web"
+              nonempty "$d/index.html" "$d/index.js" "$d/index.wasm" "$d/index.pck"
+              out="dist/pixel_defense-$LABEL-web.zip"
+              (cd "$d" && zip -qr "$GITHUB_WORKSPACE/$out" .)  # files at zip root
+              ;;
+          esac
+          ls -l dist
+          echo "ARTIFACT_PATH=$out" >> "$GITHUB_ENV"
+      - name: Upload
+        uses: actions/upload-artifact@v7
+        with:
+          name: export-${{ matrix.platform }}
+          overwrite: true
+          path: ${{ env.ARTIFACT_PATH }}
+          if-no-files-found: error
+          retention-days: 14
+          compression-level: 0  # archives/apk are already compressed
+      - name: Logs
+        if: failure()
+        uses: actions/upload-artifact@v7
+        with:
+          name: logs-export-${{ matrix.platform }}
+          overwrite: true
+          path: |
+            import1.log
+            import2.log
+            export.log
+          if-no-files-found: ignore
+          retention-days: 14
