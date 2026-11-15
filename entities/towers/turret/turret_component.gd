@@ -18,11 +18,11 @@ func _ready() -> void:
 func _process(_delta: float) -> void:
 	if _targets.is_empty():
 		return
-	var target = _get_priority_target(_targets)
+	var target: Enemy = _get_priority_target(_targets)
 	_aim(target.global_position)
 
 ## Update turret stats with the given TowerStats
-func configure(stats: TowerStats) -> void:	
+func configure(stats: TowerStats) -> void:
 	_reload_timer.wait_time = 1.0 / stats.shots_per_second
 	_detection_shape.shape.radius = stats.detection_range
 
@@ -30,7 +30,7 @@ func configure(stats: TowerStats) -> void:
 func _get_priority_target(targets: Array[Enemy]) -> Enemy:
 	# TODO: implement filters for different target priorization
 	return targets[0]
-	
+
 ## Rotate turret sprite so it points to given position
 func _aim(pos: Vector2) -> void:
 	_turret.look_at(pos)
@@ -47,5 +47,5 @@ func _on_detection_area_body_exited(body: Node2D) -> void:
 func _on_reload_timer_timeout() -> void:
 	if _targets.is_empty():
 		return
-	var dir = Vector2.DOWN.rotated(_turret.global_rotation).normalized()
+	var dir: Vector2 = Vector2.DOWN.rotated(_turret.global_rotation).normalized()
 	shot.emit(_turret.global_position + dir, _turret.global_rotation)

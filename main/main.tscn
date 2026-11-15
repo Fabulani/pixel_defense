@@ -7,7 +7,7 @@
 [ext_resource type="PackedScene" uid="uid://cspwgnxrwkpkb" path="res://core/controls/panning_camera.tscn" id="4_yyfjg"]
 [ext_resource type="PackedScene" uid="uid://8e8h5tyneieh" path="res://ui/hud/hud.tscn" id="6_hujxm"]
 [ext_resource type="PackedScene" uid="uid://c2pi1pdd0wfc4" path="res://ui/start_menu/start_menu.tscn" id="8_b1x3f"]
-[ext_resource type="PackedScene" uid="uid://be55v8ytmchi7" path="res://ui/game_over/game_over_screen.tscn" id="8_yyfjg"]
+[ext_resource type="PackedScene" uid="uid://be55v8ytmchi7" path="res://ui/game_end/game_end_screen.tscn" id="8_yyfjg"]
 [ext_resource type="Script" uid="uid://ot1k4hgx0pkp" path="res://ui/mobile/mobile_display_handler.gd" id="9_b1x3f"]
 [ext_resource type="Script" uid="uid://db1y5qpjh5jg5" path="res://core/controls/input_controller.gd" id="10_ic"]
 [ext_resource type="PackedScene" path="res://ui/tower_preview/tower_preview.tscn" id="11_tp"]
@@ -35,7 +35,7 @@ zoom = Vector2(1, 1)
 
 [node name="HUD" parent="." unique_id=796709017 instance=ExtResource("6_hujxm")]
 
-[node name="GameOverScreen" parent="." unique_id=1345433108 instance=ExtResource("8_yyfjg")]
+[node name="GameEndScreen" parent="." unique_id=1345433108 instance=ExtResource("8_yyfjg")]
 
 [node name="StartMenu" parent="." unique_id=336456624 instance=ExtResource("8_b1x3f")]
 

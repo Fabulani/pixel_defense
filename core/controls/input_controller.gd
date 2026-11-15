@@ -15,17 +15,19 @@ var _preview_cell: Vector2i = Vector2i(-1, -1)
 func setup() -> void:
 	if touch_controls == null or kbm_controls == null:
 		return
-	if DisplayServer.is_touchscreen_available():
-		touch_controls.tapped.connect(_on_tapped)
-	else:
-		kbm_controls.clicked.connect(_on_clicked)
+	# Both input paths are always live. Emulated mouse events from touches are
+	# filtered out in KBMControls, so a touch never reaches this twice.
+	if not touch_controls.tapped.is_connected(_on_touch_controls_tapped):
+		touch_controls.tapped.connect(_on_touch_controls_tapped)
+	if not kbm_controls.clicked.is_connected(_on_kbm_controls_clicked):
+		kbm_controls.clicked.connect(_on_kbm_controls_clicked)
 
 
-func _on_tapped(position: Vector2) -> void:
+func _on_touch_controls_tapped(position: Vector2) -> void:
 	_handle_cell_input(_get_cell_at_screen_pos(position))
 
 
-func _on_clicked(position: Vector2) -> void:
+func _on_kbm_controls_clicked(position: Vector2) -> void:
 	_handle_cell_input(_get_cell_at_screen_pos(position))
 
 

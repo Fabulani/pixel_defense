@@ -3,7 +3,7 @@ class_name ProjectileManager extends Node2D
 @export var bullet_scene: PackedScene
 
 func create_bullet(data: ProjectileData) -> void:
-	var bullet = bullet_scene.instantiate() as Bullet
+	var bullet: Bullet = bullet_scene.instantiate() as Bullet
 	bullet.setup(data)
 	add_child(bullet)
 

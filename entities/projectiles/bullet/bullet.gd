@@ -17,7 +17,7 @@ func setup(data: ProjectileData) -> void:
 	rotation = data.angle
 	_direction = Vector2.DOWN.rotated(data.angle)
 	_data = data
-	
+
 func _physics_process(delta: float) -> void:
 	position += _direction * _data.speed * delta
 

@@ -6,9 +6,6 @@
 [ext_resource type="PackedScene" uid="uid://bt8mmlvv2d08j" path="res://core/managers/wave/wave_manager.tscn" id="5_mbbpy"]
 [ext_resource type="PackedScene" uid="uid://dnbq1t1oyn8fv" path="res://entities/bases/player_base.tscn" id="5_urvlt"]
 [ext_resource type="PackedScene" uid="uid://cge3q31jgw6mr" path="res://core/managers/projectile/projectile_manager.tscn" id="6_d4w6o"]
-[ext_resource type="PackedScene" uid="uid://b1mg352s1f4mt" path="res://entities/enemies/basic/basic_enemy.tscn" id="6_rtcij"]
-[ext_resource type="PackedScene" uid="uid://dnwd6vi1t3f5d" path="res://entities/enemies/fast/fast_enemy.tscn" id="7_ukwr8"]
-[ext_resource type="PackedScene" uid="uid://cavk4vh6k1igx" path="res://entities/enemies/heavy/heavy_enemy.tscn" id="8_pb8y7"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_xb4v1"]
 resource_name = "Tilemap"
@@ -1008,8 +1005,5 @@ position = Vector2(41, 151)
 
 [node name="WaveManager" parent="." unique_id=1967040178 node_paths=PackedStringArray("enemy_spawner") instance=ExtResource("5_mbbpy")]
 enemy_spawner = NodePath("../EnemySpawner")
-enemy_basic = ExtResource("6_rtcij")
-enemy_fast = ExtResource("7_ukwr8")
-enemy_heavy = ExtResource("8_pb8y7")
 
 [node name="ProjectileManager" parent="." unique_id=534807489 instance=ExtResource("6_d4w6o")]

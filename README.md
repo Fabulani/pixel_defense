@@ -22,7 +22,7 @@ Download [Git LFS](https://git-lfs.com/) and, in the project folder, initialize 
 git lfs install && git lfs pull
 ```
 
-Alternatively download from Kenney (<www.kenney.nl>) and extract them in the asset folder:
+Alternatively download from Kenney (<www.kenney.nl>) and extract them next to the scenes that use them, in their feature folders (e.g. `entities/`, `ui/`):
 - Pixel Shmup
 - Kenney Fonts
 - Input Prompts Pixel 16×

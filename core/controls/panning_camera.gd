@@ -40,13 +40,11 @@ func _ready() -> void:
 	kbm_controls.zoom_out_action = zoom_out_action
 	kbm_controls.setup()
 
-	if DisplayServer.is_touchscreen_available():
-		touch_controls.pan_changed.connect(_on_touch_pan_changed)
-		touch_controls.pinch_changed.connect(_on_pinch_changed)
-		touch_controls.pinch_started.connect(_on_pinch_started)
-	else:
-		kbm_controls.mouse_panned.connect(_on_mouse_panned)
-		kbm_controls.zoomed.connect(_on_kbm_zoomed)
+	touch_controls.pan_changed.connect(_on_touch_controls_pan_changed)
+	touch_controls.pinch_changed.connect(_on_touch_controls_pinch_changed)
+	touch_controls.pinch_started.connect(_on_touch_controls_pinch_started)
+	kbm_controls.mouse_panned.connect(_on_kbm_controls_mouse_panned)
+	kbm_controls.zoomed.connect(_on_kbm_controls_zoomed)
 
 
 func _process(delta: float) -> void:
@@ -80,15 +78,15 @@ func _handle_directional_input(delta: float) -> void:
 		smooth_damp.position_goal += direction * pan_speed / zoom.x * delta
 
 
-func _on_touch_pan_changed(screen_delta: Vector2) -> void:
+func _on_touch_controls_pan_changed(screen_delta: Vector2) -> void:
 	smooth_damp.position_goal -= screen_delta / zoom
 
 
-func _on_mouse_panned(delta: Vector2) -> void:
+func _on_kbm_controls_mouse_panned(delta: Vector2) -> void:
 	smooth_damp.position_goal -= delta / zoom
 
 
-func _on_kbm_zoomed(direction: int, anchor: Vector2) -> void:
+func _on_kbm_controls_zoomed(direction: int, anchor: Vector2) -> void:
 	if not can_zoom:
 		return
 	_anchor_viewport_position = anchor
@@ -99,11 +97,11 @@ func _on_kbm_zoomed(direction: int, anchor: Vector2) -> void:
 	)
 
 
-func _on_pinch_started() -> void:
+func _on_touch_controls_pinch_started() -> void:
 	_pinch_start_zoom = zoom.x
 
 
-func _on_pinch_changed(pinch_factor: float, anchor_viewport_pos: Vector2) -> void:
+func _on_touch_controls_pinch_changed(pinch_factor: float, anchor_viewport_pos: Vector2) -> void:
 	if not can_zoom:
 		return
 	var new_zoom: float = clamp(_pinch_start_zoom * pinch_factor, min_zoom, max_zoom)

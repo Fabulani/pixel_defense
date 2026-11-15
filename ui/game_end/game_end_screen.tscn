@@ -1,8 +1,8 @@
 [gd_scene format=3 uid="uid://be55v8ytmchi7"]
 
-[ext_resource type="Script" uid="uid://do724t4nn31uo" path="res://ui/game_over/game_over_screen.gd" id="1_i3wpd"]
+[ext_resource type="Script" uid="uid://do724t4nn31uo" path="res://ui/game_end/game_end_screen.gd" id="1_i3wpd"]
 
-[node name="GameOverScreen" type="CanvasLayer" unique_id=2001117652]
+[node name="GameEndScreen" type="CanvasLayer" unique_id=2001117652]
 process_mode = 3
 script = ExtResource("1_i3wpd")
 
@@ -29,8 +29,9 @@ theme_override_constants/margin_bottom = 20
 [node name="VBoxContainer" type="VBoxContainer" parent="PanelContainer/MarginContainer" unique_id=1520089737]
 layout_mode = 2
 
-[node name="YouDiedLabel" type="Label" parent="PanelContainer/MarginContainer/VBoxContainer" unique_id=1797083761]
+[node name="TitleLabel" type="Label" parent="PanelContainer/MarginContainer/VBoxContainer" unique_id=1797083761]
 layout_mode = 2
+unique_name_in_owner = true
 theme_type_variation = &"HeaderLarge"
 theme_override_colors/font_color = Color(1, 0, 0, 1)
 text = "YOU DIED"
@@ -48,6 +49,7 @@ vertical_alignment = 1
 
 [node name="WaveLabel" type="Label" parent="PanelContainer/MarginContainer/VBoxContainer/HBoxContainer" unique_id=1603742505]
 layout_mode = 2
+unique_name_in_owner = true
 theme_override_colors/font_color = Color(0, 1, 0, 1)
 text = "wave 0"
 horizontal_alignment = 1
@@ -63,6 +65,7 @@ text = "Saved "
 
 [node name="CoinsLabel" type="Label" parent="PanelContainer/MarginContainer/VBoxContainer/HBoxContainer2" unique_id=1087499296]
 layout_mode = 2
+unique_name_in_owner = true
 theme_override_colors/font_color = Color(1, 1, 0.36078432, 1)
 text = "0"
 
@@ -72,4 +75,5 @@ text = " coins"
 
 [node name="RestartButton" type="Button" parent="PanelContainer/MarginContainer/VBoxContainer" unique_id=714368738]
 layout_mode = 2
+unique_name_in_owner = true
 text = "Retry"

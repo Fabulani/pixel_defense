@@ -1,0 +1,25 @@
+[gd_resource type="Resource" script_class="WaveConfig" format=3 uid="uid://cndjldqtub12x"]
+
+[ext_resource type="Script" uid="uid://cpnvubwtwrkup" path="res://core/managers/wave/wave_config.gd" id="1_cfg"]
+[ext_resource type="PackedScene" uid="uid://b1mg352s1f4mt" path="res://entities/enemies/basic/basic_enemy.tscn" id="2_basic"]
+[ext_resource type="Script" uid="uid://cvj1rwtrcol72" path="res://core/managers/wave/wave_enemy.gd" id="3_wenemy"]
+[ext_resource type="PackedScene" uid="uid://dnwd6vi1t3f5d" path="res://entities/enemies/fast/fast_enemy.tscn" id="4_fast"]
+[ext_resource type="PackedScene" uid="uid://cavk4vh6k1igx" path="res://entities/enemies/heavy/heavy_enemy.tscn" id="5_heavy"]
+
+[sub_resource type="Resource" id="Resource_fast"]
+script = ExtResource("3_wenemy")
+scene = ExtResource("4_fast")
+first_wave = 5
+share = 0.3
+
+[sub_resource type="Resource" id="Resource_heavy"]
+script = ExtResource("3_wenemy")
+scene = ExtResource("5_heavy")
+first_wave = 10
+share = 0.2
+
+[resource]
+script = ExtResource("1_cfg")
+max_waves = 15
+default_enemy = ExtResource("2_basic")
+variants = Array[ExtResource("3_wenemy")]([SubResource("Resource_fast"), SubResource("Resource_heavy")])
