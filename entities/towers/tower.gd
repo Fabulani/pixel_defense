@@ -8,6 +8,8 @@ signal upgraded
 @export var stats: TowerStats  ## Data container for the BASE tower stats (never mutated)
 @export var _turret: TurretComponent  ## Component for detection, aiming, and firing
 @export var major_upgrades: Array[MajorUpgrade]  ## Choices offered at the last upgrade
+@export var placed_squash_time: float = 0.15  ## Seconds of the squash after building
+@export var upgrade_flash_time: float = 0.15  ## Seconds of the white flash after an upgrade
 
 var level: int = 0  ## Current level, 0..TowerStats.MAX_LEVEL
 var major: MajorUpgrade = null  ## Set when the tower reaches MAX_LEVEL
@@ -15,11 +17,14 @@ var total_spent: int = 0  ## Coins spent on this tower; maintained by BuildingMa
 
 var _effective_stats: TowerStats
 var _bullet_material: ShaderMaterial = null
+var _base_scale: Vector2 = Vector2.ONE
+var _squash_tween: Tween = null
 
 @onready var _base: Sprite2D = %Base
 @onready var _level_label: Label = %LevelLabel
 
 func _ready() -> void:
+	_base_scale = _base.scale
 	_turret.shot.connect(_on_shot)
 	_apply_upgrades()
 	add_to_group("towers")
@@ -45,6 +50,7 @@ func upgrade() -> void:
 		return
 	level += 1
 	_apply_upgrades()
+	_flash(upgrade_flash_time)
 	upgraded.emit()
 
 ## Apply the final major upgrade. Does not touch currency.
@@ -55,11 +61,22 @@ func apply_major(new_major: MajorUpgrade) -> void:
 	major = new_major
 	level = TowerStats.MAX_LEVEL
 	_apply_upgrades()
+	_flash(upgrade_flash_time)
 	upgraded.emit()
 
 ## Play the build squash animation.
 func play_placed() -> void:
-	pass
+	if _squash_tween != null:
+		_squash_tween.kill()
+	_base.scale = _base_scale * Vector2(1.3, 0.7)
+	_squash_tween = create_tween()
+	_squash_tween.tween_property(_base, "scale", _base_scale, placed_squash_time).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
+	_turret.play_squash(placed_squash_time)
+
+## Flash base and cannon white.
+func _flash(duration: float) -> void:
+	Flash.play(_base, duration)
+	_turret.flash(duration)
 
 ## Return the effective detection range.
 func get_range() -> float:

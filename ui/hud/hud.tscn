@@ -2,6 +2,7 @@
 
 [ext_resource type="Script" uid="uid://dviylmcgi8ydp" path="res://ui/hud/hud.gd" id="1_as3gr"]
 [ext_resource type="Texture2D" uid="uid://c3qi8dlri4pv1" path="res://ui/hud/zero.png" id="1_bngdn"]
+[ext_resource type="FontFile" uid="uid://cnc783dgux1da" path="res://ui/themes/default/Kenney Mini.ttf" id="3_font"]
 [ext_resource type="Texture2D" uid="uid://bbntvb0npfhix" path="res://ui/hud/ship_grey_2.png" id="2_qao66"]
 
 [node name="CanvasLayer" type="CanvasLayer" unique_id=796709017]
@@ -92,3 +93,26 @@ layout_mode = 2
 focus_mode = 0
 theme_override_font_sizes/font_size = 16
 text = "+9999"
+
+[node name="WaveBanner" type="Label" parent="."]
+unique_name_in_owner = true
+process_mode = 3
+visible = false
+modulate = Color(1, 1, 1, 0)
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -200.0
+offset_top = 96.0
+offset_right = 200.0
+offset_bottom = 152.0
+grow_horizontal = 2
+mouse_filter = 2
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
+theme_override_constants/outline_size = 8
+theme_override_fonts/font = ExtResource("3_font")
+theme_override_font_sizes/font_size = 40
+text = "Wave"
+horizontal_alignment = 1
+vertical_alignment = 1

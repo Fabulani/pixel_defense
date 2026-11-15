@@ -7,6 +7,8 @@ class_name Pathfinding extends Node
 var _entity: CharacterBody2D
 var _path: Array[Vector2i] = []
 var _path_index: int = 0
+## When false the entity stops following its path and ignores grid changes.
+var active: bool = true
 var target_position: Vector2 = Vector2.ZERO:
 	set(value):
 		if target_position == value:
@@ -31,8 +33,12 @@ func recalculate_path() -> void:
 
 
 ## Move entity along the calculated path.
-func move() -> void:
+## [param extra_velocity] is added after the path velocity (rotation is not affected).
+func move(extra_velocity: Vector2 = Vector2.ZERO) -> void:
+	if not active:
+		return
 	_follow_path()
+	_entity.velocity += extra_velocity
 	_entity.move_and_slide()
 
 
@@ -51,4 +57,6 @@ func _follow_path() -> void:
 
 
 func _on_pathfinding_manager_grid_changed() -> void:
+	if not active:
+		return
 	recalculate_path()
