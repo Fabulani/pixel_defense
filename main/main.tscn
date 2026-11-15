@@ -12,6 +12,7 @@
 [ext_resource type="Script" uid="uid://db1y5qpjh5jg5" path="res://core/controls/input_controller.gd" id="10_ic"]
 [ext_resource type="PackedScene" path="res://ui/tower_preview/tower_preview.tscn" id="11_tp"]
 [ext_resource type="PackedScene" uid="uid://c7k2m9xq4wdhe" path="res://ui/tower_menu/tower_menu.tscn" id="12_tm"]
+[ext_resource type="Script" uid="uid://bwpfalvsqqgal" path="res://core/managers/vfx/vfx_manager.gd" id="13_vfx"]
 
 [node name="Main" type="Node2D" unique_id=74125191]
 script = ExtResource("1_l3cfh")
@@ -19,6 +20,9 @@ script = ExtResource("1_l3cfh")
 [node name="Level" parent="." unique_id=1663716660 instance=ExtResource("3_k2fmo")]
 
 [node name="BuildingManager" parent="." unique_id=829787398 instance=ExtResource("3_hujxm")]
+
+[node name="VfxManager" type="Node2D" parent="."]
+script = ExtResource("13_vfx")
 
 [node name="InputController" type="Node" parent="." unique_id=991129274]
 script = ExtResource("10_ic")

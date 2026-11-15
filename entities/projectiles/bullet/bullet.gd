@@ -1,5 +1,8 @@
 class_name Bullet extends Node2D
 
+## Emitted when the bullet damaged a body; never on lifetime end.
+signal hit(hit_position: Vector2, direction: Vector2)
+
 var _hit_count := 0
 var _direction: Vector2
 var _data: ProjectileData
@@ -32,6 +35,9 @@ func _hit(body: Node2D) -> void:
 	if not body.has_method("take_damage"):
 		return
 	body.take_damage(_data.damage)
+	if body.has_method("apply_knockback"):
+		body.apply_knockback(_direction * _data.knockback)
+	hit.emit(global_position, _direction.normalized())
 	_hit_count += 1
 
 func _die() -> void:

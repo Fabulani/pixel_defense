@@ -28,6 +28,11 @@ func set_target_position(pos: Vector2) -> void:
 	pathfinding.target_position = pos
 
 
+## Push the enemy with a knockback [param impulse] (px/s), scaled by its stats' knockback_scale.
+func apply_knockback(_impulse: Vector2) -> void:
+	pass
+
+
 ## Emit [signal died] and remove the enemy.
 func die() -> void:
 	died.emit(self)

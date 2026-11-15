@@ -17,6 +17,10 @@ func set_coin_amount(amount: int) -> void:
 func set_wave(wave_index: int) -> void:
 	wave_index_label.text = str(wave_index)
 
+## Show the "wave N" banner for [param wave_index].
+func show_wave_banner(_wave_index: int) -> void:
+	pass
+
 func set_enemy_count(count: int) -> void:
 	enemy_count_label.text = str(count)
 

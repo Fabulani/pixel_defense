@@ -115,3 +115,8 @@ func zoom_by(amount: float) -> void:
 	smooth_damp.zoom_goal = (smooth_damp.zoom_goal + amount * Vector2.ONE).clamp(
 		min_zoom * Vector2.ONE, max_zoom * Vector2.ONE
 	)
+
+
+## Add screen-shake trauma ([param amount] is clamped to 0..1).
+func shake(_amount: float) -> void:
+	pass

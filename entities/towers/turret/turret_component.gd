@@ -32,6 +32,10 @@ func configure(stats: TowerStats) -> void:
 		_reload_timer.wait_time = period
 	_detection_shape.shape.radius = stats.detection_range
 
+## Set the cannon recoil distance in px.
+func set_recoil(_distance: float) -> void:
+	pass
+
 ## Swap the cannon sprite, its material and its scale. A null texture keeps the current one; a null material clears it.
 func set_appearance(texture: Texture2D, sprite_material: Material, sprite_scale: float = 1.0) -> void:
 	if texture != null:

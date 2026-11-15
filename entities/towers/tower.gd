@@ -57,6 +57,10 @@ func apply_major(new_major: MajorUpgrade) -> void:
 	_apply_upgrades()
 	upgraded.emit()
 
+## Play the build squash animation.
+func play_placed() -> void:
+	pass
+
 ## Return the effective detection range.
 func get_range() -> float:
 	return _effective_stats.detection_range
@@ -67,15 +71,18 @@ func _apply_upgrades() -> void:
 	var damage_mult: float = 1.0
 	var rate_mult: float = 1.0
 	var range_mult: float = 1.0
+	var recoil_mult: float = 1.0
 	if major != null:
 		damage_mult = major.damage_multiplier
 		rate_mult = major.fire_rate_multiplier
 		range_mult = major.range_multiplier
+		recoil_mult = major.recoil_multiplier
 	_effective_stats = stats.duplicate()
 	_effective_stats.damage = stats.damage * level_mult * damage_mult
 	_effective_stats.shots_per_second = stats.shots_per_second * level_mult * rate_mult
 	_effective_stats.detection_range = stats.detection_range * level_mult * range_mult
 	_turret.configure(_effective_stats)
+	_turret.set_recoil(stats.recoil * recoil_mult)
 
 	# Show the level as a number; hidden at level 0 and at MAX_LEVEL (the major shows instead).
 	_level_label.text = str(level)
@@ -94,9 +101,16 @@ func _package_projectile(origin: Vector2, angle: float) -> ProjectileData:
 		_effective_stats.damage,
 		_effective_stats.penetration
 	)
+	projectile_data.knockback = _effective_stats.knockback
 	if major != null:
 		projectile_data.texture = major.bullet_texture
 		projectile_data.material = _bullet_material
+		projectile_data.knockback *= major.knockback_multiplier
+		projectile_data.trail_amount = major.trail_amount
+		projectile_data.trail_lifetime = major.trail_lifetime
+		projectile_data.trail_particle_scale = major.trail_particle_scale
+		if major.bullet_tint.a > 0.0:
+			projectile_data.color = major.bullet_tint
 	return projectile_data
 
 ## Signal relay that packages projectile data

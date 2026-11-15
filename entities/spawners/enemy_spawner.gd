@@ -3,6 +3,8 @@ class_name EnemySpawner extends Node2D
 signal spawning_complete
 signal wave_cleared
 signal alive_count_changed(count: int)
+## Emitted when an enemy died, with where, its coin drop and its effect colour.
+signal enemy_died(death_position: Vector2, coins: int, color: Color)
 
 @export var default_spawn_delay: float = 1.0
 
@@ -67,6 +69,7 @@ func speedup_spawning() -> void:
 
 func _on_enemy_died(enemy: Enemy) -> void:
 	CurrencyManager.earn(enemy.drops.coins)
+	enemy_died.emit(enemy.global_position, enemy.drops.coins, enemy.stats.vfx_color)
 
 
 func _on_enemy_tree_exiting() -> void:
