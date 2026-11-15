@@ -1,0 +1,15 @@
+[gd_resource type="Resource" script_class="MajorUpgrade" format=3 uid="uid://ce1lami263b55"]
+
+[ext_resource type="Texture2D" uid="uid://bsad7t5c6d1tp" path="res://entities/towers/upgrades/cannon_heavy.png" id="1_bsymi"]
+[ext_resource type="Script" uid="uid://d2ujisyl2bpa4" path="res://entities/towers/upgrades/major_upgrade.gd" id="2_pf3uj"]
+
+[resource]
+script = ExtResource("2_pf3uj")
+icon = ExtResource("1_bsymi")
+caption = "range+"
+icon_tint = Color(0.24705882, 0.56078434, 0.8784314, 1)
+range_multiplier = 2.0
+turret_texture = ExtResource("1_bsymi")
+base_tint = Color(0.24705882, 0.56078434, 0.8784314, 1)
+turret_tint = Color(0.24705882, 0.56078434, 0.8784314, 1)
+bullet_tint = Color(0.24705882, 0.56078434, 0.8784314, 1)

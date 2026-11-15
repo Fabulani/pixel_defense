@@ -1,0 +1,17 @@
+[gd_resource type="Resource" script_class="MajorUpgrade" format=3 uid="uid://ccdnv6kywmeli"]
+
+[ext_resource type="Texture2D" uid="uid://dk5yosqbpqyuu" path="res://entities/projectiles/bullet/bullet_heavy.png" id="1_hrx74"]
+[ext_resource type="Script" uid="uid://d2ujisyl2bpa4" path="res://entities/towers/upgrades/major_upgrade.gd" id="2_qw0v2"]
+[ext_resource type="Texture2D" uid="uid://bsad7t5c6d1tp" path="res://entities/towers/upgrades/cannon_heavy.png" id="3_a2gtf"]
+
+[resource]
+script = ExtResource("2_qw0v2")
+icon = ExtResource("3_a2gtf")
+caption = "dmg+"
+icon_tint = Color(0.627451, 0.30980393, 0.84705883, 1)
+damage_multiplier = 2.0
+turret_texture = ExtResource("3_a2gtf")
+base_tint = Color(0.627451, 0.30980393, 0.84705883, 1)
+turret_tint = Color(0.627451, 0.30980393, 0.84705883, 1)
+bullet_texture = ExtResource("1_hrx74")
+bullet_tint = Color(0.627451, 0.30980393, 0.84705883, 1)

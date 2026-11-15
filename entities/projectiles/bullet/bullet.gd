@@ -6,10 +6,17 @@ var _data: ProjectileData
 
 @onready var hitbox: Area2D = %Hitbox
 @onready var lifetime_timer: Timer = %LifetimeTimer
+@onready var _sprite: Sprite2D = %Sprite2D
 
 func _ready() -> void:
 	hitbox.body_entered.connect(_on_body_entered)
 	lifetime_timer.timeout.connect(_on_lifetime_timer_timeout)
+	if _data == null:
+		return
+	if _data.texture != null:
+		_sprite.texture = _data.texture
+	if _data.material != null:
+		_sprite.material = _data.material
 
 ## Setup the projectile. Must be called for it to function correctly.
 func setup(data: ProjectileData) -> void:
