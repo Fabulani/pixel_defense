@@ -2,13 +2,9 @@
 
 Written 2026-11-16, after the "oomf" game-feel pass (PR #24). Each item is its own feature with its own plan, branch and PR. They are done in this order.
 
-## 1. Tower-type harness and build bar (in progress)
+## 1. Tower direction (decided)
 
-Make the code able to hold several tower kinds, but ship only the current single-target tower. More towers are blocked on assets; the author decides later whether to add any.
-
-- `TowerType` resource describes a kind (scene, stats, icon textures). `BuildingManager` holds the list; nothing preloads "the" tower any more.
-- Build bar at the bottom centre of the screen: one square button per tower type (white outline, rounded corners, translucent black background, tower base + cannon as icon, gaps between buttons, no shared background).
-- Build flow: press a tower button (it stays selected, scaled to 0.9) → tap a valid cell (ghost with base, cannon and range ring) → tap the same cell again to build → repeat. Pressing the button again deselects. The camera still pans and zooms while a type is selected. Without a selected type, tapping the map builds nothing.
+A build bar and a multi-kind tower harness (`TowerType`, `BuildBar`) were built and removed after playtesting (2026-11-16). The game has one base tower with upgrade paths, built by tapping a cell twice (first tap shows the ghost, second tap builds). What remains from that work is the cannon on the build ghost.
 
 ## 2. Enemy variety
 
@@ -35,4 +31,4 @@ Generate levels using only the current tileset. Depends on item 3 if generated m
 - Optimization pass. The Web build lags a bit (reported by the author, 2026-11-16); Android is unmeasured. Notes in `docs/ideas.md`.
 - Sound; options to reduce screen shake and flashes.
 - Effect tuning and the smaller polish items listed in `docs/handoff-oomf.md`.
-- More tower kinds, once there are assets.
+- More upgrade paths for the tower.

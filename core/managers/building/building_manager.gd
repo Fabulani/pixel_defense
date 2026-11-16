@@ -6,39 +6,31 @@ signal tower_upgraded(tower: Tower)
 signal tower_sold(tower: Tower, cell_position: Vector2i)
 signal upgrade_denied()
 
+const _TOWER_SCENE: PackedScene = preload("res://entities/towers/tower.tscn")
+
 @export var level: Level
-## Tower kinds the player can build.
-@export var tower_types: Array[TowerType]
 
 ## Built towers by cell.
 var _towers: Dictionary[Vector2i, Tower] = {}
 
 
-## Try to build a tower of [param type] on the cell. Emits [signal tower_built] or [signal tower_placement_denied].
-func place_tower(cell_position: Vector2i, type: TowerType) -> void:
-	if type == null or type.scene == null or type.stats == null or not check_valid_tower_placement(cell_position):
+## Try to build a tower on the cell. Emits [signal tower_built] or [signal tower_placement_denied].
+func place_tower(cell_position: Vector2i) -> void:
+	if not check_valid_tower_placement(cell_position):
 		tower_placement_denied.emit()
 		return
 
-	var instance: Node = type.scene.instantiate()
-	var new_tower: Tower = instance as Tower
-	if new_tower == null:
-		instance.free()
-		push_error("TowerType '%s': scene root is not a Tower" % type.id)
-		tower_placement_denied.emit()
-		return
+	var new_tower: Tower = _TOWER_SCENE.instantiate() as Tower
 
-	if not CurrencyManager.spend(type.stats.cost):
+	if not CurrencyManager.spend(new_tower.stats.cost):
 		new_tower.free()
 		tower_placement_denied.emit()
 		return
 
-	new_tower.stats = type.stats
-	new_tower.tower_type = type
 	var cell_size: Vector2 = Vector2(GameData.grid_cell_size)
 	new_tower.position = Vector2(cell_position) * cell_size + cell_size / 2.0
 	add_child(new_tower)
-	new_tower.total_spent = type.stats.cost
+	new_tower.total_spent = new_tower.stats.cost
 	_towers[cell_position] = new_tower
 	tower_built.emit(new_tower, cell_position)
 

@@ -13,7 +13,6 @@
 [ext_resource type="PackedScene" path="res://ui/tower_preview/tower_preview.tscn" id="11_tp"]
 [ext_resource type="PackedScene" uid="uid://c7k2m9xq4wdhe" path="res://ui/tower_menu/tower_menu.tscn" id="12_tm"]
 [ext_resource type="Script" uid="uid://bwpfalvsqqgal" path="res://core/managers/vfx/vfx_manager.gd" id="13_vfx"]
-[ext_resource type="PackedScene" path="res://ui/build_bar/build_bar.tscn" id="14_bb"]
 
 [node name="Main" type="Node2D" unique_id=74125191]
 script = ExtResource("1_l3cfh")
@@ -22,7 +21,7 @@ script = ExtResource("1_l3cfh")
 
 [node name="BuildingManager" parent="." unique_id=829787398 instance=ExtResource("3_hujxm")]
 
-[node name="VfxManager" type="Node2D" parent="." unique_id=813081176]
+[node name="VfxManager" type="Node2D" parent="."]
 script = ExtResource("13_vfx")
 
 [node name="InputController" type="Node" parent="." unique_id=991129274]
@@ -40,8 +39,6 @@ position = Vector2(363, 358)
 zoom = Vector2(1, 1)
 
 [node name="HUD" parent="." unique_id=796709017 instance=ExtResource("6_hujxm")]
-
-[node name="BuildBar" parent="." instance=ExtResource("14_bb")]
 
 [node name="GameEndScreen" parent="." unique_id=1345433108 instance=ExtResource("8_yyfjg")]
 

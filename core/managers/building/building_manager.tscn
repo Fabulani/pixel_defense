@@ -1,9 +1,6 @@
 [gd_scene format=3 uid="uid://cfa11hv32x4xj"]
 
 [ext_resource type="Script" uid="uid://b8vkhmkqiqk07" path="res://core/managers/building/building_manager.gd" id="1_1d47m"]
-[ext_resource type="Resource" path="res://entities/towers/basic_tower.tres" id="2_basic"]
-[ext_resource type="Script" path="res://entities/towers/tower_type.gd" id="3_tt"]
 
 [node name="BuildingManager" type="Node" unique_id=829787398]
 script = ExtResource("1_1d47m")
-tower_types = Array[ExtResource("3_tt")]([ExtResource("2_basic")])
