@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="EnemyStats" format=3]
+
+[ext_resource type="Script" uid="uid://c2pkska5ungt1" path="res://entities/enemies/components/stats/enemy_stats.gd" id="1_stats"]
+[ext_resource type="PackedScene" path="res://entities/enemies/mini/mini_enemy.tscn" id="1_mini"]
+
+[resource]
+script = ExtResource("1_stats")
+speed = 35.0
+max_health = 12
+knockback_scale = 0.5
+vfx_color = Color(0.96, 0.71, 0.09, 1)
+death_spawn_scene = ExtResource("1_mini")
+death_spawn_count = 3
+metadata/_custom_type_script = "uid://c2pkska5ungt1"

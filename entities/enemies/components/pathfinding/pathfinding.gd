@@ -1,10 +1,10 @@
-## Add A* pathfinding to a CharacterBody2D.
+## Add A* pathfinding to an [Enemy] (speed comes from [method Enemy.get_speed]).
 ##
 ## Expects a PathfindingManager autoload with the A* implementation.
 ## Recalculates its path whenever [signal PathfindingManager.grid_changed] is emitted.
 class_name Pathfinding extends Node
 
-var _entity: CharacterBody2D
+var _entity: Enemy
 var _path: Array[Vector2i] = []
 var _path_index: int = 0
 ## When false the entity stops following its path and ignores grid changes.
@@ -20,7 +20,7 @@ var target_position: Vector2 = Vector2.ZERO:
 
 
 func _ready() -> void:
-	_entity = owner as CharacterBody2D
+	_entity = owner as Enemy
 	PathfindingManager.grid_changed.connect(_on_pathfinding_manager_grid_changed)
 	recalculate_path()
 
@@ -47,7 +47,7 @@ func _follow_path() -> void:
 	if _path and _path_index < _path.size():
 		var global_pos: Vector2 = _entity.global_position
 		var direction: Vector2 = global_pos.direction_to(Vector2(_path[_path_index]))
-		_entity.velocity = direction * _entity.stats.speed
+		_entity.velocity = direction * _entity.get_speed()
 		_entity.rotation = _entity.velocity.angle()
 
 		if global_pos.distance_to(Vector2(_path[_path_index])) <= 10:

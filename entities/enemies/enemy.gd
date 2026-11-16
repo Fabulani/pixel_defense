@@ -1,6 +1,9 @@
 class_name Enemy extends CharacterBody2D
 
 signal died(enemy: Enemy)
+## Emitted for every hit with the damage left after armor, always before the hit is applied to
+## health, so it comes before [signal died] on the killing hit.
+signal damaged(amount: float)
 
 @export var stats: EnemyStats
 @export var drops: Drops
@@ -14,14 +17,21 @@ signal died(enemy: Enemy)
 @export var flash_duration: float = 0.08
 @export var death_duration: float = 0.25
 @export var spawn_duration: float = 0.2
+## How many death spawns deep this enemy is: 0 for queue spawns, parent + 1 for death spawns.
+var split_generation: int = 0
 
 var _knockback: Vector2 = Vector2.ZERO
 var _knockback_time_left: float = 0.0
 var _is_dying: bool = false
 var _base_scale: Vector2 = Vector2.ONE
 var _tween: Tween
+var _speed_factors: Dictionary[StringName, float] = {}
+var _spawn_done: bool = false
+var _stretch: float = 1.0
 
 const _HIT_FLASH_SHADER: Shader = preload("res://core/vfx/hit_flash.gdshader")
+## Flash colour of a hit that armor reduced.
+const _ARMOR_FLASH_COLOR: Color = Color(0.55, 0.7, 0.9)
 
 @onready var _sprite: Sprite2D = $Sprite2D
 
@@ -46,10 +56,57 @@ func _physics_process(delta: float) -> void:
 
 ## Apply damage to this enemy's health.
 func take_damage(amount: float) -> void:
+	if _is_dying or amount <= 0.0:
+		return
+	var flash_color: Color = Color.WHITE
+	if stats.armor > 0.0:
+		var reduced: float = maxf(amount - stats.armor, amount * stats.min_damage_share)
+		if reduced < amount:
+			flash_color = _ARMOR_FLASH_COLOR
+		amount = reduced
+	Flash.play(_sprite, flash_duration, flash_color)
+	damaged.emit(amount)
+	health.take_damage(amount)
+
+
+## Restore hp up to [member EnemyStats.max_health]. Does nothing while dying.
+func heal(amount: float) -> void:
 	if _is_dying:
 		return
-	Flash.play(_sprite, flash_duration)
-	health.take_damage(amount)
+	health.heal(amount, float(stats.max_health))
+
+
+## Current movement speed (px/s): stats speed times the product of all speed factors.
+func get_speed() -> float:
+	var speed: float = stats.speed
+	for factor: float in _speed_factors.values():
+		speed *= factor
+	return speed
+
+
+## Set the speed factor owned by [param source] (replaces that source's previous factor).
+## Factors of different sources multiply, so a dash and a slow combine.
+func set_speed_factor(source: StringName, factor: float) -> void:
+	_speed_factors[source] = factor
+
+
+## Remove the speed factor owned by [param source].
+func clear_speed_factor(source: StringName) -> void:
+	_speed_factors.erase(source)
+
+
+## Flash the sprite with [param color] and fade back over [param duration] seconds.
+func flash(color: Color, duration: float) -> void:
+	if _is_dying:
+		return
+	Flash.play(_sprite, duration, color)
+
+
+## Stretch the sprite along the travel direction by [param factor] (1.0 = normal).
+## Applied only after the spawn-in tween and never while dying, so it cannot fight those tweens.
+func set_stretch(factor: float) -> void:
+	_stretch = factor
+	_apply_stretch()
 
 
 ## True once the enemy started dying; it can no longer be hurt or targeted.
@@ -95,6 +152,18 @@ func _current_knockback() -> Vector2:
 	return _knockback * (_knockback_time_left / knockback_decay_time)
 
 
+func _apply_stretch() -> void:
+	if _is_dying or not _spawn_done:
+		return
+	# The sprite is rotated 90 degrees, so its local y axis is the travel axis.
+	_sprite.scale = _base_scale * Vector2(1.0, _stretch)
+
+
+func _on_spawn_finished() -> void:
+	_spawn_done = true
+	_apply_stretch()
+
+
 func _play_spawn_in() -> void:
 	_base_scale = _sprite.scale
 	_sprite.scale = _base_scale * 0.3
@@ -103,6 +172,7 @@ func _play_spawn_in() -> void:
 	_tween = create_tween().set_parallel(true)
 	_tween.tween_property(_sprite, "scale", _base_scale, spawn_duration)
 	_tween.tween_property(_sprite, "modulate:a", 1.0, spawn_duration)
+	_tween.chain().tween_callback(_on_spawn_finished)
 
 
 func _kill_tween() -> void:

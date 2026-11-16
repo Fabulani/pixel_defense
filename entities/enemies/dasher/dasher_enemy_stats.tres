@@ -1,0 +1,10 @@
+[gd_resource type="Resource" script_class="EnemyStats" format=3]
+
+[ext_resource type="Script" uid="uid://c2pkska5ungt1" path="res://entities/enemies/components/stats/enemy_stats.gd" id="1_stats"]
+
+[resource]
+script = ExtResource("1_stats")
+speed = 60.0
+max_health = 2
+vfx_color = Color(0.95, 0.37, 0.20, 1)
+metadata/_custom_type_script = "uid://c2pkska5ungt1"
