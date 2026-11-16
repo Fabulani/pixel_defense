@@ -7,6 +7,7 @@
 script = ExtResource("1_kbb3g")
 
 [node name="Sprite2D" type="Sprite2D" parent="." unique_id=839354663]
+unique_name_in_owner = true
 texture = ExtResource("3_ggh3e")
 
 [node name="SpawnTimer" type="Timer" parent="." unique_id=1347065656]

@@ -1,18 +1,19 @@
 class_name EnemySpawner extends Node2D
 
 signal spawning_complete
-signal wave_cleared
 signal alive_count_changed(count: int)
 ## Emitted when an enemy died, with where, its coin drop and its effect colour.
 signal enemy_died(death_position: Vector2, coins: int, color: Color)
 
-@export var default_spawn_delay: float = 1.0
+## The spawner takes part from the wave with this index (0-based; the banner shows index + 1).
+@export var first_wave: int = 0
 
 var target_position: Vector2 = Vector2.ZERO
 
 var _spawn_queue: Array[PackedScene] = []
 var _spawn_queue_index: int = 0
 var _spawn_delay: float = 0.0
+var _is_active: bool = true
 var _alive_count: int = 0
 var _is_spawning: bool = false
 ## Death children counted as alive but still waiting for their deferred add_child.
@@ -20,24 +21,50 @@ var _pending_children: Array[Enemy] = []
 
 ## Death spawns deeper than this are refused (guards split loops).
 const MAX_SPLIT_DEPTH: int = 3
+## Smallest timer delay in seconds (Timer errors on wait_time <= 0).
+const MIN_DELAY: float = 0.01
+## Alpha of the flag while the spawner is not open yet.
+const INACTIVE_ALPHA: float = 0.35
 
 @onready var spawn_timer: Timer = %SpawnTimer
+@onready var _sprite: Sprite2D = %Sprite2D
 
 
 func _ready() -> void:
 	spawn_timer.timeout.connect(_on_spawn_timer_timeout)
-	_spawn_delay = default_spawn_delay
-	spawn_timer.wait_time = _spawn_delay
 
 
-## Starts spawning [param spawn_list] one enemy per timer tick.
-## Note: this works for a single wave, but can't spawn
-## multiple waves concurrently (a la Dungeon Warfare style).
-func start_spawning(spawn_list: Array[PackedScene]) -> void:
+## Starts spawning [param spawn_list]: the first enemy after [param first_delay] seconds,
+## then one every [param spawn_delay] seconds. Pacing is owned by [WaveManager].
+## Replaces any queue still running.
+func start_spawning(spawn_list: Array[PackedScene], spawn_delay: float, first_delay: float) -> void:
 	_spawn_queue.assign(spawn_list)
 	_spawn_queue_index = 0
+	_spawn_delay = maxf(MIN_DELAY, spawn_delay)
 	_is_spawning = true
-	spawn_timer.start()
+	# Timer.start(time) overwrites wait_time, so the follow-up delay is set per tick.
+	spawn_timer.start(maxf(MIN_DELAY, first_delay))
+
+
+## Whether a queue is still being spawned.
+func is_spawning() -> bool:
+	return _is_spawning
+
+
+## Number of enemies of this spawner that are alive (including pending death children).
+func get_alive_count() -> int:
+	return _alive_count
+
+
+## Whether the spawner is open for the current wave (visual state set by [method set_active]).
+func is_active() -> bool:
+	return _is_active
+
+
+## Visual only: draws the flag faded while the spawner is not open yet.
+func set_active(active: bool) -> void:
+	_is_active = active
+	_sprite.modulate.a = 1.0 if active else INACTIVE_ALPHA
 
 
 ## Spawns the next enemy in the queue, or finishes spawning when the queue is empty.
@@ -46,22 +73,12 @@ func spawn_next() -> void:
 		spawn_timer.stop()
 		_is_spawning = false
 		spawning_complete.emit()
-		if _alive_count == 0:
-			wave_cleared.emit()
-		# Next time, spawn faster. For fun.
-		speedup_spawning()
 		return
 
 	var index: int = _spawn_queue_index
 	_spawn_queue_index += 1
 
 	_create_enemy(_spawn_queue[index], global_position, false)
-
-
-## Shortens the delay between spawns for the next wave.
-func speedup_spawning() -> void:
-	_spawn_delay = maxf(0.01, _spawn_delay - 0.1)
-	spawn_timer.wait_time = _spawn_delay
 
 
 ## Instantiates [param scene] at [param world_position] and counts it as alive.
@@ -125,9 +142,9 @@ func _on_enemy_died(enemy: Enemy) -> void:
 func _on_enemy_tree_exiting() -> void:
 	_alive_count = maxi(0, _alive_count - 1)
 	alive_count_changed.emit(_alive_count)
-	if _alive_count == 0 and not _is_spawning:
-		wave_cleared.emit()
 
 
 func _on_spawn_timer_timeout() -> void:
 	spawn_next()
+	if _is_spawning:
+		spawn_timer.start(_spawn_delay)
