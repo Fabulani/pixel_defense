@@ -6,4 +6,5 @@
 script = ExtResource("1_hmfid")
 speed = 50.0
 max_health = 3
+vfx_color = Color(0.75, 0.75, 0.78, 1)
 metadata/_custom_type_script = "uid://c2pkska5ungt1"

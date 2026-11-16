@@ -10,6 +10,7 @@ class_name Main extends Node2D
 @onready var start_menu: StartMenu = $StartMenu
 @onready var highlight_tile: HighlightTile = $HighlightTile
 @onready var tower_menu: TowerMenu = $TowerMenu
+@onready var vfx: VfxManager = $VfxManager
 
 
 func _ready() -> void:
@@ -27,6 +28,10 @@ func _ready() -> void:
 	current_level.lost.connect(_on_level_lost)
 	current_level.won.connect(_on_level_won)
 	current_level.wave_started.connect(hud.set_wave)
+	current_level.wave_started.connect(hud.show_wave_banner)
+	current_level.bullet_fired.connect(_on_level_bullet_fired)
+	current_level.bullet_hit.connect(_on_level_bullet_hit)
+	current_level.enemy_died.connect(_on_level_enemy_died)
 	current_level.enemy_count_changed.connect(hud.set_enemy_count)
 	building_manager.tower_built.connect(current_level.register_tower)
 	building_manager.tower_built.connect(_on_building_manager_tower_built)
@@ -56,8 +61,22 @@ func _unhandled_input(event: InputEvent) -> void:
 
 
 func _on_level_lost() -> void:
+	camera.shake(0.7)
 	_close_tower_ui()
 	game_end_screen.show_defeat(current_level.waves_survived, CurrencyManager.coins)
+
+
+func _on_level_bullet_fired(data: ProjectileData) -> void:
+	vfx.play_muzzle(data.origin, data.angle, data.color)
+
+
+func _on_level_bullet_hit(hit_position: Vector2, direction: Vector2, data: ProjectileData) -> void:
+	vfx.play_impact(hit_position, direction, data.color)
+
+
+func _on_level_enemy_died(death_position: Vector2, coins: int, color: Color) -> void:
+	vfx.play_death(death_position, color)
+	vfx.play_coin_popup(death_position, coins)
 
 
 func _on_level_won() -> void:
@@ -73,7 +92,9 @@ func _on_start_menu_start_requested() -> void:
 	current_level.start()
 
 
-func _on_building_manager_tower_built(_tower: Tower, _cell: Vector2i) -> void:
+func _on_building_manager_tower_built(tower: Tower, _cell: Vector2i) -> void:
+	tower.play_placed()
+	vfx.play_tower_built(tower.global_position)
 	input_controller.cancel_preview()
 
 
@@ -96,6 +117,7 @@ func _on_input_controller_tower_deselected() -> void:
 
 
 func _on_building_manager_tower_upgraded(tower: Tower) -> void:
+	vfx.play_tower_upgraded(tower.global_position)
 	if tower_menu.get_tower() != tower:
 		return
 	tower_menu.refresh()

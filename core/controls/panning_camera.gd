@@ -2,6 +2,7 @@ class_name PanningCamera extends Camera2D
 
 @onready var touch_controls: TouchControls = $TouchControls
 @onready var kbm_controls: KBMControls = $KBMControls
+@onready var _camera_shake: CameraShake = $CameraShake
 
 @export_group("Smoothing")
 @export_range(0.0, 0.5, 0.01) var pan_smoothing: float = 0.2
@@ -115,3 +116,8 @@ func zoom_by(amount: float) -> void:
 	smooth_damp.zoom_goal = (smooth_damp.zoom_goal + amount * Vector2.ONE).clamp(
 		min_zoom * Vector2.ONE, max_zoom * Vector2.ONE
 	)
+
+
+## Add screen-shake trauma ([param amount] is clamped to 0..1).
+func shake(amount: float) -> void:
+	_camera_shake.add_trauma(amount)

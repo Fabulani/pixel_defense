@@ -25,8 +25,9 @@ godot -e                             # open the editor
 Feature folders: a script, its scene, its `.tres` data and its sprites live together. There is no global `assets/` or `scenes/` folder any more; do not reintroduce one.
 
 ```
-core/controls/   PanningCamera, TouchControls, KBMControls, SmoothDamp, InputController
-core/managers/   building, currency, pathfinding, projectile, wave
+core/controls/   PanningCamera, CameraShake, TouchControls, KBMControls, SmoothDamp, InputController
+core/managers/   building, currency, pathfinding, projectile, vfx, wave
+core/vfx/        Flash helper and hit_flash.gdshader (shared by enemies and towers)
 core/game_data.gd
 entities/        bases, enemies (+ components), projectiles, spawners, towers (+ upgrades, hue_swap.gdshader)
 levels/          level.tscn (TileMapLayer + tileset) and level.gd
@@ -46,14 +47,15 @@ Main
 ├─ Level              TileMapLayer, PathfindingPreview (Line2D), PlayerBase,
 │                     EnemySpawner, WaveManager, ProjectileManager
 ├─ BuildingManager    towers are added as its children
+├─ VfxManager         one-shot particle bursts and coin pop-ups, drawn above towers
 ├─ InputController
 ├─ TowerPreview, HighlightTile
 ├─ TowerMenu          CanvasLayer with upgrade / major / sell buttons above the selected tower
-├─ PanningCamera      children: TouchControls, KBMControls
+├─ PanningCamera      children: TouchControls, KBMControls, CameraShake
 └─ HUD, GameEndScreen, StartMenu, MobileDisplayHandler
 ```
 
-**`main/main.gd` is the composition root.** It injects cross-scene dependencies into `@export` vars and connects all cross-scene signals in `_ready()`. Siblings do not look each other up; new cross-scene wiring goes in `Main._ready()`. `Level` is a facade: Main and `BuildingManager` use its signals (`wave_started`, `enemy_count_changed`, `lost`, `won`) and methods (`start()`, `register_tower()`, `is_cell_buildable()`, `would_block_path()`) and never reach into its children. `Level` reports only the first outcome (`lost` or `won`). Inside a scene, dependencies are `@export` node references or `%UniqueName` / `@onready`.
+**`main/main.gd` is the composition root.** It injects cross-scene dependencies into `@export` vars and connects all cross-scene signals in `_ready()`. Siblings do not look each other up; new cross-scene wiring goes in `Main._ready()`. `Level` is a facade: Main and `BuildingManager` use its signals (`wave_started`, `enemy_count_changed`, `lost`, `won`, and the effect signals `bullet_fired`, `bullet_hit`, `enemy_died`) and methods (`start()`, `register_tower()`, `is_cell_buildable()`, `would_block_path()`) and never reach into its children. `Level` reports only the first outcome (`lost` or `won`). Inside a scene, dependencies are `@export` node references or `%UniqueName` / `@onready`.
 
 **Input flow.** `TouchControls` and `KBMControls` turn raw events into signals (`tapped`, `clicked`, `pan_changed`, `pinch_changed`, `zoomed`, …) in `_unhandled_input`. `PanningCamera` consumes pan/zoom and smooths them through `SmoothDamp` (a `Resource` holding goal + spring state). `InputController` consumes tap/click and converts screen position to a tile cell. Both paths are always connected. `KBMControls` drops mouse events emulated from touch (`device == InputEvent.DEVICE_ID_EMULATION`), so a touch is handled once. A touch is a `tapped` only if it stayed under the drag threshold (3 mm, converted to viewport units per gesture), never had a second finger and was not cancelled; `clicked` needs a press and release within 8 px with no panning.
 
@@ -66,6 +68,16 @@ Main
 **Tower levels.** `Tower.level` is 0..5 (`TowerStats.MAX_LEVEL`). Effective stats (damage, fire rate, range) = base stats x (1 + 0.1 x level) x the major multiplier; `TowerStats` (base) is never mutated, `Tower._effective_stats` is a copy rebuilt in `_apply_upgrades()` and pushed to `TurretComponent.configure()`. Upgrades 1-4 cost `TowerStats.cost x next level`; the 5th is a `MajorUpgrade` resource (`entities/towers/upgrades/`: `rapid_fire`, `long_shot`, `big_boy`; the tower scene lists the choices) costing `major_cost` (50). Levels 1-4 show the level as a number (`%LevelLabel`, Kenney font 32 px at scale 0.2, white with black outline, top-right corner of the tower; hidden at 0 and 5); a major sets the turret texture (drawn at `MajorUpgrade.turret_scale`, 0.8, via `TurretComponent.set_appearance()`; the normal cannon is 1.0), a hue-swap `ShaderMaterial` (`hue_swap.gdshader`) on base/turret/bullet (all three majors tint their bullet; `rapid_fire` and `big_boy` also swap the bullet texture) and the bullet texture. `Tower.total_spent` is kept by `BuildingManager`; selling refunds all of it.
 
 **Combat.** `TurretComponent` tracks `Enemy` bodies in its detection area and emits `shot(origin, angle)` on its reload timer. `Tower` wraps that in a `ProjectileData` (`RefCounted`, carries damage, penetration and an optional bullet texture/material from the major upgrade) and re-emits `shot`. `ProjectileManager` instantiates the `Bullet`. Bullets damage anything with a `take_damage` method and die after `penetration` hits or on their lifetime timer.
+
+**Game feel.** All effects are visual only and must not change tower stats, fire timing or bullet origin.
+
+- *Wiring.* `Bullet.hit` → `ProjectileManager.bullet_hit` / `bullet_fired`, and `EnemySpawner.enemy_died`, are relayed by `Level`; `Main` connects them, `tower_built`, `tower_upgraded`, `lost` and `wave_started` to `VfxManager.play_*`, `Tower.play_placed()`, `PanningCamera.shake()` and `HUD.show_wave_banner()`.
+- *Particles.* `VfxManager.make_particles()` (static) is the only place that constructs particle nodes (`GPUParticles2D`, 1 px texture, alpha fade ramp), so swapping to `CPUParticles2D` is a one-function change. Bursts are one-shot, freed on `finished` (plus a safety timer), capped at `max_live_bursts`; pop-ups at `max_live_popups`. `VfxManager` runs with `PROCESS_MODE_ALWAYS` so effects finish behind the end screen. Bullets build their trail with the same factory and hand it to their parent on death so it fades out.
+- *Flash.* `Flash.play(sprite, duration)` tweens the `flash` uniform that both `hit_flash.gdshader` and `hue_swap.gdshader` have. Enemies own a permanent hit-flash material; towers without a major get a temporary one that is removed afterwards. Do not flash with overbright `modulate` (lost on Web, and it feeds the hue-swap saturation test).
+- *Enemy death.* `Enemy.die()` is idempotent (`is_dying()`): it emits `died` once (coins are paid then), stops pathing, sets `collision_layer = 0` deferred, leaves group `"enemies"`, fades and shrinks the sprite to half its normal scale over 0.25 s, then frees. The HUD count, `wave_cleared` and the win therefore lag the kill by the fade. Bullets and `TurretComponent` ignore dying enemies.
+- *Knockback.* `ProjectileData.knockback` = `TowerStats.knockback` × `MajorUpgrade.knockback_multiplier`; `Enemy.apply_knockback()` scales it by `EnemyStats.knockback_scale`, caps it, and `Pathfinding.move(extra_velocity)` adds it after the path velocity (rotation untouched), decaying over 0.12 s.
+- *Tower.* Recoil tweens only `%Turret`'s `Sprite2D.offset` (divided by the cannon scale), never `position`, `rotation` or `scale`. The placement squash tweens the base and cannon sprite scales back to their stored target scale; `set_appearance()` kills it. Recoil, knockback and trail (`trail_amount`, `trail_lifetime`, `trail_particle_scale`, colour = bullet tint) differ per major via `MajorUpgrade` exports.
+- *Camera shake.* `CameraShake` (always processing) writes only `Camera2D.offset` (trauma² × noise ÷ zoom); `position` and `zoom` belong to `SmoothDamp`. It is triggered only on loss.
 
 **Data.** Tunables are `Resource` subclasses saved as `.tres` beside the scene: `TowerStats`, `EnemyStats`, `Drops`. `Health` is also a `Resource`. Enemy variants (`basic`, `fast`, `heavy`) are inherited scenes of `entities/enemies/enemy.tscn` with their own stats/drops `.tres`.
 
@@ -116,3 +128,8 @@ Open items:
 - `core/managers/wave/default_waves.tres` and its reference in `wave_manager.tscn` were written by hand and have no `uid://`; re-save them once in the editor.
 - `export_presets.cfg` `application/console_wrapper_icon` points at `uid://bgfcsb8hwikmn`, which does not exist.
 - `Level.waves_survived` is the number of waves *started*.
+- Game-feel effects are checked by headless scenario runs and by the author playing on PC. Not yet checked: Web export (GPU particles and trails on the Compatibility renderer, first-emission stutter), Android frame rate in late waves, a phone screen. All effect values are first-pass, not tuned.
+- Every bullet, muzzle flash and burst creates its own `GPUParticles2D` and `ParticleProcessMaterial`; nothing is pooled or cached. Measure on a device before optimising.
+- There is no sound, and no setting to reduce flashes or screen shake.
+- Dying enemies freeze mid-fade behind the win/loss screen (the tree is paused; only `VfxManager`, `CameraShake` and the wave banner keep running).
+- Enemies removed by the base (`PlayerBase` frees them) get no death effect.

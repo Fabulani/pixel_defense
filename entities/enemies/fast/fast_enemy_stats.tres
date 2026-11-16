@@ -6,4 +6,5 @@
 script = ExtResource("1_1cmjy")
 speed = 100.0
 max_health = 1
+vfx_color = Color(0.35, 0.6, 1, 1)
 metadata/_custom_type_script = "uid://c2pkska5ungt1"

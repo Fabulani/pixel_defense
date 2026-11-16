@@ -4,6 +4,9 @@ signal wave_started(wave_index: int)
 signal enemy_count_changed(count: int)
 signal lost
 signal won
+signal bullet_fired(data: ProjectileData)
+signal bullet_hit(hit_position: Vector2, direction: Vector2, data: ProjectileData)
+signal enemy_died(death_position: Vector2, coins: int, color: Color)
 
 @export var player_base: PlayerBase
 @export var enemy_spawner: EnemySpawner
@@ -33,6 +36,9 @@ func _ready() -> void:
 	wave_manager.wave_started.connect(_on_wave_manager_wave_started)
 	wave_manager.all_waves_done.connect(_on_wave_manager_all_waves_done)
 	enemy_spawner.alive_count_changed.connect(_on_enemy_spawner_alive_count_changed)
+	enemy_spawner.enemy_died.connect(_on_enemy_spawner_enemy_died)
+	projectile_manager.bullet_fired.connect(_on_projectile_manager_bullet_fired)
+	projectile_manager.bullet_hit.connect(_on_projectile_manager_bullet_hit)
 	player_base.destroyed.connect(_on_player_base_destroyed)
 	PathfindingManager.grid_changed.connect(_on_pathfinding_manager_grid_changed)
 
@@ -94,6 +100,18 @@ func _on_wave_manager_all_waves_done() -> void:
 
 func _on_enemy_spawner_alive_count_changed(count: int) -> void:
 	enemy_count_changed.emit(count)
+
+
+func _on_enemy_spawner_enemy_died(death_position: Vector2, coins: int, color: Color) -> void:
+	enemy_died.emit(death_position, coins, color)
+
+
+func _on_projectile_manager_bullet_fired(data: ProjectileData) -> void:
+	bullet_fired.emit(data)
+
+
+func _on_projectile_manager_bullet_hit(hit_position: Vector2, direction: Vector2, data: ProjectileData) -> void:
+	bullet_hit.emit(hit_position, direction, data)
 
 
 func _on_player_base_destroyed() -> void:

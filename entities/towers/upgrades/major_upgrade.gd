@@ -15,6 +15,11 @@ const _HUE_SWAP_SHADER: Shader = preload("res://entities/towers/hue_swap.gdshade
 @export var turret_tint: Color = Color(1, 1, 1, 0)  ## Hue for the cannon; alpha 0 means no tint
 @export var bullet_texture: Texture2D  ## Replaces the bullet sprite; null keeps the default
 @export var bullet_tint: Color = Color(1, 1, 1, 0)  ## Hue for the bullet; alpha 0 means no tint
+@export var knockback_multiplier: float = 1.0  ## Multiplies the tower's knockback
+@export var recoil_multiplier: float = 1.0  ## Multiplies the tower's cannon recoil
+@export var trail_amount: int = 6  ## Particles in the bullet trail
+@export var trail_lifetime: float = 0.15  ## Lifetime of the bullet trail particles in seconds
+@export var trail_particle_scale: float = 1.0  ## Size multiplier of the bullet trail particles
 
 
 ## Build a hue-swap material for [param tint], or null when the tint is disabled (alpha 0).

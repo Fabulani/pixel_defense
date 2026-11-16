@@ -13,3 +13,6 @@ turret_texture = ExtResource("3_2mtrr")
 base_tint = Color(0.8784314, 0.2509804, 0.18431373, 1)
 bullet_texture = ExtResource("1_wl1aa")
 bullet_tint = Color(0.8784314, 0.2509804, 0.18431373, 1)
+knockback_multiplier = 0.5
+trail_amount = 4
+trail_lifetime = 0.1
