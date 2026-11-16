@@ -11,6 +11,7 @@ signal upgraded
 @export var placed_squash_time: float = 0.15  ## Seconds of the squash after building
 @export var upgrade_flash_time: float = 0.15  ## Seconds of the white flash after an upgrade
 
+var tower_type: TowerType = null  ## Kind this tower was built from; set by BuildingManager before it enters the tree
 var level: int = 0  ## Current level, 0..TowerStats.MAX_LEVEL
 var major: MajorUpgrade = null  ## Set when the tower reaches MAX_LEVEL
 var total_spent: int = 0  ## Coins spent on this tower; maintained by BuildingManager, do not change it here

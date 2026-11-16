@@ -1,6 +1,6 @@
 class_name InputController extends Node
 
-signal build_requested(cell_position: Vector2i)
+signal build_requested(cell_position: Vector2i, type: TowerType)
 signal placement_invalid(cell_position: Vector2i)
 signal tower_selected(tower: Tower)
 signal tower_deselected()
@@ -12,6 +12,7 @@ signal tower_deselected()
 @export var building_manager: BuildingManager
 
 var _preview_cell: Vector2i = Vector2i(-1, -1)
+var _build_type: TowerType = null
 
 
 func setup() -> void:
@@ -23,6 +24,14 @@ func setup() -> void:
 		touch_controls.tapped.connect(_on_touch_controls_tapped)
 	if not kbm_controls.clicked.is_connected(_on_kbm_controls_clicked):
 		kbm_controls.clicked.connect(_on_kbm_controls_clicked)
+
+
+## Select the tower kind the next taps build. Null clears it. Any change hides a showing build ghost;
+## it leaves the range ring of a selected tower alone.
+func set_build_type(type: TowerType) -> void:
+	_build_type = type
+	if _preview_cell != Vector2i(-1, -1):
+		cancel_preview()
 
 
 func _on_touch_controls_tapped(position: Vector2) -> void:
@@ -42,8 +51,11 @@ func _handle_cell_input(cell: Vector2i) -> void:
 
 	tower_deselected.emit()
 
+	if _build_type == null:
+		return
+
 	if _preview_cell == cell:
-		build_requested.emit(cell)
+		build_requested.emit(cell, _build_type)
 		# Ghost stays until build is confirmed or until user taps a different tile.
 		return
 
@@ -53,7 +65,7 @@ func _handle_cell_input(cell: Vector2i) -> void:
 		return
 
 	_preview_cell = cell
-	tower_preview.show_at(cell)
+	tower_preview.show_at(cell, _build_type)
 
 
 func cancel_preview() -> void:

@@ -1,0 +1,17 @@
+[gd_resource type="Resource" script_class="TowerType" format=3]
+
+[ext_resource type="Script" path="res://entities/towers/tower_type.gd" id="1_tt"]
+[ext_resource type="PackedScene" uid="uid://br8jx6eys5877" path="res://entities/towers/tower.tscn" id="2_scene"]
+[ext_resource type="Resource" uid="uid://sx48riltl5xa" path="res://entities/towers/stats/tower_stats.tres" id="3_stats"]
+[ext_resource type="Texture2D" uid="uid://dv637d1ugre8m" path="res://entities/towers/tower_base.png" id="4_base"]
+[ext_resource type="Texture2D" uid="uid://ulqmo2r1ivep" path="res://entities/towers/tower_turret.png" id="5_turret"]
+
+[resource]
+script = ExtResource("1_tt")
+id = &"basic"
+display_name = "Cannon"
+scene = ExtResource("2_scene")
+stats = ExtResource("3_stats")
+base_texture = ExtResource("4_base")
+turret_texture = ExtResource("5_turret")
+turret_scale = 1.0

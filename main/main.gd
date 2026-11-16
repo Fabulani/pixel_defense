@@ -5,6 +5,7 @@ class_name Main extends Node2D
 @onready var input_controller: InputController = $InputController
 @onready var tower_preview: TowerPreview = $TowerPreview
 @onready var hud: HUD = $HUD
+@onready var build_bar: BuildBar = $BuildBar
 @onready var camera: PanningCamera = $PanningCamera
 @onready var game_end_screen: GameEndScreen = $GameEndScreen
 @onready var start_menu: StartMenu = $StartMenu
@@ -50,6 +51,11 @@ func _ready() -> void:
 	building_manager.tower_upgraded.connect(_on_building_manager_tower_upgraded)
 	building_manager.tower_sold.connect(_on_building_manager_tower_sold)
 	building_manager.upgrade_denied.connect(highlight_tile.flash_denied)
+
+	# Build bar
+	build_bar.set_tower_types(building_manager.tower_types)
+	build_bar.tower_type_selected.connect(_on_build_bar_tower_type_selected)
+	build_bar.tower_type_deselected.connect(_on_build_bar_tower_type_deselected)
 
 	hud.set_wave(current_level.waves_survived)
 	hud.set_enemy_count(0)
@@ -116,6 +122,18 @@ func _on_input_controller_tower_deselected() -> void:
 	tower_preview.hide_preview()
 
 
+func _on_build_bar_tower_type_selected(type: TowerType) -> void:
+	# Closing the tower UI also hides the ring; cancel_preview in set_build_type hides the ghost.
+	if tower_menu.get_tower() != null:
+		tower_menu.hide_menu()
+		tower_preview.hide_preview()
+	input_controller.set_build_type(type)
+
+
+func _on_build_bar_tower_type_deselected() -> void:
+	input_controller.set_build_type(null)
+
+
 func _on_building_manager_tower_upgraded(tower: Tower) -> void:
 	vfx.play_tower_upgraded(tower.global_position)
 	if tower_menu.get_tower() != tower:
@@ -133,3 +151,4 @@ func _on_building_manager_tower_sold(tower: Tower, cell_position: Vector2i) -> v
 func _close_tower_ui() -> void:
 	tower_menu.hide_menu()
 	input_controller.cancel_preview()
+	build_bar.deselect()
