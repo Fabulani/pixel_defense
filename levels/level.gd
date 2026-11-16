@@ -41,8 +41,9 @@ func _ready() -> void:
 	# Starting currency
 	CurrencyManager.coins = 5
 
-	if use_generated_map:
+	if use_generated_map and not GameData.legacy_map:
 		_generate_map()
+	GameData.map_seed = map_seed
 
 	PathfindingManager.setup(tile_map_layer)
 	if enemy_spawners.is_empty():
@@ -102,8 +103,10 @@ func would_block_path(cell_position: Vector2i) -> bool:
 	return false
 
 
-## Seed for the next generated map.
+## Seed for the next generated map: the requested one, or a random one.
 func _pick_seed() -> int:
+	if GameData.requested_seed >= 0:
+		return GameData.requested_seed
 	return randi()
 
 

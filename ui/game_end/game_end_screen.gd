@@ -10,6 +10,7 @@ const _VICTORY_COLOR: Color = Color(0, 0.5, 1)
 @onready var _title_label: Label = %TitleLabel
 @onready var _wave_label: Label = %WaveLabel
 @onready var _coins_label: Label = %CoinsLabel
+@onready var _seed_label: Label = %SeedLabel
 @onready var _restart_button: Button = %RestartButton
 
 
@@ -19,22 +20,24 @@ func _ready() -> void:
 
 
 ## Show the defeat screen and pause the game.
-func show_defeat(waves_survived: int, coins: int) -> void:
-	_show_end(_DEFEAT_TITLE, _DEFEAT_COLOR, waves_survived, coins)
+func show_defeat(waves_survived: int, coins: int, map_seed: int) -> void:
+	_show_end(_DEFEAT_TITLE, _DEFEAT_COLOR, waves_survived, coins, map_seed)
 
 
 ## Show the victory screen and pause the game.
-func show_victory(waves_survived: int, coins: int) -> void:
-	_show_end(_VICTORY_TITLE, _VICTORY_COLOR, waves_survived, coins)
+func show_victory(waves_survived: int, coins: int, map_seed: int) -> void:
+	_show_end(_VICTORY_TITLE, _VICTORY_COLOR, waves_survived, coins, map_seed)
 
 
-func _show_end(title: String, color: Color, waves_survived: int, coins: int) -> void:
+func _show_end(title: String, color: Color, waves_survived: int, coins: int, map_seed: int) -> void:
 	if not is_inside_tree():
 		return
 	_title_label.text = title
 	_title_label.add_theme_color_override("font_color", color)
 	_wave_label.text = "wave %d" % waves_survived
 	_coins_label.text = str(coins)
+	_seed_label.text = "seed %d" % map_seed
+	_seed_label.visible = map_seed != 0
 	show()
 	get_tree().paused = true
 
