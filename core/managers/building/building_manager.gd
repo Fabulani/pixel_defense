@@ -23,7 +23,7 @@ func place_tower(cell_position: Vector2i) -> void:
 	var new_tower: Tower = _TOWER_SCENE.instantiate() as Tower
 
 	if not CurrencyManager.spend(new_tower.stats.cost):
-		new_tower.queue_free()
+		new_tower.free()
 		tower_placement_denied.emit()
 		return
 
