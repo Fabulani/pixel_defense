@@ -979,10 +979,10 @@ custom_data_layer_1/name = "movement_cost"
 custom_data_layer_1/type = 2
 sources/0 = SubResource("TileSetAtlasSource_xb4v1")
 
-[node name="Level" type="Node2D" unique_id=1663716660 node_paths=PackedStringArray("player_base", "enemy_spawner", "wave_manager", "projectile_manager", "pathfinding_preview")]
+[node name="Level" type="Node2D" unique_id=1663716660 node_paths=PackedStringArray("player_base", "enemy_spawners", "wave_manager", "projectile_manager", "pathfinding_preview")]
 script = ExtResource("1_377w7")
 player_base = NodePath("PlayerBase")
-enemy_spawner = NodePath("EnemySpawner")
+enemy_spawners = [NodePath("EnemySpawner"), NodePath("EnemySpawner2")]
 wave_manager = NodePath("WaveManager")
 projectile_manager = NodePath("ProjectileManager")
 pathfinding_preview = NodePath("PathfindingPreview")
@@ -1003,7 +1003,10 @@ position = Vector2(488, 215)
 [node name="EnemySpawner" parent="." unique_id=1573003688 instance=ExtResource("5_d4w6o")]
 position = Vector2(41, 151)
 
-[node name="WaveManager" parent="." unique_id=1967040178 node_paths=PackedStringArray("enemy_spawner") instance=ExtResource("5_mbbpy")]
-enemy_spawner = NodePath("../EnemySpawner")
+[node name="EnemySpawner2" parent="." unique_id=1573003689 instance=ExtResource("5_d4w6o")]
+position = Vector2(680, 680)
+first_wave = 2
+
+[node name="WaveManager" parent="." unique_id=1967040178 instance=ExtResource("5_mbbpy")]
 
 [node name="ProjectileManager" parent="." unique_id=534807489 instance=ExtResource("6_d4w6o")]

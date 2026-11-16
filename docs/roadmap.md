@@ -14,15 +14,9 @@ Left: the obstacle breaker (issue #11), aura / support enemies, a boss, health b
 
 ## 3. Multiple spawners
 
-Current state (checked 2026-11-16): **not supported.** A second `EnemySpawner` node in the level would be ignored. What assumes a single spawner:
+Built (placeholders for position and timing): `Level.enemy_spawners` holds any number of spawners; the level has two. `WaveManager` deals each wave round-robin to the spawners that are open (`EnemySpawner.first_wave`, the second one opens at banner wave 3) and owns the spawn pacing, so the whole wave spawns at the old single-spawner rate. The next-wave timer waits for every spawner; the HUD count and the win use the total over all spawners. Closed spawners are drawn faded and have no path preview line. `Level.would_block_path()` checks every spawner, so a tower cannot wall off a closed one either.
 
-- `Level` has one `enemy_spawner` export; it sets its target, relays its signals and draws one path preview line.
-- `Level.would_block_path()` only checks the path from that one spawner, so a tower could wall off a second one.
-- `WaveManager` hands each wave to one spawner and starts the next-wave timer on that spawner's `spawning_complete`.
-- Each spawner keeps its own alive count and emits `wave_cleared` itself, so the HUD count and the win condition would need one aggregate.
-- The spawn-delay speed-up is per spawner.
-
-Enemies themselves are fine: they only need a target position and re-path on `grid_changed`.
+Left: per-spawner wave composition (e.g. a spawner that only sends dashers), a stronger tell when a spawner opens, handling enemies that get walled in mid-path (they re-path on `grid_changed`, but nothing checks that a path still exists), a human playtest of the placement and timing.
 
 ## 4. Procedural map generation
 
