@@ -8,7 +8,9 @@ A build bar and a multi-kind tower harness (`TowerType`, `BuildBar`) were built 
 
 ## 2. Enemy variety
 
-Plan and design more enemy kinds with different effects. Today there are three (`basic`, `fast`, `heavy`) that differ only in stats. Not designed yet. Open issue #11 (an enemy that breaks through obstacles) belongs here.
+First batch built (all values are placeholders): `armored` (flat armor, hits flash steel blue), `regenerator` (heals after 1.5 s without damage, green flash), `splitter` (spawns 3 `mini` on death), `mini` (only from splitters), `dasher` (periodic x3 speed burst). New mechanisms: armor stat, `Health.heal`, per-source speed factors on `Enemy` (also the hook for slowing towers), coloured flash, ability components, death spawns. Waves use them from wave 4 to 12 (wave numbers as on the banner, which shows the internal wave index + 1).
+
+Left: the obstacle breaker (issue #11), aura / support enemies, a boss, health bars so armor and regeneration are readable.
 
 ## 3. Multiple spawners
 

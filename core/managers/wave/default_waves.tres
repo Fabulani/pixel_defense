@@ -5,6 +5,10 @@
 [ext_resource type="Script" uid="uid://cvj1rwtrcol72" path="res://core/managers/wave/wave_enemy.gd" id="3_wenemy"]
 [ext_resource type="PackedScene" uid="uid://dnwd6vi1t3f5d" path="res://entities/enemies/fast/fast_enemy.tscn" id="4_fast"]
 [ext_resource type="PackedScene" uid="uid://cavk4vh6k1igx" path="res://entities/enemies/heavy/heavy_enemy.tscn" id="5_heavy"]
+[ext_resource type="PackedScene" path="res://entities/enemies/dasher/dasher_enemy.tscn" id="6_dasher"]
+[ext_resource type="PackedScene" path="res://entities/enemies/armored/armored_enemy.tscn" id="7_armored"]
+[ext_resource type="PackedScene" path="res://entities/enemies/regenerator/regenerator_enemy.tscn" id="8_regen"]
+[ext_resource type="PackedScene" path="res://entities/enemies/splitter/splitter_enemy.tscn" id="9_splitter"]
 
 [sub_resource type="Resource" id="Resource_fast"]
 script = ExtResource("3_wenemy")
@@ -18,8 +22,32 @@ scene = ExtResource("5_heavy")
 first_wave = 10
 share = 0.2
 
+[sub_resource type="Resource" id="Resource_dasher"]
+script = ExtResource("3_wenemy")
+scene = ExtResource("6_dasher")
+first_wave = 3
+share = 0.15
+
+[sub_resource type="Resource" id="Resource_armored"]
+script = ExtResource("3_wenemy")
+scene = ExtResource("7_armored")
+first_wave = 6
+share = 0.2
+
+[sub_resource type="Resource" id="Resource_regen"]
+script = ExtResource("3_wenemy")
+scene = ExtResource("8_regen")
+first_wave = 8
+share = 0.15
+
+[sub_resource type="Resource" id="Resource_splitter"]
+script = ExtResource("3_wenemy")
+scene = ExtResource("9_splitter")
+first_wave = 11
+share = 0.1
+
 [resource]
 script = ExtResource("1_cfg")
 max_waves = 15
 default_enemy = ExtResource("2_basic")
-variants = Array[ExtResource("3_wenemy")]([SubResource("Resource_fast"), SubResource("Resource_heavy")])
+variants = Array[ExtResource("3_wenemy")]([SubResource("Resource_fast"), SubResource("Resource_heavy"), SubResource("Resource_dasher"), SubResource("Resource_armored"), SubResource("Resource_regen"), SubResource("Resource_splitter")])

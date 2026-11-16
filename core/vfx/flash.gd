@@ -1,16 +1,16 @@
 class_name Flash extends RefCounted
-## Brief white flash for sprites, driven by the `flash` shader uniform.
+## Brief flash for sprites (white unless a colour is given), driven by the `flash` and `flash_color` shader uniforms.
 
 const _HIT_FLASH_SHADER: Shader = preload("res://core/vfx/hit_flash.gdshader")
 const _TWEEN_META: StringName = &"_flash_tween"
 const _TEMP_MATERIAL_META: StringName = &"_flash_temp_material"
 
 
-## Flash [param sprite] white and fade back over [param duration] seconds.
-## Uses the sprite's own ShaderMaterial when it has one (it must expose a `flash` uniform);
+## Flash [param sprite] with [param color] (white by default) and fade back over [param duration] seconds.
+## Uses the sprite's own ShaderMaterial when it has one (it must expose `flash` and `flash_color` uniforms);
 ## otherwise a temporary hit_flash material is applied and removed again afterwards.
 ## Repeated calls restart the flash instead of stacking.
-static func play(sprite: CanvasItem, duration: float) -> void:
+static func play(sprite: CanvasItem, duration: float, color: Color = Color.WHITE) -> void:
 	if not is_instance_valid(sprite):
 		return
 
@@ -39,6 +39,7 @@ static func play(sprite: CanvasItem, duration: float) -> void:
 	else:
 		return
 
+	flash_material.set_shader_parameter("flash_color", color)
 	flash_material.set_shader_parameter("flash", 1.0)
 	var tween: Tween = sprite.create_tween()
 	sprite.set_meta(_TWEEN_META, tween)

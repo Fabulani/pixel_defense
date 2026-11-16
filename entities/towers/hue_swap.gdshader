@@ -6,8 +6,9 @@ shader_type canvas_item;
 // A non-white modulate feeds the saturation test, since COLOR includes it.
 uniform vec4 target_color : source_color = vec4(1.0, 0.0, 0.0, 1.0);
 uniform float saturation_threshold = 0.5;
-// Mixes the result towards white (hit/build flash); 0.0 keeps the look unchanged.
+// Mixes the result towards flash_color (white by default; hit/build flash); 0.0 keeps the look unchanged.
 uniform float flash : hint_range(0.0, 1.0) = 0.0;
+uniform vec4 flash_color : source_color = vec4(1.0, 1.0, 1.0, 1.0);
 
 vec3 rgb_to_hsv(vec3 c) {
 	float mx = max(c.r, max(c.g, c.b));
@@ -42,5 +43,5 @@ void fragment() {
 		float hue = rgb_to_hsv(target_color.rgb).x;
 		rgb = hsv_to_rgb(vec3(hue, hsv.y, hsv.z));
 	}
-	COLOR = vec4(mix(rgb, vec3(1.0), flash), c.a);
+	COLOR = vec4(mix(rgb, flash_color.rgb, flash), c.a);
 }

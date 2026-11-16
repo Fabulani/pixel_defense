@@ -11,3 +11,9 @@ func take_damage(amount: float) -> void:
 	hp -= amount
 	if hp <= 0:
 		depleted.emit()
+
+## Restore hp, clamped to [param max_hp]. Does nothing once hp is depleted.
+func heal(amount: float, max_hp: float) -> void:
+	if hp <= 0:
+		return
+	hp = minf(hp + amount, max_hp)
