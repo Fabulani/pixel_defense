@@ -1,0 +1,21 @@
+[gd_resource type="Resource" script_class="MapGenConfig" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://levels/generation/map_gen_config.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+size = Vector2i(45, 45)
+spawner_count_min = 2
+spawner_count_max = 2
+spawner_first_waves = Array[int]([0, 2, 5])
+min_spawner_base_distance = 22
+min_spawner_separation = 15
+base_margin = 10
+spawner_edge_band = 4
+keep_out_radius = 3
+lake_coverage = 0.06
+lake_noise_frequency = 0.08
+tree_coverage = 0.08
+tree_cluster_share = 0.6
+decoration_density = 0.01
+max_attempts = 20
