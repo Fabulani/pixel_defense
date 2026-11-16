@@ -14,6 +14,8 @@ godot --headless --import            # (re)build .godot/ cache and parse all scr
 godot --headless --quit-after 120    # boot main scene for 120 frames; must print no SCRIPT ERROR
 godot                                # run the game (main scene: main/main.tscn)
 godot -e                             # open the editor
+godot -- --seed=12345                # replay the generated map of that seed (integer >= 0)
+godot -- --legacy-map                # play the hand-made map instead of a generated one
 ```
 
 - On a fresh clone (no `.godot/`), the **first** `--import` reports a bogus parse error in `levels/level.gd` because autoloads are not registered yet. Run it a second time before trusting any error.
@@ -30,7 +32,7 @@ core/managers/   building, currency, pathfinding, projectile, vfx, wave
 core/vfx/        Flash helper and hit_flash.gdshader (shared by enemies and towers)
 core/game_data.gd
 entities/        bases, enemies (+ components), projectiles, spawners, towers (+ upgrades, hue_swap.gdshader)
-levels/          level.tscn (TileMapLayer + tileset) and level.gd
+levels/          level.tscn (TileMapLayer + tileset) and level.gd; generation/ (MapGenConfig, MapData, MapGenerator, MapPainter, default_map.tres)
 main/            main.tscn / main.gd: entry point and composition root
 ui/              hud, start_menu, game_end, highlight, tower_preview, tower_menu, mobile, themes
 docs/            screenshots and asset licences (.gdignore'd)
@@ -38,14 +40,15 @@ docs/            screenshots and asset licences (.gdignore'd)
 
 ## Architecture
 
-**Autoloads** (`project.godot`): `CurrencyManager`, `PathfindingManager`, `GameData`. They have no `class_name` and are used by their autoload name. Their state survives `reload_current_scene()`, so `Level._ready()` re-initialises them (`coins = 5`, `PathfindingManager.setup(tile_map_layer)`).
+**Autoloads** (`project.godot`): `CurrencyManager`, `PathfindingManager`, `GameData`. They have no `class_name` and are used by their autoload name. Their state survives `reload_current_scene()`, so `Level._ready()` re-initialises them (`coins = 5`, `PathfindingManager.setup(tile_map_layer)`). `GameData` also holds `requested_seed` (-1 = random each run), `legacy_map` (both set from the user args in `GameData._ready()` and deliberately kept across reloads, so restart and F1 replay the same map) and `map_seed` (seed of the loaded map, 0 for the legacy map; written by `Level._ready()`).
 
 **Scene tree**
 
 ```
 Main
 ├─ Level              TileMapLayer, PathfindingPreview (Line2D), PlayerBase,
-│                     EnemySpawner + EnemySpawner2, WaveManager, ProjectileManager
+│                     WaveManager, ProjectileManager, spawners (created at runtime on
+│                     generated maps; EnemySpawner + EnemySpawner2 are the legacy map's)
 ├─ BuildingManager    towers are added as its children
 ├─ VfxManager         one-shot particle bursts and coin pop-ups, drawn above towers
 ├─ InputController
@@ -83,7 +86,12 @@ Main
 
 **Data.** Tunables are `Resource` subclasses saved as `.tres` beside the scene: `TowerStats`, `EnemyStats`, `Drops`. `Health` is also a `Resource`. Enemy variants (`basic`, `fast`, `heavy`, `armored`, `regenerator`, `splitter`, `mini`, `dasher`) are inherited scenes of `entities/enemies/enemy.tscn`, each in its own folder with its own sprite (copied from the Kenney pack), stats/drops `.tres` and, for abilities, a component child node; `modulate` stays white.
 
-**Tiles.** 16 px tiles. The tileset is embedded in `levels/level.tscn` with custom data layer 0 `buildable` (bool) and layer 1 `movement_cost` (int; `255` means solid). `PathfindingManager` reads `movement_cost` by name, rebuilds its grid on every `setup()`, and emits `grid_changed` from `set_cell_solid()` (enemy `Pathfinding` components and the path preview re-path on it). It also writes the tile size to `GameData.grid_cell_size`.
+**Map generation.** `Level._ready()` (when `use_generated_map` and not `GameData.legacy_map`) calls `_generate_map()`: `_pick_seed()` (`GameData.requested_seed` if >= 0, else `randi()`) -> `MapGenerator.generate(map_config, seed)` -> `tile_map_layer.clear()` -> `MapPainter.paint()` -> `PlayerBase` moved to the base cell -> the scene's spawners are freed and one `EnemySpawner` per generated spawner cell is instantiated (`first_wave` from the config) before `WaveManager` in the tree. All of this runs before `PathfindingManager.setup()` and `WaveManager.setup()`. The seed is printed (`Map seed: N`) and shown on the end screen (`%SeedLabel`, hidden for the legacy map). `MapGenConfig` (`levels/generation/default_map.tres`, assigned to `Level.map_config`) holds all tunables (45x45, 2 spawners, lake/tree/decor shares, `max_attempts` 20).
+- *Generator.* `MapGenerator` and `MapData` are pure data with a local `RandomNumberGenerator` per attempt (seeded from `hash([seed, attempt])`): no nodes, autoloads or global `randi`, so the same config and seed give the same map. Steps: water ring, base and spawners (spawners near the edge), keep-out circles, lakes from the top noise values, shore cleanup, trees, validation, decoration. The tileset has no tile for diagonal water pinches or grass with water on opposite sides, so a grass cell may only have one of 13 water masks (`MapData.is_valid_shore_mask()`; a water side also sets its two corners). The cleanup turns offending cells into water or grass and removes lakes under 4 cells until stable. Validation flood-fills (4-neighbour) from the base; if a spawner is not reached, a straight corridor is carved to it and the cleanup runs again; if it still fails, or the cleanup does not converge, the attempt is dropped and the next one runs. After `max_attempts` a fallback map (no lakes or trees, markers only) is used (`MapData.used_fallback`). Cut-off grass pockets away from water become trees.
+- *Painter.* `MapPainter` builds a lookup from water mask to tile by reading the tileset's terrain peering bits (terrain set 0: grass 0, water 1), using only `buildable` grass tiles; picks among equal tiles with an RNG seeded by the map seed. Water, trees (3 tiles) and decoration tiles are fixed atlas coords. Decoration (`MapData.decor`, drawn instead of the terrain tile): dirt dots, farmland patches near the base, small islands in lakes.
+- *User args.* `godot -- --seed=N` and `-- --legacy-map` (see Commands). An invalid seed gives a `push_warning` and a random seed. The legacy map is the tilemap painted in `levels/level.tscn`; `Level.use_generated_map = false` also selects it.
+
+**Tiles.** 16 px tiles. The tileset is embedded in `levels/level.tscn` with custom data layer 0 `buildable` (bool) and layer 1 `movement_cost` (int; `255` means solid). `PathfindingManager` reads `movement_cost` by name, but only `255` (solid) matters: all other values are unused, every walkable cell costs the same (no weights), rebuilds its grid on every `setup()`, and emits `grid_changed` from `set_cell_solid()` (enemy `Pathfinding` components and the path preview re-path on it). It also writes the tile size to `GameData.grid_cell_size`.
 
 **Physics layers:** 1 enemies, 2 projectiles, 3 towers, 4 player base. Groups: `"enemies"`, `"towers"`.
 
@@ -116,7 +124,12 @@ Done so far: feature-folder layout, enemy components + stats resources, tower/tu
 
 Open items:
 
-- Multiple spawners: the position of `EnemySpawner2` (cell (42, 42), bottom right) and `first_wave = 2` are placeholders. The node was added to `levels/level.tscn` by hand (re-save once in the editor). Verified only by headless scenario runs, not playtested by a human. All spawners share one wave composition (no per-spawner enemy mix), nothing tells the player when a spawner opens besides the flag fading in, and enemies already walking when a tower walls them in are not handled.
+- Multiple spawners: on the legacy map the position of `EnemySpawner2` (cell (42, 42), bottom right) and `first_wave = 2` are placeholders; on generated maps positions and `first_wave` come from `default_map.tres`. `EnemySpawner2` was added to `levels/level.tscn` by hand (re-save once in the editor). Verified only by headless scenario runs, not playtested by a human. All spawners share one wave composition (no per-spawner enemy mix), nothing tells the player when a spawner opens besides the flag fading in, and enemies already walking when a tower walls them in are not handled.
+- Map generation is verified only by headless scenario runs (500 seeds) and offline renders, not playtested by a human. All values in `default_map.tres` are placeholders.
+- The corridor carve and the fallback map in `MapGenerator` were never hit in the 500-seed run and are untested.
+- `default_map.tres`, its reference in `level.tscn` and the `%SeedLabel` node in `game_end_screen.tscn` were written by hand; re-save them once in the editor.
+- There is no seed UI (start menu field, replay button, Web URL parameter); seeds are set only with `--seed=N`, which a Web build cannot take.
+- Generation takes about 45 ms per map in a headless desktop run; not measured on Web or Android.
 - There is one base tower by design; variety comes from its upgrade paths (currently the three majors). `BuildingManager` and `TowerPreview` each `preload` the single tower scene / stats on purpose. There is no build bar or tower-kind harness (built and removed after playtesting, 2026-11-16).
 - Multi-touch across the tower menu and the map is not coordinated: a finger held on a button does not block a second finger's map tap, and a pinch starting on a button cannot zoom.
 - All values of the new enemies (armored, regenerator, splitter, mini, dasher), their coins and wave shares are placeholders and unbalanced.

@@ -20,7 +20,11 @@ Left: per-spawner wave composition (e.g. a spawner that only sends dashers), a s
 
 ## 4. Procedural map generation
 
-Generate levels using only the current tileset. Depends on item 3 if generated maps should have several spawners. Not designed yet.
+Built (all values are placeholders): every run (start, restart, F1) plays a generated 45x45 grass island: sea ring, lakes, trees, decoration (dirt dots, a farmland patch near the base, small islands in the water), one base and two spawners near the edge (the second opens at banner wave 3). It uses only tiles of the current tileset; the shore tile is looked up from the tileset's terrain peering bits. The generator only produces shapes the tileset can draw (it has no tile for diagonal water pinches or grass with water on opposite sides). Maps are seeded and deterministic: the seed is printed to the log and shown on the end screen, `godot -- --seed=N` replays a map, and `-- --legacy-map` (or `Level.use_generated_map = false`) plays the hand-made map, which stays in `levels/level.tscn`.
+
+Pathfinding no longer weights tiles: every walkable cell costs the same (enemies are planes), so roads are not preferred and the generator draws none.
+
+Left: seed entry in the start menu, replay-this-map, map sizes other than 45x45 and camera limits for them, the dirt tile set / biomes, roads as decoration, per-spawner count and difficulty scaling, tuning of all `default_map.tres` values, a human playtest. Generation takes about 45 ms per map in a headless desktop run; Web and Android are not measured.
 
 ## Later
 
