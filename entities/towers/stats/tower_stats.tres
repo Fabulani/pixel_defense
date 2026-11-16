@@ -6,4 +6,5 @@
 resource_local_to_scene = true
 script = ExtResource("1_u3wh4")
 cost = 5
+knockback = 60.0
 metadata/_custom_type_script = "uid://c24eh8ud422ty"
