@@ -16,7 +16,7 @@ class_name MapGenConfig extends Resource
 @export var base_margin: int = 10
 ## Spawners lie within this many cells of the land edge.
 @export var spawner_edge_band: int = 4
-## Cells around the base and each spawner that stay plain grass.
+## Cells around the base and each spawner that stay plain grass. Values below 2 are treated as 2 (the 8 neighbours of a marker always stay grass).
 @export var keep_out_radius: int = 3
 ## Target share of interior cells that are lake water.
 @export var lake_coverage: float = 0.06

@@ -128,14 +128,23 @@ static func _first_wave_for(config: MapGenConfig, index: int) -> int:
 	return config.spawner_first_waves[mini(index, config.spawner_first_waves.size() - 1)]
 
 
+## Effective keep-out radius: `MapGenConfig.keep_out_radius`, but at least 2 (a radius-1 circle leaves the diagonal neighbours free, so a corner could be water and the cell a shore tile).
+static func _keep_out_radius(config: MapGenConfig) -> int:
+	return maxi(2, config.keep_out_radius)
+
+
 ## Step 2: base and spawners. Returns false if no valid placement was found.
 static func _place_markers(data: MapData, config: MapGenConfig, rng: RandomNumberGenerator, min_base: int, sep: int) -> bool:
 	var count: int = rng.randi_range(config.spawner_count_min, maxi(config.spawner_count_min, config.spawner_count_max))
-	var margin: int = config.base_margin
+	# Keep the margin valid on small maps: at least 2 cells from the edge, at most the map centre.
+	@warning_ignore("integer_division")
+	var margin_x: int = clampi(config.base_margin, 2, (data.size.x - 1) / 2)
+	@warning_ignore("integer_division")
+	var margin_y: int = clampi(config.base_margin, 2, (data.size.y - 1) / 2)
 	for _b: int in _BASE_TRIES:
 		var base: Vector2i = Vector2i(
-			rng.randi_range(margin, data.size.x - 1 - margin),
-			rng.randi_range(margin, data.size.y - 1 - margin))
+			rng.randi_range(margin_x, data.size.x - 1 - margin_x),
+			rng.randi_range(margin_y, data.size.y - 1 - margin_y))
 		var spawners: Array[Vector2i] = []
 		for _i: int in count:
 			var spawner: Vector2i = _find_spawner_cell(data, config, rng, base, spawners, min_base, sep)
@@ -187,7 +196,7 @@ static func _build_keep_out(data: MapData, config: MapGenConfig) -> PackedByteAr
 	keep.resize(data.cells.size())
 	var centers: Array[Vector2i] = [data.base_cell]
 	centers.append_array(data.spawner_cells)
-	var r: int = config.keep_out_radius
+	var r: int = _keep_out_radius(config)
 	for center: Vector2i in centers:
 		for dy: int in range(-r, r + 1):
 			for dx: int in range(-r, r + 1):
@@ -426,7 +435,7 @@ static func _is_plain_free(data: MapData, cell: Vector2i, keep: PackedByteArray)
 
 
 static func _place_farmland(data: MapData, config: MapGenConfig, rng: RandomNumberGenerator, keep: PackedByteArray, patches: int) -> void:
-	var r: int = config.keep_out_radius
+	var r: int = _keep_out_radius(config)
 	for _p: int in patches:
 		var center: Vector2i = Vector2i(-1, -1)
 		for _t: int in 30:

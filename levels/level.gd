@@ -104,10 +104,11 @@ func would_block_path(cell_position: Vector2i) -> bool:
 
 
 ## Seed for the next generated map: the requested one, or a random one.
+## A seed is never 0 (`GameData.map_seed == 0` means the legacy map).
 func _pick_seed() -> int:
-	if GameData.requested_seed >= 0:
+	if GameData.requested_seed >= 1:
 		return GameData.requested_seed
-	return randi()
+	return maxi(1, randi())
 
 
 ## Replaces the painted map, the base position and the spawners with a generated map.
