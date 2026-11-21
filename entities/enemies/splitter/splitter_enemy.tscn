@@ -1,22 +1,28 @@
-[gd_scene format=3]
+[gd_scene format=3 uid="uid://bfng13bn36l8i"]
 
 [ext_resource type="PackedScene" uid="uid://dw4n2dmih5uxd" path="res://entities/enemies/enemy.tscn" id="1_base"]
-[ext_resource type="Resource" path="res://entities/enemies/splitter/splitter_enemy_stats.tres" id="2_stats"]
-[ext_resource type="Resource" path="res://entities/enemies/splitter/splitter_enemy_drops.tres" id="3_drops"]
-[ext_resource type="Texture2D" path="res://entities/enemies/splitter/ship_yellow_heavy.png" id="3_texture"]
+[ext_resource type="Resource" uid="uid://dnwc64h85rxy" path="res://entities/enemies/splitter/splitter_enemy_stats.tres" id="2_stats"]
+[ext_resource type="Resource" uid="uid://bh3ahb8atfmj6" path="res://entities/enemies/splitter/splitter_enemy_drops.tres" id="3_drops"]
+[ext_resource type="Texture2D" uid="uid://w55x2fb5cq8c" path="res://entities/enemies/splitter/ship_yellow_heavy.png" id="3_texture"]
+[ext_resource type="Script" uid="uid://dr6joirhgvifb" path="res://entities/enemies/components/health/health.gd" id="4_1l8o5"]
+
+[sub_resource type="Resource" id="Resource_p1ttv"]
+resource_local_to_scene = true
+script = ExtResource("4_1l8o5")
+metadata/_custom_type_script = "uid://dr6joirhgvifb"
 
 [sub_resource type="CapsuleShape2D" id="Hitbox_splitter"]
 radius = 13.2353
 height = 38.2353
 
-[node name="SplitterEnemy" instance=ExtResource("1_base")]
+[node name="SplitterEnemy" unique_id=1948755283 instance=ExtResource("1_base")]
 stats = ExtResource("2_stats")
 drops = ExtResource("3_drops")
+health = SubResource("Resource_p1ttv")
 
-[node name="Sprite2D" parent="." index="0"]
-scale = Vector2(1.0, 1.0)
+[node name="Sprite2D" parent="." index="0" unique_id=177971911]
 texture = ExtResource("3_texture")
 
-[node name="CollisionShape2D" parent="." index="1"]
+[node name="CollisionShape2D" parent="." index="1" unique_id=2005179287]
 scale = Vector2(0.85, 0.85)
 shape = SubResource("Hitbox_splitter")

@@ -7,6 +7,9 @@ class_name TowerStats extends Resource
 @export var penetration: int = 1  ## Maximum number of projectile hits
 @export var knockback: float = 20.0  ## Initial knockback speed (px/s) applied to an enemy on hit; decays quickly
 @export var recoil: float = 2.0  ## Cannon recoil distance in px
+@export var bullet_speed: float = 500.0  ## Projectile speed in px/s; also used to lead moving targets
+@export var turn_speed: float = 360.0  ## Cannon turn speed in degrees per second
+@export var aim_tolerance: float = 5.0  ## Max angle in degrees between cannon and an enemy for the cannon to fire
 const MAX_LEVEL: int = 5  ## Level reached by picking a major upgrade
 
 @export var upgrade_bonus_per_level: float = 0.1  ## Additive bonus to damage, fire rate and range per level

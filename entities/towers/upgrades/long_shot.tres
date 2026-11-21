@@ -18,3 +18,4 @@ recoil_multiplier = 1.5
 trail_amount = 10
 trail_lifetime = 0.3
 trail_particle_scale = 0.75
+turn_speed_multiplier = 0.6

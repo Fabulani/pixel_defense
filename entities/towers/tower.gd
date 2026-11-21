@@ -89,15 +89,18 @@ func _apply_upgrades() -> void:
 	var rate_mult: float = 1.0
 	var range_mult: float = 1.0
 	var recoil_mult: float = 1.0
+	var turn_mult: float = 1.0
 	if major != null:
 		damage_mult = major.damage_multiplier
 		rate_mult = major.fire_rate_multiplier
 		range_mult = major.range_multiplier
 		recoil_mult = major.recoil_multiplier
+		turn_mult = major.turn_speed_multiplier
 	_effective_stats = stats.duplicate()
 	_effective_stats.damage = stats.damage * level_mult * damage_mult
 	_effective_stats.shots_per_second = stats.shots_per_second * level_mult * rate_mult
 	_effective_stats.detection_range = stats.detection_range * level_mult * range_mult
+	_effective_stats.turn_speed = stats.turn_speed * turn_mult
 	_turret.configure(_effective_stats)
 	_turret.set_recoil(stats.recoil * recoil_mult)
 
@@ -116,7 +119,8 @@ func _package_projectile(origin: Vector2, angle: float) -> ProjectileData:
 		origin,
 		angle,
 		_effective_stats.damage,
-		_effective_stats.penetration
+		_effective_stats.penetration,
+		_effective_stats.bullet_speed
 	)
 	projectile_data.knockback = _effective_stats.knockback
 	if major != null:

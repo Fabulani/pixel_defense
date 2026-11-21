@@ -16,3 +16,4 @@ bullet_tint = Color(0.8784314, 0.2509804, 0.18431373, 1)
 knockback_multiplier = 0.5
 trail_amount = 4
 trail_lifetime = 0.1
+turn_speed_multiplier = 1.5

@@ -51,7 +51,7 @@ func _physics_process(delta: float) -> void:
 	if _is_dying:
 		return
 	_knockback_time_left = maxf(0.0, _knockback_time_left - delta)
-	pathfinding.move(_current_knockback())
+	pathfinding.move(delta, _current_knockback())
 
 
 ## Apply damage to this enemy's health.
@@ -107,6 +107,11 @@ func flash(color: Color, duration: float) -> void:
 func set_stretch(factor: float) -> void:
 	_stretch = factor
 	_apply_stretch()
+
+
+## Velocity from path following only (no knockback); ZERO when not moving along a path.
+func get_path_velocity() -> Vector2:
+	return pathfinding.path_velocity if pathfinding != null else Vector2.ZERO
 
 
 ## True once the enemy started dying; it can no longer be hurt or targeted.

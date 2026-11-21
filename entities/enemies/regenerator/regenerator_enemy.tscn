@@ -1,28 +1,32 @@
-[gd_scene format=3]
+[gd_scene format=3 uid="uid://cmplrw87602f1"]
 
 [ext_resource type="PackedScene" uid="uid://dw4n2dmih5uxd" path="res://entities/enemies/enemy.tscn" id="1_base"]
-[ext_resource type="Resource" path="res://entities/enemies/regenerator/regenerator_enemy_stats.tres" id="2_stats"]
-[ext_resource type="Resource" path="res://entities/enemies/regenerator/regenerator_enemy_drops.tres" id="3_drops"]
-[ext_resource type="Texture2D" path="res://entities/enemies/regenerator/ship_green_small.png" id="3_texture"]
-[ext_resource type="Script" path="res://entities/enemies/components/abilities/regeneration.gd" id="4_comp"]
+[ext_resource type="Resource" uid="uid://cdgnk18y3kskp" path="res://entities/enemies/regenerator/regenerator_enemy_stats.tres" id="2_stats"]
+[ext_resource type="Resource" uid="uid://c1nk0l1ssp2l7" path="res://entities/enemies/regenerator/regenerator_enemy_drops.tres" id="3_drops"]
+[ext_resource type="Texture2D" uid="uid://d1gaiu33wvk8o" path="res://entities/enemies/regenerator/ship_green_small.png" id="3_texture"]
+[ext_resource type="Script" uid="uid://cu0kptnvjawfe" path="res://entities/enemies/components/abilities/regeneration.gd" id="4_comp"]
+[ext_resource type="Script" uid="uid://dr6joirhgvifb" path="res://entities/enemies/components/health/health.gd" id="4_un1a8"]
+
+[sub_resource type="Resource" id="Resource_wvm41"]
+resource_local_to_scene = true
+script = ExtResource("4_un1a8")
+metadata/_custom_type_script = "uid://dr6joirhgvifb"
 
 [sub_resource type="CircleShape2D" id="Hitbox_regenerator"]
 radius = 8.2353
 
-[node name="RegeneratorEnemy" instance=ExtResource("1_base")]
+[node name="RegeneratorEnemy" unique_id=1191433174 instance=ExtResource("1_base")]
 stats = ExtResource("2_stats")
 drops = ExtResource("3_drops")
+health = SubResource("Resource_wvm41")
 
-[node name="Sprite2D" parent="." index="0"]
+[node name="Sprite2D" parent="." index="0" unique_id=177971911]
 scale = Vector2(0.7, 0.7)
 texture = ExtResource("3_texture")
 
-[node name="CollisionShape2D" parent="." index="1"]
+[node name="CollisionShape2D" parent="." index="1" unique_id=2005179287]
 scale = Vector2(0.85, 0.85)
 shape = SubResource("Hitbox_regenerator")
 
-[node name="Regeneration" type="Node" parent="."]
+[node name="Regeneration" type="Node" parent="." index="3" unique_id=1465794895]
 script = ExtResource("4_comp")
-hp_per_second = 2.0
-delay_after_hit = 1.5
-tick_interval = 0.5

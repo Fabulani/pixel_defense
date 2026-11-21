@@ -4,6 +4,12 @@
 [ext_resource type="Resource" uid="uid://cfw02juunpfer" path="res://entities/enemies/fast/fast_enemy_stats.tres" id="2_stats"]
 [ext_resource type="Resource" uid="uid://etst3o306quk" path="res://entities/enemies/fast/fast_enemy_drops.tres" id="3_imqxe"]
 [ext_resource type="Texture2D" uid="uid://ct3qspnjf7rnq" path="res://entities/enemies/fast/ship_blue_1.png" id="3_texture"]
+[ext_resource type="Script" uid="uid://dr6joirhgvifb" path="res://entities/enemies/components/health/health.gd" id="4_imqxe"]
+
+[sub_resource type="Resource" id="Resource_jc25c"]
+resource_local_to_scene = true
+script = ExtResource("4_imqxe")
+metadata/_custom_type_script = "uid://dr6joirhgvifb"
 
 [sub_resource type="CircleShape2D" id="Hitbox_fast"]
 radius = 5.8823533
@@ -11,6 +17,7 @@ radius = 5.8823533
 [node name="FastEnemy" unique_id=806520150 instance=ExtResource("1_base")]
 stats = ExtResource("2_stats")
 drops = ExtResource("3_imqxe")
+health = SubResource("Resource_jc25c")
 
 [node name="Sprite2D" parent="." index="0" unique_id=177971911]
 scale = Vector2(0.4, 0.4)
