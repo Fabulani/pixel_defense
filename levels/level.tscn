@@ -7,7 +7,7 @@
 [ext_resource type="PackedScene" uid="uid://dnbq1t1oyn8fv" path="res://entities/bases/player_base.tscn" id="5_urvlt"]
 [ext_resource type="PackedScene" uid="uid://cge3q31jgw6mr" path="res://core/managers/projectile/projectile_manager.tscn" id="6_d4w6o"]
 
-[ext_resource type="Resource" path="res://levels/generation/default_map.tres" id="7_mapcfg"]
+[ext_resource type="Resource" uid="uid://c1emt3v0k5l4v" path="res://levels/generation/default_map.tres" id="7_mapcfg"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_xb4v1"]
 resource_name = "Tilemap"
