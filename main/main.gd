@@ -34,6 +34,7 @@ func _ready() -> void:
 	current_level.bullet_fired.connect(_on_level_bullet_fired)
 	current_level.bullet_hit.connect(_on_level_bullet_hit)
 	current_level.enemy_died.connect(_on_level_enemy_died)
+	current_level.armor_deflected.connect(_on_level_armor_deflected)
 	current_level.enemy_count_changed.connect(hud.set_enemy_count)
 	building_manager.tower_built.connect(current_level.register_tower)
 	building_manager.tower_built.connect(_on_building_manager_tower_built)
@@ -79,6 +80,10 @@ func _on_level_bullet_hit(hit_position: Vector2, direction: Vector2, data: Proje
 func _on_level_enemy_died(death_position: Vector2, coins: int, color: Color) -> void:
 	vfx.play_death(death_position, color)
 	vfx.play_coin_popup(death_position, coins)
+
+
+func _on_level_armor_deflected(hit_position: Vector2) -> void:
+	vfx.play_deflect(hit_position)
 
 
 func _on_level_won() -> void:

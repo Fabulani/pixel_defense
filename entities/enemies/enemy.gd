@@ -4,6 +4,8 @@ signal died(enemy: Enemy)
 ## Emitted for every hit with the damage left after armor, always before the hit is applied to
 ## health, so it comes before [signal died] on the killing hit.
 signal damaged(amount: float)
+## Emitted when armor reduced a hit, with the enemy's world position.
+signal armor_deflected(hit_position: Vector2)
 
 @export var stats: EnemyStats
 @export var drops: Drops
@@ -28,6 +30,7 @@ var _tween: Tween
 var _speed_factors: Dictionary[StringName, float] = {}
 var _spawn_done: bool = false
 var _stretch: float = 1.0
+var _attached_effects: Array[GPUParticles2D] = []
 
 const _HIT_FLASH_SHADER: Shader = preload("res://core/vfx/hit_flash.gdshader")
 ## Flash colour of a hit that armor reduced.
@@ -47,6 +50,12 @@ func _ready() -> void:
 	_play_spawn_in()
 
 
+func _process(_delta: float) -> void:
+	for effect: GPUParticles2D in _attached_effects:
+		if is_instance_valid(effect):
+			effect.global_position = global_position
+
+
 func _physics_process(delta: float) -> void:
 	if _is_dying:
 		return
@@ -59,12 +68,16 @@ func take_damage(amount: float) -> void:
 	if _is_dying or amount <= 0.0:
 		return
 	var flash_color: Color = Color.WHITE
+	var deflected: bool = false
 	if stats.armor > 0.0:
 		var reduced: float = maxf(amount - stats.armor, amount * stats.min_damage_share)
 		if reduced < amount:
 			flash_color = _ARMOR_FLASH_COLOR
+			deflected = true
 		amount = reduced
 	Flash.play(_sprite, flash_duration, flash_color)
+	if deflected:
+		armor_deflected.emit(global_position)
 	damaged.emit(amount)
 	health.take_damage(amount)
 
@@ -133,6 +146,17 @@ func apply_knockback(impulse: Vector2) -> void:
 	_knockback_time_left = knockback_decay_time
 
 
+## Attach a particle emitter that follows this enemy's position but not its rotation
+## (it becomes top level). On [method die] it stops emitting, is handed to the enemy's parent
+## and freed once its particles have faded.
+func attach_effect(particles: GPUParticles2D) -> void:
+	particles.top_level = true
+	# Deferred: components call this from their _ready, while this node is still adding children.
+	add_child.call_deferred(particles)
+	particles.position = global_position
+	_attached_effects.append(particles)
+
+
 ## Emit [signal died] once, stop moving, and fade out before freeing the enemy.
 func die() -> void:
 	if _is_dying:
@@ -143,11 +167,32 @@ func die() -> void:
 	velocity = Vector2.ZERO
 	set_deferred("collision_layer", 0)
 	remove_from_group("enemies")
+	_release_effects()
 	_kill_tween()
 	_tween = create_tween().set_parallel(true)
 	_tween.tween_property(_sprite, "modulate:a", 0.0, death_duration)
 	_tween.tween_property(_sprite, "scale", _base_scale * 0.5, death_duration)
 	_tween.chain().tween_callback(queue_free)
+
+
+## Leave the attached emitters behind to fade out on their own, then free them.
+func _release_effects() -> void:
+	var host: Node = get_parent()
+	for effect: GPUParticles2D in _attached_effects:
+		if not is_instance_valid(effect):
+			continue
+		effect.emitting = false
+		if not effect.is_inside_tree():
+			# The deferred add never ran (enemy died in its first frame).
+			effect.queue_free()
+			continue
+		if host == null or not host.is_inside_tree():
+			continue
+		effect.reparent(host, true)
+		var tween: Tween = effect.create_tween()
+		tween.tween_interval(effect.lifetime + 0.1)
+		tween.tween_callback(effect.queue_free)
+	_attached_effects.clear()
 
 
 ## Knockback velocity left right now: linear decay over [member knockback_decay_time].
