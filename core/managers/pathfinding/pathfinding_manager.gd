@@ -18,16 +18,15 @@ func setup(tile_map: TileMapLayer) -> void:
 	astar_grid.diagonal_mode = AStarGrid2D.DIAGONAL_MODE_ONLY_IF_NO_OBSTACLES
 	astar_grid.update()
 
-	# Update pathing weights
+	# Mark obstacles solid
 	for cell_position: Vector2i in tile_map.get_used_cells():
 		var tile_data: TileData = tile_map.get_cell_tile_data(cell_position)
 		if tile_data == null:
 			continue
 		var cost: int = tile_data.get_custom_data("movement_cost")
+		# Only obstacles are special; all walkable cells cost the same (no weight scale).
 		if cost == OBSTACLE_COST:
 			astar_grid.set_point_solid(cell_position, true)
-		else:
-			astar_grid.set_point_weight_scale(cell_position, cost)
 
 
 ## Convert a world-space position to a grid cell.

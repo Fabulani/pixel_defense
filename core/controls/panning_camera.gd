@@ -118,6 +118,20 @@ func zoom_by(amount: float) -> void:
 	)
 
 
+## Centres the camera on [param rect] (global pixels) and zooms so the whole rect fits the viewport.
+## Lowers [member min_zoom] to that zoom if it is smaller, so the player can always zoom out to the whole
+## rect but never further. Resets the smoothing state so the camera does not glide from its old values.
+func fit_rect(rect: Rect2) -> void:
+	var viewport_size: Vector2 = get_viewport_rect().size
+	if rect.size.x <= 0.0 or rect.size.y <= 0.0:
+		return
+	var fit_zoom: float = minf(viewport_size.x / rect.size.x, viewport_size.y / rect.size.y)
+	min_zoom = minf(min_zoom, fit_zoom)
+	position = rect.get_center()
+	zoom = fit_zoom * Vector2.ONE
+	smooth_damp.initialize(zoom, position)
+
+
 ## Add screen-shake trauma ([param amount] is clamped to 0..1).
 func shake(amount: float) -> void:
 	_camera_shake.add_trauma(amount)

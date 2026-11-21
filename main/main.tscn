@@ -10,7 +10,7 @@
 [ext_resource type="PackedScene" uid="uid://be55v8ytmchi7" path="res://ui/game_end/game_end_screen.tscn" id="8_yyfjg"]
 [ext_resource type="Script" uid="uid://ot1k4hgx0pkp" path="res://ui/mobile/mobile_display_handler.gd" id="9_b1x3f"]
 [ext_resource type="Script" uid="uid://db1y5qpjh5jg5" path="res://core/controls/input_controller.gd" id="10_ic"]
-[ext_resource type="PackedScene" path="res://ui/tower_preview/tower_preview.tscn" id="11_tp"]
+[ext_resource type="PackedScene" uid="uid://bti165bu8lw8e" path="res://ui/tower_preview/tower_preview.tscn" id="11_tp"]
 [ext_resource type="PackedScene" uid="uid://c7k2naxq4wdhe" path="res://ui/tower_menu/tower_menu.tscn" id="12_tm"]
 [ext_resource type="Script" uid="uid://bwpfalvsqqgal" path="res://core/managers/vfx/vfx_manager.gd" id="13_vfx"]
 

@@ -24,6 +24,8 @@ func _ready() -> void:
 	input_controller.setup()
 	tower_preview.tile_map_layer = current_level.tile_map_layer
 
+	camera.fit_rect(current_level.get_map_rect())
+
 	# Game signals
 	current_level.lost.connect(_on_level_lost)
 	current_level.won.connect(_on_level_won)
@@ -63,7 +65,7 @@ func _unhandled_input(event: InputEvent) -> void:
 func _on_level_lost() -> void:
 	camera.shake(0.7)
 	_close_tower_ui()
-	game_end_screen.show_defeat(current_level.waves_survived, CurrencyManager.coins)
+	game_end_screen.show_defeat(current_level.waves_survived, CurrencyManager.coins, current_level.map_seed)
 
 
 func _on_level_bullet_fired(data: ProjectileData) -> void:
@@ -81,7 +83,7 @@ func _on_level_enemy_died(death_position: Vector2, coins: int, color: Color) -> 
 
 func _on_level_won() -> void:
 	_close_tower_ui()
-	game_end_screen.show_victory(current_level.waves_survived, CurrencyManager.coins)
+	game_end_screen.show_victory(current_level.waves_survived, CurrencyManager.coins, current_level.map_seed)
 
 
 func _on_game_end_screen_restart_requested() -> void:

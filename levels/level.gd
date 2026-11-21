@@ -13,6 +13,15 @@ signal enemy_died(death_position: Vector2, coins: int, color: Color)
 @export var wave_manager: WaveManager
 @export var projectile_manager: ProjectileManager
 @export var pathfinding_preview: Line2D
+## Build the map with the generator instead of using the hand-painted one in the scene.
+@export var use_generated_map: bool = true
+## Settings of the map generator. Only used when `use_generated_map` is on.
+@export var map_config: MapGenConfig
+
+const SPAWNER_SCENE: PackedScene = preload("uid://dbkc22ud4e32")
+
+## Seed of the generated map, 0 for the legacy map.
+var map_seed: int = 0
 
 ## Number of waves started so far.
 var waves_survived: int:
@@ -31,6 +40,10 @@ var _finished: bool = false
 func _ready() -> void:
 	# Starting currency
 	CurrencyManager.coins = 5
+
+	if use_generated_map and not GameData.legacy_map:
+		_generate_map()
+	GameData.map_seed = map_seed
 
 	PathfindingManager.setup(tile_map_layer)
 	if enemy_spawners.is_empty():
@@ -72,6 +85,14 @@ func unregister_tower(tower: Tower, cell_position: Vector2i) -> void:
 	PathfindingManager.set_cell_solid(cell_position, false)
 
 
+## Global pixel rect covered by the used cells of the tile layer.
+func get_map_rect() -> Rect2:
+	var used: Rect2i = tile_map_layer.get_used_rect()
+	var tile_size: Vector2 = Vector2(tile_map_layer.tile_set.tile_size)
+	var top_left: Vector2 = tile_map_layer.to_global(tile_map_layer.map_to_local(used.position) - tile_size * 0.5)
+	return Rect2(top_left, Vector2(used.size) * tile_size * tile_map_layer.global_scale)
+
+
 ## Whether the tile at the cell allows building.
 func is_cell_buildable(cell_position: Vector2i) -> bool:
 	var tile_data: TileData = tile_map_layer.get_cell_tile_data(cell_position)
@@ -88,6 +109,40 @@ func would_block_path(cell_position: Vector2i) -> bool:
 		if PathfindingManager.would_block_path(cell_position, spawn_cell, target_cell):
 			return true
 	return false
+
+
+## Seed for the next generated map: the requested one, or a random one.
+## A seed is never 0 (`GameData.map_seed == 0` means the legacy map).
+func _pick_seed() -> int:
+	if GameData.requested_seed >= 1:
+		return GameData.requested_seed
+	return maxi(1, randi())
+
+
+## Replaces the painted map, the base position and the spawners with a generated map.
+func _generate_map() -> void:
+	map_seed = _pick_seed()
+	var config: MapGenConfig = map_config
+	if config == null:
+		push_error("Level: map_config is not assigned, using default settings.")
+		config = MapGenConfig.new()
+	var data: MapData = MapGenerator.generate(config, map_seed)
+	tile_map_layer.clear()
+	MapPainter.paint(tile_map_layer, data)
+	player_base.position = tile_map_layer.map_to_local(data.base_cell)
+
+	var insert_at: int = wave_manager.get_index()
+	for old_spawner: EnemySpawner in enemy_spawners:
+		old_spawner.queue_free()
+	enemy_spawners.clear()
+	for i: int in data.spawner_cells.size():
+		var spawner: EnemySpawner = SPAWNER_SCENE.instantiate() as EnemySpawner
+		spawner.first_wave = data.spawner_first_waves[i]
+		spawner.position = tile_map_layer.map_to_local(data.spawner_cells[i])
+		add_child(spawner)
+		move_child(spawner, insert_at + i)
+		enemy_spawners.append(spawner)
+	print("Map seed: %d" % map_seed)
 
 
 ## Makes one preview line per spawner: copies of the template, placed right after it.
