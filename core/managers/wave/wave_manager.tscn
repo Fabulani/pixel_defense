@@ -1,7 +1,7 @@
 [gd_scene format=3 uid="uid://bt8mmlvv2d08j"]
 
 [ext_resource type="Script" uid="uid://clhjupk5pihwt" path="res://core/managers/wave/wave_manager.gd" id="1_28t5r"]
-[ext_resource type="Resource" path="res://core/managers/wave/default_waves.tres" id="2_waves"]
+[ext_resource type="Resource" uid="uid://cndjldqtub12x" path="res://core/managers/wave/default_waves.tres" id="2_waves"]
 
 [node name="WaveManager" type="Node" unique_id=1967040178]
 script = ExtResource("1_28t5r")
