@@ -1,6 +1,6 @@
 class_name MapData extends RefCounted
 
-enum Cell { WATER, GRASS, TREE }
+enum Cell { WATER, GRASS, TREE, ROAD, LAMP }
 
 ## Bits of the water mask (neighbours that are water).
 const N: int = 1
@@ -52,9 +52,24 @@ func set_cell(cell: Vector2i, value: Cell) -> void:
 		cells[cell.y * size.x + cell.x] = value
 
 
-## Grass cells are walkable; all grass decoration tiles are walkable too.
+## Grass and road cells are walkable; all grass decoration tiles are walkable too. Trees and lamps are not.
 func is_walkable(cell: Vector2i) -> bool:
-	return get_cell(cell) == Cell.GRASS
+	var value: Cell = get_cell(cell)
+	return value == Cell.GRASS or value == Cell.ROAD
+
+
+## Returns the 4-bit road mask of a cell: N, E, S, W are set where that side neighbour is a road.
+func get_road_mask(cell: Vector2i) -> int:
+	var mask: int = 0
+	if get_cell(cell + Vector2i(0, -1)) == Cell.ROAD:
+		mask |= N
+	if get_cell(cell + Vector2i(1, 0)) == Cell.ROAD:
+		mask |= E
+	if get_cell(cell + Vector2i(0, 1)) == Cell.ROAD:
+		mask |= S
+	if get_cell(cell + Vector2i(-1, 0)) == Cell.ROAD:
+		mask |= W
+	return mask
 
 
 ## Returns the normalised 8-bit water mask of a cell: a water side also sets its two corners.

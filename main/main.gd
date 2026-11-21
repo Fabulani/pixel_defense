@@ -24,6 +24,8 @@ func _ready() -> void:
 	input_controller.setup()
 	tower_preview.tile_map_layer = current_level.tile_map_layer
 
+	camera.fit_rect(current_level.get_map_rect())
+
 	# Game signals
 	current_level.lost.connect(_on_level_lost)
 	current_level.won.connect(_on_level_won)

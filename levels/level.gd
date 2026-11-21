@@ -85,6 +85,14 @@ func unregister_tower(tower: Tower, cell_position: Vector2i) -> void:
 	PathfindingManager.set_cell_solid(cell_position, false)
 
 
+## Global pixel rect covered by the used cells of the tile layer.
+func get_map_rect() -> Rect2:
+	var used: Rect2i = tile_map_layer.get_used_rect()
+	var tile_size: Vector2 = Vector2(tile_map_layer.tile_set.tile_size)
+	var top_left: Vector2 = tile_map_layer.to_global(tile_map_layer.map_to_local(used.position) - tile_size * 0.5)
+	return Rect2(top_left, Vector2(used.size) * tile_size * tile_map_layer.global_scale)
+
+
 ## Whether the tile at the cell allows building.
 func is_cell_buildable(cell_position: Vector2i) -> bool:
 	var tile_data: TileData = tile_map_layer.get_cell_tile_data(cell_position)
