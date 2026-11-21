@@ -68,13 +68,19 @@ func speedup_spawning() -> void:
 ## The position is set before add_child so the enemy paths from where it appears.
 ## With [param deferred] the child is added at the end of the frame; use it when called from a
 ## physics callback (a bullet hit), where adding a physics body is an error. It is counted at once.
-func _create_enemy(scene: PackedScene, world_position: Vector2, deferred: bool, generation: int = 0) -> Enemy:
+## A non-NaN [param facing] is the starting rotation and skips the spawn-facing snap.
+func _create_enemy(
+	scene: PackedScene, world_position: Vector2, deferred: bool, generation: int = 0, facing: float = NAN
+) -> Enemy:
 	var enemy: Enemy = scene.instantiate() as Enemy
 	if enemy == null:
 		push_error("EnemySpawner: scene %s does not instantiate Enemy." % scene.resource_path)
 		return null
 	enemy.position = to_local(world_position)
 	enemy.split_generation = generation
+	if not is_nan(facing):
+		enemy.rotation = facing
+		enemy.pathfinding.snap_to_first_path = false
 	enemy.set_target_position(target_position)
 	enemy.died.connect(_on_enemy_died)
 	enemy.tree_exiting.connect(_on_enemy_tree_exiting)
@@ -104,7 +110,7 @@ func _spawn_death_children(enemy: Enemy) -> void:
 		return
 	for i: int in range(enemy.stats.death_spawn_count):
 		var offset: Vector2 = Vector2.from_angle(randf() * TAU) * randf_range(2.0, 6.0)
-		_create_enemy(scene, enemy.global_position + offset, true, enemy.split_generation + 1)
+		_create_enemy(scene, enemy.global_position + offset, true, enemy.split_generation + 1, enemy.rotation)
 
 
 func _exit_tree() -> void:
