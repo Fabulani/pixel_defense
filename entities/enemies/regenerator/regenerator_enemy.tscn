@@ -6,6 +6,7 @@
 [ext_resource type="Texture2D" uid="uid://d1gaiu33wvk8o" path="res://entities/enemies/regenerator/ship_green_small.png" id="3_texture"]
 [ext_resource type="Script" uid="uid://cu0kptnvjawfe" path="res://entities/enemies/components/abilities/regeneration.gd" id="4_comp"]
 [ext_resource type="Script" uid="uid://dr6joirhgvifb" path="res://entities/enemies/components/health/health.gd" id="4_un1a8"]
+[ext_resource type="Script" path="res://entities/enemies/components/effects/damage_smoke.gd" uid="uid://bkubxlugtfpim" id="9_smoke"]
 
 [sub_resource type="Resource" id="Resource_wvm41"]
 resource_local_to_scene = true
@@ -30,3 +31,6 @@ shape = SubResource("Hitbox_regenerator")
 
 [node name="Regeneration" type="Node" parent="." index="3" unique_id=1465794895]
 script = ExtResource("4_comp")
+
+[node name="DamageSmoke" type="Node" parent="."]
+script = ExtResource("9_smoke")

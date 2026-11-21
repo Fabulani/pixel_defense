@@ -4,6 +4,8 @@ signal spawning_complete
 signal alive_count_changed(count: int)
 ## Emitted when an enemy died, with where, its coin drop and its effect colour.
 signal enemy_died(death_position: Vector2, coins: int, color: Color)
+## Emitted when an enemy's armor reduced a hit, with where.
+signal enemy_armor_deflected(hit_position: Vector2)
 
 ## The spawner takes part from the wave with this index (0-based; the banner shows index + 1).
 @export var first_wave: int = 0
@@ -100,6 +102,7 @@ func _create_enemy(
 		enemy.pathfinding.snap_to_first_path = false
 	enemy.set_target_position(target_position)
 	enemy.died.connect(_on_enemy_died)
+	enemy.armor_deflected.connect(_on_enemy_armor_deflected)
 	enemy.tree_exiting.connect(_on_enemy_tree_exiting)
 	_alive_count += 1
 	if deferred:
@@ -143,6 +146,10 @@ func _on_enemy_died(enemy: Enemy) -> void:
 	CurrencyManager.earn(enemy.drops.coins)
 	enemy_died.emit(enemy.global_position, enemy.drops.coins, enemy.stats.vfx_color)
 	_spawn_death_children(enemy)
+
+
+func _on_enemy_armor_deflected(hit_position: Vector2) -> void:
+	enemy_armor_deflected.emit(hit_position)
 
 
 func _on_enemy_tree_exiting() -> void:

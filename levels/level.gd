@@ -7,6 +7,7 @@ signal won
 signal bullet_fired(data: ProjectileData)
 signal bullet_hit(hit_position: Vector2, direction: Vector2, data: ProjectileData)
 signal enemy_died(death_position: Vector2, coins: int, color: Color)
+signal armor_deflected(hit_position: Vector2)
 
 @export var player_base: PlayerBase
 @export var enemy_spawners: Array[EnemySpawner] = []
@@ -57,6 +58,7 @@ func _ready() -> void:
 	wave_manager.alive_count_changed.connect(_on_wave_manager_alive_count_changed)
 	for spawner: EnemySpawner in enemy_spawners:
 		spawner.enemy_died.connect(_on_enemy_spawner_enemy_died)
+		spawner.enemy_armor_deflected.connect(_on_enemy_spawner_enemy_armor_deflected)
 	wave_manager.setup(enemy_spawners)
 	projectile_manager.bullet_fired.connect(_on_projectile_manager_bullet_fired)
 	projectile_manager.bullet_hit.connect(_on_projectile_manager_bullet_hit)
@@ -193,6 +195,10 @@ func _on_wave_manager_alive_count_changed(count: int) -> void:
 
 func _on_enemy_spawner_enemy_died(death_position: Vector2, coins: int, color: Color) -> void:
 	enemy_died.emit(death_position, coins, color)
+
+
+func _on_enemy_spawner_enemy_armor_deflected(hit_position: Vector2) -> void:
+	armor_deflected.emit(hit_position)
 
 
 func _on_projectile_manager_bullet_fired(data: ProjectileData) -> void:
