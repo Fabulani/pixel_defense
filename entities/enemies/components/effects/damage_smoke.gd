@@ -16,7 +16,7 @@ class_name DamageSmoke extends Node
 ## Exponent on the intensity; above 1 keeps the smoke faint for longer.
 @export var intensity_curve: float = 1.5
 @export var lifetime: float = 0.9
-@export var color: Color = Color(0.25, 0.25, 0.25, 0.55)
+@export var color: Color = Color(0.25, 0.25, 0.25, 0.8)
 @export var speed_min: float = 4.0
 @export var speed_max: float = 10.0
 @export var spread_degrees: float = 25.0
