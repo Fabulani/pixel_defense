@@ -1,8 +1,8 @@
 [gd_scene format=3 uid="uid://cmplrw87602f1"]
 
 [ext_resource type="PackedScene" uid="uid://dw4n2dmih5uxd" path="res://entities/enemies/enemy.tscn" id="1_base"]
-[ext_resource type="Resource" path="res://entities/enemies/regenerator/regenerator_enemy_stats.tres" id="2_stats"]
-[ext_resource type="Resource" path="res://entities/enemies/regenerator/regenerator_enemy_drops.tres" id="3_drops"]
+[ext_resource type="Resource" uid="uid://cdgnk18y3kskp" path="res://entities/enemies/regenerator/regenerator_enemy_stats.tres" id="2_stats"]
+[ext_resource type="Resource" uid="uid://c1nk0l1ssp2l7" path="res://entities/enemies/regenerator/regenerator_enemy_drops.tres" id="3_drops"]
 [ext_resource type="Texture2D" uid="uid://d1gaiu33wvk8o" path="res://entities/enemies/regenerator/ship_green_small.png" id="3_texture"]
 [ext_resource type="Script" uid="uid://cu0kptnvjawfe" path="res://entities/enemies/components/abilities/regeneration.gd" id="4_comp"]
 [ext_resource type="Script" uid="uid://dr6joirhgvifb" path="res://entities/enemies/components/health/health.gd" id="4_un1a8"]

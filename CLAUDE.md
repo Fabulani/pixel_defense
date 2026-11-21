@@ -118,7 +118,7 @@ Open items:
 
 - There is one base tower by design; variety comes from its upgrade paths (currently the three majors). `BuildingManager` and `TowerPreview` each `preload` the single tower scene / stats on purpose. There is no build bar or tower-kind harness (built and removed after playtesting, 2026-11-16).
 - Multi-touch across the tower menu and the map is not coordinated: a finger held on a button does not block a second finger's map tap, and a pinch starting on a button cannot zoom.
-- All values of the new enemies (armored, regenerator, splitter, mini, dasher), their coins and wave shares are placeholders and unbalanced. Their stats/drops `.tres` were written by hand without `uid://`; re-save them once in the editor (the `.tscn` are re-saved).
+- All values of the new enemies (armored, regenerator, splitter, mini, dasher), their coins and wave shares are placeholders and unbalanced.
 - Enemies have no health bars, so armor and regeneration are only readable through the flash colours.
 - Issue #11 (obstacle-breaking enemy) is not done.
 - Tower upgrades / `TowerMenu` are verified only headless with injected mouse and touch events (real `Input.parse_input_event` presses on the menu buttons; no leak to `clicked`/`tapped`, no double handling). Not yet checked on a phone, mobile Web or touchscreen laptop, nor with a human looking at it: menu placement/size at zoom and near screen edges, the hue-swap colours, the level number label and the 0.8 cannon scale are reviewed only in desktop renders, not on a device.

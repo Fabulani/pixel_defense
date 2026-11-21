@@ -1,4 +1,4 @@
-[gd_resource type="Resource" script_class="EnemyStats" format=3]
+[gd_resource type="Resource" script_class="EnemyStats" format=3 uid="uid://dnwc64h85rxy"]
 
 [ext_resource type="Script" uid="uid://c2pkska5ungt1" path="res://entities/enemies/components/stats/enemy_stats.gd" id="1_stats"]
 [ext_resource type="PackedScene" path="res://entities/enemies/mini/mini_enemy.tscn" id="1_mini"]
