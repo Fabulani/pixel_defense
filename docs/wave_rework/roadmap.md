@@ -26,7 +26,7 @@ Planned 2026-11-22. Replaces the dev-only wave generation (roadmap item 5). One 
 |---|---|---|---|
 | 0 | [phase-0.md](phase-0.md) | Remove legacy map option | done |
 | 1 | [phase-1.md](phase-1.md) | Seeded budget generator, 20 waves, `tools/print_waves` | done |
-| 2 | [phase-2.md](phase-2.md) | Wave templates, per-spawner composition, boss slot | todo |
+| 2 | [phase-2.md](phase-2.md) | Wave templates, per-spawner composition, boss slot | done |
 | 3 | [phase-3.md](phase-3.md) | Countdown, call-early bonus, wave banner | todo |
 | 4 | [phase-4.md](phase-4.md) | Bosses (base + varieties). Blocked on debug scene | outline |
 
@@ -53,6 +53,7 @@ pixel_defense deltas (win over studio files on conflict):
 - Git: no commit, branch, switch, stash, push. Manager does all git.
 - No edits to `CLAUDE.md`, `README.md`, `docs/`. Manager updates them after review.
 - Values marked placeholder: use as given, never tune.
+- Never write `uid://` values by hand. New/changed `.tres`/`.tscn`: let Godot save them (temp `@tool` scene run with `godot --headless -e <scene>` doing `load()`/build + `ResourceSaver.save()`, deleted after; a plain runtime or `--script` save drops uids). `.uid` sidecars come from `godot --headless --import`. Keep existing uids.
 
 ## Workflow per phase
 

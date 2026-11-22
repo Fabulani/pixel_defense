@@ -1,0 +1,26 @@
+[gd_resource type="Resource" script_class="WaveTemplate" format=3 uid="uid://dly88catgkkhm"]
+
+[ext_resource type="Script" uid="uid://wjbmh338yskt" path="res://core/managers/wave/wave_enemy_weight.gd" id="1_vgf6h"]
+[ext_resource type="PackedScene" uid="uid://dnwd6vi1t3f5d" path="res://entities/enemies/fast/fast_enemy.tscn" id="2_mic5p"]
+[ext_resource type="PackedScene" uid="uid://rt4p6ierf3dm" path="res://entities/enemies/dasher/dasher_enemy.tscn" id="3_1032b"]
+[ext_resource type="Script" uid="uid://durs445cwrswf" path="res://core/managers/wave/wave_template.gd" id="4_qxa1e"]
+
+[sub_resource type="Resource" id="Resource_u4fvr"]
+script = ExtResource("1_vgf6h")
+scene = ExtResource("2_mic5p")
+multiplier = 3.0
+
+[sub_resource type="Resource" id="Resource_8ud4k"]
+script = ExtResource("1_vgf6h")
+scene = ExtResource("3_1032b")
+multiplier = 3.0
+
+[resource]
+script = ExtResource("4_qxa1e")
+id = &"rush"
+display_name = "Rush"
+description = "Fast enemies, little warning."
+is_special = true
+first_wave = 2
+spawn_delay_multiplier = 0.7
+enemy_weights = Array[ExtResource("1_vgf6h")]([SubResource("Resource_u4fvr"), SubResource("Resource_8ud4k")])

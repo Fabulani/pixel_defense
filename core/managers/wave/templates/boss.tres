@@ -1,0 +1,33 @@
+[gd_resource type="Resource" script_class="WaveTemplate" format=3 uid="uid://d073o33i8spw7"]
+
+[ext_resource type="Script" uid="uid://wjbmh338yskt" path="res://core/managers/wave/wave_enemy_weight.gd" id="1_iaju2"]
+[ext_resource type="PackedScene" uid="uid://cavk4vh6k1igx" path="res://entities/enemies/heavy/heavy_enemy.tscn" id="2_6ckms"]
+[ext_resource type="PackedScene" uid="uid://bed7ulmwtdwx8" path="res://entities/enemies/armored/armored_enemy.tscn" id="3_sor47"]
+[ext_resource type="PackedScene" uid="uid://b1mg352s1f4mt" path="res://entities/enemies/basic/basic_enemy.tscn" id="4_f6240"]
+[ext_resource type="Script" uid="uid://durs445cwrswf" path="res://core/managers/wave/wave_template.gd" id="5_aasi4"]
+
+[sub_resource type="Resource" id="Resource_qtkva"]
+script = ExtResource("1_iaju2")
+scene = ExtResource("2_6ckms")
+multiplier = 3.0
+
+[sub_resource type="Resource" id="Resource_023kt"]
+script = ExtResource("1_iaju2")
+scene = ExtResource("3_sor47")
+multiplier = 3.0
+
+[sub_resource type="Resource" id="Resource_oo3k1"]
+script = ExtResource("1_iaju2")
+scene = ExtResource("4_f6240")
+multiplier = 0.3
+
+[resource]
+script = ExtResource("5_aasi4")
+id = &"boss"
+display_name = "Boss"
+description = "Something big is coming."
+is_special = true
+weight = 0.0
+budget_multiplier = 1.5
+spawn_delay_multiplier = 1.2
+enemy_weights = Array[ExtResource("1_iaju2")]([SubResource("Resource_qtkva"), SubResource("Resource_023kt"), SubResource("Resource_oo3k1")])
