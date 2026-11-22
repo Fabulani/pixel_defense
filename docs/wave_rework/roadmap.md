@@ -28,7 +28,7 @@ Planned 2026-11-22. Replaces the dev-only wave generation (roadmap item 5). One 
 | 1 | [phase-1.md](phase-1.md) | Seeded budget generator, 20 waves, `tools/print_waves` | done |
 | 2 | [phase-2.md](phase-2.md) | Wave templates, per-spawner composition, boss slot | done |
 | 3 | [phase-3.md](phase-3.md) | Countdown, call-early bonus, wave banner | done |
-| 4 | [phase-4.md](phase-4.md) | Bosses (base + varieties). Blocked on debug menu (`docs/debug_menu/`) | outline |
+| 4 | [phase-4.md](phase-4.md) | Bosses (base + varieties). Unblocked: the debug menu (`debug/`) exists | outline |
 
 Briefs 1-4 are rechecked against merged code before their phase starts.
 
