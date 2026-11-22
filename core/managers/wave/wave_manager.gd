@@ -1,18 +1,29 @@
 class_name WaveManager extends Node
 
 signal wave_started(wave_index: int)
-signal wave_done(wave_index: int)
+## Emitted when the next wave was planned (countdown start, or right before the first wave).
+signal wave_planned(plan: WavePlan)
+## Countdown to the next wave: seconds left and the current early-call bonus in coins.
+## Emitted at countdown start, then at most every 0.1 s, and as (0.0, 0) when it ends or is skipped.
+signal countdown_changed(time_left: float, bonus: int)
+## Emitted when the player called the next wave early, with the coins paid.
+signal early_called(coins: int)
 signal all_waves_done
 ## Emitted when any spawner's alive count changed, with the total over all spawners.
 signal alive_count_changed(count: int)
 
-@export var wave_delay: int = 3
+## Seconds between the end of spawning and the next wave (placeholder).
+@export var wave_delay: float = 12.0
+## Coins per remaining countdown second when calling the next wave early (placeholder).
+@export var early_bonus_per_second: float = 0.5
 @export var config: WaveConfig
 ## Seconds between two spawns of the whole wave (first wave).
 @export var spawn_delay: float = 1.0
 ## Subtracted from the spawn delay after each wave whose spawning completed.
 @export var spawn_delay_step: float = 0.1
 @export var min_spawn_delay: float = 0.3
+
+const COUNTDOWN_EMIT_INTERVAL: float = 0.1
 
 var wave_index: int = 0
 
@@ -25,13 +36,27 @@ var _is_exiting: bool = false
 var _wave_seed: int = 1
 ## Template each spawner used in its previous wave (no-repeat rule for special templates).
 var _last_templates: Dictionary[EnemySpawner, WaveTemplate] = {}
+## Plan of the next wave; spawned as is by [method start_next_wave].
+var _next_plan: WavePlan = null
+## Seconds until the next [signal countdown_changed] from [method _process].
+var _countdown_emit_in: float = 0.0
 
 @onready var wave_timer: Timer = $WaveTimer
 
 
 func _ready() -> void:
 	_current_spawn_delay = maxf(min_spawn_delay, spawn_delay)
+	wave_timer.one_shot = true
 	wave_timer.timeout.connect(_on_wave_timer_timeout)
+
+
+func _process(delta: float) -> void:
+	if wave_timer.is_stopped():
+		return
+	_countdown_emit_in -= delta
+	if _countdown_emit_in <= 0.0:
+		_countdown_emit_in = COUNTDOWN_EMIT_INTERVAL
+		countdown_changed.emit(wave_timer.time_left, get_early_bonus())
 
 
 func _exit_tree() -> void:
@@ -66,13 +91,17 @@ func start_next_wave() -> void:
 		push_error("WaveManager: no spawners; call setup() first.")
 		return
 
+	if _next_plan == null:
+		_next_plan = _plan_next_wave()
+		wave_planned.emit(_next_plan)
+	var plan: WavePlan = _next_plan
+	_next_plan = null
 	var active: Array[EnemySpawner] = _get_active_spawners()
 	var count: int = active.size()
-
-	var last_templates: Array[WaveTemplate] = []
-	for spawner: EnemySpawner in active:
-		last_templates.append(_last_templates.get(spawner))
-	var plan: WavePlan = config.generate(wave_index, WaveConfig.make_rng(_wave_seed, wave_index), count, last_templates)
+	if plan.index != wave_index or plan.spawners.size() != count:
+		push_warning("WaveManager: stored plan does not match wave %d; re-planning." % wave_index)
+		plan = _plan_next_wave()
+		wave_planned.emit(plan)
 
 	_spawning_count = 0
 	for k: int in range(count):
@@ -93,10 +122,50 @@ func start_next_wave() -> void:
 		_on_all_spawning_complete()
 
 
-## Ends the current wave and schedules the next one.
+## Whether [method call_next_wave] would start a wave now (only while the countdown runs).
+func can_call_next_wave() -> bool:
+	return not wave_timer.is_stopped() and _spawning_count == 0 and wave_index < config.max_waves and not _is_exiting
+
+
+## Coins paid for calling the next wave now; 0 when no countdown runs.
+func get_early_bonus() -> int:
+	if wave_timer.is_stopped():
+		return 0
+	return floori(wave_timer.time_left * early_bonus_per_second)
+
+
+## Starts the next wave now and pays the early bonus. No-op unless [method can_call_next_wave].
+func call_next_wave() -> void:
+	if not can_call_next_wave():
+		return
+	var bonus: int = get_early_bonus()
+	wave_timer.stop()
+	if bonus > 0:
+		CurrencyManager.earn(bonus)
+	early_called.emit(bonus)
+	countdown_changed.emit(0.0, 0)
+	start_next_wave()
+
+
+## Ends the current wave: plans the next one and starts the countdown (none after the last wave).
 func end_current_wave() -> void:
-	wave_done.emit(wave_index)
+	if wave_index >= config.max_waves:
+		countdown_changed.emit(0.0, 0)
+		return
+	_next_plan = _plan_next_wave()
+	wave_planned.emit(_next_plan)
 	wave_timer.start(wave_delay)
+	_countdown_emit_in = COUNTDOWN_EMIT_INTERVAL
+	countdown_changed.emit(wave_timer.time_left, get_early_bonus())
+
+
+## Generates the plan of the upcoming wave for its open spawners.
+func _plan_next_wave() -> WavePlan:
+	var active: Array[EnemySpawner] = _get_active_spawners()
+	var last_templates: Array[WaveTemplate] = []
+	for spawner: EnemySpawner in active:
+		last_templates.append(_last_templates.get(spawner))
+	return config.generate(wave_index, WaveConfig.make_rng(_wave_seed, wave_index), active.size(), last_templates)
 
 
 func _get_active_spawners() -> Array[EnemySpawner]:
@@ -135,6 +204,7 @@ func _on_all_spawning_complete() -> void:
 
 ## The next wave starts at (all spawning complete + timer_timeout).
 func _on_wave_timer_timeout() -> void:
+	countdown_changed.emit(0.0, 0)
 	start_next_wave()
 
 

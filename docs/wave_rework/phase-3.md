@@ -51,3 +51,13 @@ Manual (user): check on a phone/touch device; button size, banner legibility.
 ## Out of scope
 
 Upcoming-waves strip, enemy icons, intro cards, fast-forward, auto-start toggle, balancing.
+
+## As built (manager decisions, 2026-11-22)
+
+- `countdown_changed(time_left: float, bonus: int)` carries the bonus, so the HUD needs no tunable.
+- Wave 1 has no countdown; its plan is made and `wave_planned` emitted inside `start_next_wave()` (not `setup()`, which runs before `Main` connects).
+- `WaveTimer` is set `one_shot` in code (it repeated before).
+- Early-call coin pop-up: existing `VfxManager.play_coin_popup()` at `Level.get_base_position()`.
+- HUD: `%NextWaveButton` bottom centre (180×72); special lines in `%WaveBannerDetail` (child of `%WaveBanner`), held `banner_hold_special` 2.0 s (placeholder); `(+N)` hidden when the bonus is 0.
+- Banner only at wave start (user, after playtest): showing it at countdown start too was confusing. `show_wave_plan()` only stores the plan.
+- Known: a fast double press on the button reaches the map with its second press (button hides at once); listed in `CLAUDE.md`.

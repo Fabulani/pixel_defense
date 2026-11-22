@@ -6,14 +6,22 @@
 - [ ] **Separate interface scale for mobile.** The mobile UI is too small for a touchscreen. Add a dedicated UI scale for mobile (HUD, tower menu, buttons).
 - [x] **Smooth turning.** Enemies and tower cannons currently snap to their direction of movement / target. Rotate them smoothly toward it.
 - [ ] **Glossary.** A screen listing enemy and tower types, their stats and what they do.
-- [ ] **Wave notification.** A short on-screen notice that disappears by itself and says which enemies come this wave and what is special about them, in a few words. Covered by wave rework phase 3 (`docs/wave_rework/phase-3.md`): banner names special waves only.
+- [x] **Wave notification.** A short on-screen notice that disappears by itself and says which enemies come this wave and what is special about them, in a few words. Covered by wave rework phase 3 (`docs/wave_rework/phase-3.md`): banner names special waves only.
 - [ ] **Debug scene.** A separate scene for testing individual features, towers and enemies in isolation (spawn a chosen enemy or tower on demand, free coins, no waves).
 - [ ] **Map generation options.** A screen (from the start menu) where the player tunes the generated map to their liking: seed, map size, island size and coast roughness, number of spawners, lakes, trees, decoration, farms, road wiggle and lamp spacing. Each setting maps to a `MapGenConfig` export; keep a "default" reset and show the seed so a map can be shared and replayed.
 - [ ] **Enemies spread out like a wave.** Enemies currently clump and only walk the shortest path from flag to base. Experiment: each enemy starts on the flag-to-base path but keeps its own independent path, so when it is pushed off the main path (knockback, crowding) it may take a different route instead of snapping back. Goal: no more big clumps; a wave should spread and expand across the map.
+- [ ] **Turret turn slowdown after a shot.** For 1 s after firing, a turret turns at 25 % of its turn speed.
 - [ ] **Allow building on farms.** Farmland cells should be buildable like grass.
 - [ ] **Difficulty setting.** A difficulty choice that scales `WaveConfig.budget_growth` (and maybe `max_waves`). Belongs with the wave-settings / advanced settings screen.
 - [ ] **Unique maps.** Hand-made maps playable next to generated ones. The old legacy map (still painted in `levels/level.tscn`, not playable since wave rework phase 0) becomes the first unique map. Needs its own plan: map selection, where unique maps live, spawner `first_wave` per map.
 - [ ] **Boss varieties.** A base boss plus varieties: shielded (big shield effect that keeps regenerating like the regenerator; once broken, no more regen), carrier (keeps spawning fast / dasher enemies), stealther (goes invisible every x seconds, untargetable), more later. Planned as wave rework phase 4 (`docs/wave_rework/phase-4.md`).
+
+## UI rework
+
+- [ ] **Top bar.** A slim horizontal bar across the top of the screen: total coins on the left, current wave on the right.
+- [ ] **Wave banner as a drop-down notification.** The banner drops from the top of the screen like a mobile notification. Title `Wave N`, subtitle `<special wave name>`, description `<enemy icon> <amount> <other enemy icon> <amount> ...` (one icon + count per enemy type in the wave).
+- [ ] **Minimap.** A square minimap in the bottom right with a simplified view of the map: enemies are red dots, the player base a blue dot, built towers green dots, obstacles gray dots. Below the map: `<red dot> x <enemy count> left`.
+- [ ] **Early-call toast.** The next-wave button becomes a toast in the bottom left: `Next wave`, second line `+<bonus><coin icon>`, and a progress bar along the top of the toast going from full to empty instead of the numeric countdown.
 
 ## Effects polish
 
