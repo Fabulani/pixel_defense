@@ -24,7 +24,7 @@ Planned 2026-11-22. Replaces the dev-only wave generation (roadmap item 5). One 
 
 | # | Brief | Content | Status |
 |---|---|---|---|
-| 0 | [phase-0.md](phase-0.md) | Remove legacy map option | todo |
+| 0 | [phase-0.md](phase-0.md) | Remove legacy map option | done |
 | 1 | [phase-1.md](phase-1.md) | Seeded budget generator, 20 waves, `tools/print_waves` | todo |
 | 2 | [phase-2.md](phase-2.md) | Wave templates, per-spawner composition, boss slot | todo |
 | 3 | [phase-3.md](phase-3.md) | Countdown, call-early bonus, wave banner | todo |

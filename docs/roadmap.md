@@ -56,7 +56,7 @@ Left:
 
 Replaces the dev-only wave generation: seeded per-wave budget, 20 waves (configurable), wave templates (special waves, boss slot), per-spawner composition, countdown with call-early bonus, wave banner. Plan, decisions and phase briefs: `docs/wave_rework/roadmap.md`.
 
-- [ ] Phase 0: remove the legacy map option
+- [x] Phase 0: remove the legacy map option
 - [ ] Phase 1: seeded budget generator
 - [ ] Phase 2: templates, per-spawner composition, boss slot
 - [ ] Phase 3: countdown, call-early bonus, wave banner
