@@ -10,3 +10,6 @@ downloads/
 # release signing
 *.keystore
 *.jks
+
+# personal notes
+docs/untracked/

@@ -14,14 +14,12 @@ signal armor_deflected(hit_position: Vector2)
 @export var wave_manager: WaveManager
 @export var projectile_manager: ProjectileManager
 @export var pathfinding_preview: Line2D
-## Build the map with the generator instead of using the hand-painted one in the scene.
-@export var use_generated_map: bool = true
-## Settings of the map generator. Only used when `use_generated_map` is on.
+## Settings of the map generator.
 @export var map_config: MapGenConfig
 
 const SPAWNER_SCENE: PackedScene = preload("uid://dbkc22ud4e32")
 
-## Seed of the generated map, 0 for the legacy map.
+## Seed of the generated map (>= 1 once the level is ready).
 var map_seed: int = 0
 
 ## Number of waves started so far.
@@ -42,8 +40,7 @@ func _ready() -> void:
 	# Starting currency
 	CurrencyManager.coins = 5
 
-	if use_generated_map and not GameData.legacy_map:
-		_generate_map()
+	_generate_map()
 	GameData.map_seed = map_seed
 
 	PathfindingManager.setup(tile_map_layer)
@@ -114,7 +111,7 @@ func would_block_path(cell_position: Vector2i) -> bool:
 
 
 ## Seed for the next generated map: the requested one, or a random one.
-## A seed is never 0 (`GameData.map_seed == 0` means the legacy map).
+## A seed is never 0.
 func _pick_seed() -> int:
 	if GameData.requested_seed >= 1:
 		return GameData.requested_seed

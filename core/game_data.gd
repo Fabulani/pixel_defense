@@ -6,14 +6,11 @@ var grid_cell_size: Vector2i = Vector2i.ONE
 ## It stays set until changed, so every run (restart, F1) replays that map.
 var requested_seed: int = -1
 
-## Play the hand-made map instead of a generated one.
-var legacy_map: bool = false
-
-## Seed of the map currently loaded (0 only for the legacy map; generated maps use seeds >= 1). Written by Level.
+## Seed of the map currently loaded (0 until a level has loaded, then >= 1). Written by Level.
 var map_seed: int = 0
 
 
-## Reads the user arguments once: `--seed=<int>` and `--legacy-map` (usage: `godot -- --seed=12345`).
+## Reads the user arguments once: `--seed=<int>` (usage: `godot -- --seed=12345`).
 func _ready() -> void:
 	for arg: String in OS.get_cmdline_user_args():
 		if arg.begins_with("--seed="):
@@ -22,5 +19,3 @@ func _ready() -> void:
 				requested_seed = value.to_int()
 			else:
 				push_warning("GameData: ignoring invalid seed '%s' (expected an integer >= 1)." % value)
-		elif arg == "--legacy-map":
-			legacy_map = true

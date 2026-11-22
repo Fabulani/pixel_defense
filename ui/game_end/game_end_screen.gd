@@ -37,7 +37,7 @@ func _show_end(title: String, color: Color, waves_survived: int, coins: int, map
 	_wave_label.text = "wave %d" % waves_survived
 	_coins_label.text = str(coins)
 	_seed_label.text = "seed %d" % map_seed
-	_seed_label.visible = map_seed != 0
+	_seed_label.visible = true
 	show()
 	get_tree().paused = true
 
