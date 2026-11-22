@@ -8,7 +8,7 @@ description: LFS pull, Godot, optional export templates, import cache.
 inputs:
   templates:
     description: >-
-      Space-separated platforms whose release export templates to install:
+      Space-separated platforms whose release + debug export templates to install:
       any of windows linux android web. Empty = none.
     default: ""
 runs:
@@ -72,8 +72,8 @@ runs:
       uses: actions/cache@v6
       with:
         path: ~/.local/share/godot/export_templates/${{ env.GODOT_VERSION }}.stable
-        # -v1: bump when the extracted file list below changes (stale cache otherwise).
-        key: templates-${{ env.GODOT_VERSION }}-${{ steps.in.outputs.key }}-v1
+        # -v2: bump when the extracted file list below changes (stale cache otherwise).
+        key: templates-${{ env.GODOT_VERSION }}-${{ steps.in.outputs.key }}-v2
     - name: Download export templates
       if: steps.in.outputs.key != '' && steps.tpl-cache.outputs.cache-hit != 'true'
       shell: bash
@@ -81,15 +81,16 @@ runs:
         TEMPLATES: ${{ inputs.templates }}
       run: |
         # Full .tpz is ~1.3 GB unpacked (all platforms, debug + release): extract
-        # only the release templates we export with (cache bloat otherwise).
-        # Android also needs the debug apk: unsigned-fallback builds use --export-debug.
+        # only the templates we export with (cache bloat otherwise): release for tag
+        # releases, debug for PR/main/manual builds (--export-debug, debug menu included).
         # (Non-gradle Android export uses only android_{release,debug}.apk, not android_source.zip.)
         files=("templates/version.txt")
         for p in $TEMPLATES; do
           case "$p" in
-            windows) files+=("templates/windows_release_x86_64.exe" "templates/windows_release_x86_64_console.exe") ;;
-            linux)   files+=("templates/linux_release.x86_64") ;;
-            web)     files+=("templates/web_nothreads_release.zip") ;;
+            windows) files+=("templates/windows_release_x86_64.exe" "templates/windows_release_x86_64_console.exe"
+                             "templates/windows_debug_x86_64.exe" "templates/windows_debug_x86_64_console.exe") ;;
+            linux)   files+=("templates/linux_release.x86_64" "templates/linux_debug.x86_64") ;;
+            web)     files+=("templates/web_nothreads_release.zip" "templates/web_nothreads_debug.zip") ;;
             android) files+=("templates/android_release.apk" "templates/android_debug.apk") ;;
           esac
         done
