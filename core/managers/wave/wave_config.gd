@@ -18,7 +18,7 @@ class_name WaveConfig extends Resource
 ## Template of the boss slot.
 @export var boss_template: WaveTemplate
 ## Every [member boss_interval]-th wave (and the last one) has a boss slot.
-@export var boss_interval: int = 5
+@export var boss_interval: int = 10
 
 
 ## Budget of the wave at [param index].
