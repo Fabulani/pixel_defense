@@ -26,6 +26,8 @@ signal alive_count_changed(count: int)
 const COUNTDOWN_EMIT_INTERVAL: float = 0.1
 
 var wave_index: int = 0
+## Debug: multiplies the budget of waves planned from now on.
+var budget_scale: float = 1.0
 
 var _spawners: Array[EnemySpawner] = []
 var _current_spawn_delay: float = 0.0
@@ -40,6 +42,10 @@ var _last_templates: Dictionary[EnemySpawner, WaveTemplate] = {}
 var _next_plan: WavePlan = null
 ## Seconds until the next [signal countdown_changed] from [method _process].
 var _countdown_emit_in: float = 0.0
+## Debug releases of [method debug_spawn_wave]: {spawner, enemies, wait, interval}, independent of the wave queue.
+var _debug_releases: Array[Dictionary] = []
+## Debug spawn delay override in seconds; 0 = off.
+var _spawn_delay_override: float = 0.0
 
 @onready var wave_timer: Timer = $WaveTimer
 
@@ -51,7 +57,8 @@ func _ready() -> void:
 
 
 func _process(delta: float) -> void:
-	if wave_timer.is_stopped():
+	_process_debug_releases(delta)
+	if wave_timer.is_stopped() or wave_timer.paused:
 		return
 	_countdown_emit_in -= delta
 	if _countdown_emit_in <= 0.0:
@@ -113,7 +120,7 @@ func start_next_wave() -> void:
 			continue
 		_spawning_count += 1
 		var delay_multiplier: float = sp.template.spawn_delay_multiplier if sp.template != null else 1.0
-		spawner.start_spawning(sp.enemies, _current_spawn_delay * count * delay_multiplier, _current_spawn_delay * (k + 1))
+		spawner.start_spawning(sp.enemies, _effective_spawn_delay() * count * delay_multiplier, _effective_spawn_delay() * (k + 1))
 
 	wave_index += 1
 	wave_started.emit(wave_index)
@@ -159,22 +166,117 @@ func end_current_wave() -> void:
 	countdown_changed.emit(wave_timer.time_left, get_early_bonus())
 
 
+## Debug: multiplies the budget of waves planned from now on; re-plans a plan already made.
+func set_budget_scale(scale: float) -> void:
+	budget_scale = maxf(0.0, scale)
+	_replan_next()
+
+
+## Debug: pauses or resumes the next-wave countdown.
+func set_countdown_held(held: bool) -> void:
+	wave_timer.paused = held
+
+
+## Debug: spawn delay (s) used instead of [member spawn_delay] and its per-wave steps; <= 0 turns it
+## off. Spawners still spawning pick it up from their next enemy. The normal delay keeps stepping down.
+func set_spawn_delay_override(delay: float) -> void:
+	_spawn_delay_override = delay
+	var count: int = _get_active_spawners().size()
+	for spawner: EnemySpawner in _spawners:
+		if not is_instance_valid(spawner) or not spawner.is_spawning():
+			continue
+		var template: WaveTemplate = _last_templates.get(spawner)
+		var multiplier: float = template.spawn_delay_multiplier if template != null else 1.0
+		spawner.set_spawn_delay(_effective_spawn_delay() * count * multiplier)
+	for release: Dictionary in _debug_releases:
+		release["interval"] = _effective_spawn_delay() * maxi(1, count)
+
+
+## Spawn delay for new spawning: the debug override when set, else the current stepped delay.
+func _effective_spawn_delay() -> float:
+	return _spawn_delay_override if _spawn_delay_override > 0.0 else _current_spawn_delay
+
+
+## Debug: the next wave started or planned is [param index] (0-based, clamped to the valid waves).
+## A running wave is not touched; a stored plan is re-made.
+func debug_jump_to_wave(index: int) -> void:
+	var was_finished: bool = wave_index >= config.max_waves
+	wave_index = clampi(index, 0, maxi(0, config.max_waves - 1))
+	_replan_next()
+	# After the last wave no plan or countdown exists: restart the flow from the new index.
+	if was_finished and _spawning_count == 0:
+		end_current_wave()
+
+
+## Debug: spawns the plan of wave [param index] (0-based) as an extra, on top of the normal flow.
+## Uses its own release queue: wave index, countdown, spawn delay and templates are untouched.
+func debug_spawn_wave(index: int) -> void:
+	if _spawners.is_empty():
+		push_warning("WaveManager: no spawners; call setup() first.")
+		return
+	var clamped: int = clampi(index, 0, maxi(0, config.max_waves - 1))
+	var open: Array[EnemySpawner] = _get_active_spawners_for(clamped)
+	var plan: WavePlan = config.generate(clamped, WaveConfig.make_rng(_wave_seed, clamped), open.size(), [], budget_scale)
+	var interval: float = _effective_spawn_delay() * open.size()
+	for k: int in range(open.size()):
+		var enemies: Array[PackedScene] = plan.spawners[k].enemies.duplicate()
+		if enemies.is_empty():
+			continue
+		_debug_releases.append({
+			"spawner": open[k],
+			"enemies": enemies,
+			"wait": _effective_spawn_delay() * (k + 1),
+			"interval": interval,
+		})
+
+
+## Re-makes the stored plan (if any) for the current wave index and budget scale.
+func _replan_next() -> void:
+	if _next_plan == null:
+		return
+	_next_plan = _plan_next_wave()
+	wave_planned.emit(_next_plan)
+
+
+## Releases one enemy per debug queue whenever its wait ran out.
+func _process_debug_releases(delta: float) -> void:
+	for i: int in range(_debug_releases.size() - 1, -1, -1):
+		var release: Dictionary = _debug_releases[i]
+		var spawner: EnemySpawner = release["spawner"] as EnemySpawner
+		var enemies: Array[PackedScene] = release["enemies"]
+		if not is_instance_valid(spawner) or enemies.is_empty():
+			_debug_releases.remove_at(i)
+			continue
+		release["wait"] = float(release["wait"]) - delta
+		if float(release["wait"]) > 0.0:
+			continue
+		release["wait"] = float(release["interval"])
+		spawner.spawn_extra(enemies.pop_front(), spawner.global_position)
+		if enemies.is_empty():
+			_debug_releases.remove_at(i)
+
+
 ## Generates the plan of the upcoming wave for its open spawners.
 func _plan_next_wave() -> WavePlan:
 	var active: Array[EnemySpawner] = _get_active_spawners()
 	var last_templates: Array[WaveTemplate] = []
 	for spawner: EnemySpawner in active:
 		last_templates.append(_last_templates.get(spawner))
-	return config.generate(wave_index, WaveConfig.make_rng(_wave_seed, wave_index), active.size(), last_templates)
+	return config.generate(wave_index, WaveConfig.make_rng(_wave_seed, wave_index), active.size(), last_templates, budget_scale)
 
 
 func _get_active_spawners() -> Array[EnemySpawner]:
+	return _get_active_spawners_for(wave_index)
+
+
+## Spawners open at wave [param index]; all of them if none is.
+func _get_active_spawners_for(index: int) -> Array[EnemySpawner]:
 	var active: Array[EnemySpawner] = []
 	for spawner: EnemySpawner in _spawners:
-		if spawner.first_wave <= wave_index:
+		if spawner.first_wave <= index:
 			active.append(spawner)
 	if active.is_empty() and not _spawners.is_empty():
-		push_warning("WaveManager: no spawner is open for wave %d; using all." % wave_index)
+		push_warning("WaveManager: no spawner is open for wave %d; using all." % index)
 		active.assign(_spawners)
 	return active
 

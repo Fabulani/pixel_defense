@@ -4,6 +4,8 @@ signal died(enemy: Enemy)
 ## Emitted for every hit with the damage left after armor, always before the hit is applied to
 ## health, so it comes before [signal died] on the killing hit.
 signal damaged(amount: float)
+## Debug: hp was set directly by [method set_health_ratio] (no hit, no flash).
+signal health_set
 ## Emitted when armor reduced a hit, with the enemy's world position.
 signal armor_deflected(hit_position: Vector2)
 
@@ -21,6 +23,8 @@ signal armor_deflected(hit_position: Vector2)
 @export var spawn_duration: float = 0.2
 ## How many death spawns deep this enemy is: 0 for queue spawns, parent + 1 for death spawns.
 var split_generation: int = 0
+## Debug: hits still flash and emit signals, but health is untouched.
+var debug_invulnerable: bool = false
 
 var _knockback: Vector2 = Vector2.ZERO
 var _knockback_time_left: float = 0.0
@@ -79,7 +83,8 @@ func take_damage(amount: float) -> void:
 	if deflected:
 		armor_deflected.emit(global_position)
 	damaged.emit(amount)
-	health.take_damage(amount)
+	if not debug_invulnerable:
+		health.take_damage(amount)
 
 
 ## Restore hp up to [member EnemyStats.max_health]. Does nothing while dying.
@@ -87,6 +92,15 @@ func heal(amount: float) -> void:
 	if _is_dying:
 		return
 	health.heal(amount, float(stats.max_health))
+
+
+## Debug: set hp to [param ratio] (clamped to 0.01..1) of max health, without signals.
+## Does nothing while dying.
+func set_health_ratio(ratio: float) -> void:
+	if _is_dying:
+		return
+	health.hp = clampf(ratio, 0.01, 1.0) * float(stats.max_health)
+	health_set.emit()
 
 
 ## Current movement speed (px/s): stats speed times the product of all speed factors.

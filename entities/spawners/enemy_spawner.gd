@@ -48,6 +48,13 @@ func start_spawning(spawn_list: Array[PackedScene], spawn_delay: float, first_de
 	spawn_timer.start(maxf(MIN_DELAY, first_delay))
 
 
+## Changes the delay between the following spawns of the running queue (from the next enemy on).
+func set_spawn_delay(spawn_delay: float) -> void:
+	_spawn_delay = maxf(MIN_DELAY, spawn_delay)
+	if _is_spawning and spawn_timer.time_left > _spawn_delay:
+		spawn_timer.start(_spawn_delay)
+
+
 ## Whether a queue is still being spawned.
 func is_spawning() -> bool:
 	return _is_spawning
@@ -81,6 +88,12 @@ func spawn_next() -> void:
 	_spawn_queue_index += 1
 
 	_create_enemy(_spawn_queue[index], global_position, false)
+
+
+## Debug: spawns [param scene] at [param world_position] outside any wave queue.
+## Counted alive like any spawn. Returns null if the scene is not an [Enemy].
+func spawn_extra(scene: PackedScene, world_position: Vector2) -> Enemy:
+	return _create_enemy(scene, world_position, false)
 
 
 ## Instantiates [param scene] at [param world_position] and counts it as alive.

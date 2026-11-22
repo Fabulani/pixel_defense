@@ -12,6 +12,8 @@ const _TOWER_SCENE: PackedScene = preload("res://entities/towers/tower.tscn")
 
 ## Built towers by cell.
 var _towers: Dictionary[Vector2i, Tower] = {}
+## Debug: whether towers hold fire (applied to towers built later too).
+var _hold_fire: bool = false
 
 
 ## Try to build a tower on the cell. Emits [signal tower_built] or [signal tower_placement_denied].
@@ -31,6 +33,7 @@ func place_tower(cell_position: Vector2i) -> void:
 	new_tower.position = Vector2(cell_position) * cell_size + cell_size / 2.0
 	add_child(new_tower)
 	new_tower.total_spent = new_tower.stats.cost
+	new_tower.set_hold_fire(_hold_fire)
 	_towers[cell_position] = new_tower
 	tower_built.emit(new_tower, cell_position)
 
@@ -70,6 +73,30 @@ func apply_major_upgrade(tower: Tower, major: MajorUpgrade) -> void:
 	tower.total_spent += cost
 	tower.apply_major(major)
 	tower_upgraded.emit(tower)
+
+
+## Debug: set [param tower] to [param level] for free. Below max level the major is dropped; at max
+## level [param major] (or the tower's first major when null) is applied. Emits [signal tower_upgraded].
+## [member Tower.total_spent] is untouched.
+func debug_set_level(tower: Tower, target_level: int, major: MajorUpgrade) -> void:
+	if not _is_managed(tower):
+		push_warning("BuildingManager: debug_set_level on a tower that is not managed.")
+		return
+	var new_level: int = clampi(target_level, 0, TowerStats.MAX_LEVEL)
+	var new_major: MajorUpgrade = null
+	if new_level == TowerStats.MAX_LEVEL:
+		new_major = major
+		if new_major == null and not tower.major_upgrades.is_empty():
+			new_major = tower.major_upgrades[0]
+	tower.debug_set_level(new_level, new_major)
+	tower_upgraded.emit(tower)
+
+
+## Debug: all managed towers, and towers built later, aim and sweep but never fire.
+func set_hold_fire(enabled: bool) -> void:
+	_hold_fire = enabled
+	for tower: Tower in _towers.values():
+		tower.set_hold_fire(enabled)
 
 
 ## Remove the tower and refund everything spent on it. Emits [signal tower_sold].

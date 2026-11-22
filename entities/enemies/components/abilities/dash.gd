@@ -1,6 +1,6 @@
 ## Periodically multiplies its [Enemy]'s speed for a short burst.
 ##
-## Reads the enemy through [code]owner[/code]. The first dash comes after a random part of
+## Reads the enemy through [code]owner[/code], or the parent when added at runtime. The first dash comes after a random part of
 ## [member interval] so groups do not dash in sync. While dashing the sprite is stretched
 ## along the travel direction. Stops once the enemy is dying.
 class_name Dash extends Node
@@ -29,7 +29,9 @@ var _trail: GPUParticles2D
 func _ready() -> void:
 	_enemy = owner as Enemy
 	if _enemy == null:
-		push_error("Dash: owner is not an Enemy; component disabled.")
+		_enemy = get_parent() as Enemy
+	if _enemy == null:
+		push_error("Dash: owner and parent are not an Enemy; component disabled.")
 		return
 	_timer = Timer.new()
 	_timer.one_shot = true

@@ -6,7 +6,6 @@ signal next_wave_requested
 @onready var coin_amount_label: Label = $PanelContainer/MarginContainer/VBoxContainer/CoinContainer/CoinAmountLabel
 @onready var wave_index_label: Label = $PanelContainer/MarginContainer/VBoxContainer/WaveContainer/WaveIndexLabel
 @onready var enemy_count_label: Label = $PanelContainer/MarginContainer/VBoxContainer/EnemyCountContainer/EnemyCount
-@onready var _debug_coins_button: Button = %DebugCoinsButton
 @onready var _wave_banner: Label = %WaveBanner
 @onready var _wave_banner_detail: Label = %WaveBannerDetail
 @onready var _next_wave_button: Button = %NextWaveButton
@@ -22,8 +21,6 @@ var _banner_tween: Tween
 var _plan: WavePlan
 
 func _ready() -> void:
-	_debug_coins_button.visible = OS.is_debug_build()
-	_debug_coins_button.pressed.connect(_on_debug_coins_button_pressed)
 	_next_wave_button.visible = false
 	_next_wave_button.pressed.connect(_on_next_wave_button_pressed)
 	CurrencyManager.currency_changed.connect(set_coin_amount)
@@ -82,10 +79,6 @@ func hide_next_wave_button() -> void:
 
 func set_enemy_count(count: int) -> void:
 	enemy_count_label.text = str(count)
-
-## Debug builds only: grant coins for testing.
-func _on_debug_coins_button_pressed() -> void:
-	CurrencyManager.earn(9999)
 
 func _on_next_wave_button_pressed() -> void:
 	next_wave_requested.emit()

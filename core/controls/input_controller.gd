@@ -34,6 +34,9 @@ func _on_kbm_controls_clicked(position: Vector2) -> void:
 
 
 func _handle_cell_input(cell: Vector2i) -> void:
+	# The camera's input nodes run while paused (panning); building and selecting do not.
+	if get_tree().paused:
+		return
 	var tower: Tower = building_manager.get_tower_at(cell)
 	if tower != null:
 		cancel_preview()

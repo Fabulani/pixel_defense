@@ -12,6 +12,9 @@ class_name Main extends Node2D
 @onready var tower_menu: TowerMenu = $TowerMenu
 @onready var vfx: VfxManager = $VfxManager
 
+## Camera trauma added when the base is hit (placeholder; the loss adds its own 0.7).
+@export var base_hit_shake: float = 0.4
+
 
 func _ready() -> void:
 	# Wire cross-scene dependencies explicitly
@@ -28,6 +31,7 @@ func _ready() -> void:
 
 	# Game signals
 	current_level.lost.connect(_on_level_lost)
+	current_level.base_damaged.connect(_on_level_base_damaged)
 	current_level.won.connect(_on_level_won)
 	current_level.wave_started.connect(hud.set_wave)
 	current_level.wave_started.connect(hud.show_wave_banner)
@@ -61,6 +65,15 @@ func _ready() -> void:
 	hud.set_wave(current_level.waves_survived)
 	hud.set_enemy_count(0)
 
+	if OS.is_debug_build():
+		var debug_menu: DebugMenu = DebugMenu.new()
+		debug_menu.level = current_level
+		debug_menu.building_manager = building_manager
+		debug_menu.tower_menu = tower_menu
+		debug_menu.vfx = vfx
+		debug_menu.camera = camera
+		add_child(debug_menu)
+
 
 func _unhandled_input(event: InputEvent) -> void:
 	if event.is_action_pressed("f1"):
@@ -72,6 +85,10 @@ func _on_level_lost() -> void:
 	hud.hide_next_wave_button()
 	_close_tower_ui()
 	game_end_screen.show_defeat(current_level.waves_survived, CurrencyManager.coins, current_level.map_seed)
+
+
+func _on_level_base_damaged(_amount: int) -> void:
+	camera.shake(base_hit_shake)
 
 
 func _on_level_bullet_fired(data: ProjectileData) -> void:

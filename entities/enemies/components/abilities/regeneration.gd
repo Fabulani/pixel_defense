@@ -1,6 +1,6 @@
 ## Heals its [Enemy] over time once it went a while without taking damage.
 ##
-## Reads the enemy through [code]owner[/code]. Stops once the enemy is dying.
+## Reads the enemy through [code]owner[/code], or the parent when added at runtime. Stops once the enemy is dying.
 class_name Regeneration extends Node
 
 ## Hit points restored per second.
@@ -28,7 +28,9 @@ var _plus_emitter: GPUParticles2D
 func _ready() -> void:
 	_enemy = owner as Enemy
 	if _enemy == null:
-		push_error("Regeneration: owner is not an Enemy; component disabled.")
+		_enemy = get_parent() as Enemy
+	if _enemy == null:
+		push_error("Regeneration: owner and parent are not an Enemy; component disabled.")
 		return
 	_timer = Timer.new()
 	_timer.wait_time = tick_interval
@@ -48,7 +50,12 @@ func _ready() -> void:
 	material.emission_sphere_radius = plus_emission_radius
 	_enemy.attach_effect(_plus_emitter)
 	_enemy.damaged.connect(_on_enemy_damaged)
+	_enemy.health_set.connect(_on_enemy_health_set)
 	_enemy.died.connect(_on_enemy_died)
+	# Added at runtime to an already damaged enemy: start the heal cycle now. A scene-owned
+	# component runs before Enemy._ready (hp not initialised yet), so it is skipped.
+	if _enemy.is_node_ready() and _enemy.health.hp < float(_enemy.stats.max_health):
+		_timer.start()
 
 
 func _on_enemy_damaged(_amount: float) -> void:
@@ -57,6 +64,12 @@ func _on_enemy_damaged(_amount: float) -> void:
 	_quiet_time = 0.0
 	_set_plus_emitting(false)
 	_timer.start()
+
+
+## hp was set directly (debug): start the heal cycle if below max.
+func _on_enemy_health_set() -> void:
+	if not _enemy.is_dying() and _enemy.health.hp < float(_enemy.stats.max_health) and _timer.is_stopped():
+		_timer.start()
 
 
 func _on_enemy_died(_enemy_died: Enemy) -> void:

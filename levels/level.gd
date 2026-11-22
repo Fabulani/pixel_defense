@@ -8,6 +8,8 @@ signal countdown_changed(time_left: float, bonus: int)
 ## The next wave was called early; [param coins] were paid.
 signal early_called(coins: int)
 signal enemy_count_changed(count: int)
+## The player base was hit (also in god mode).
+signal base_damaged(amount: int)
 signal lost
 signal won
 signal bullet_fired(data: ProjectileData)
@@ -24,6 +26,8 @@ signal armor_deflected(hit_position: Vector2)
 @export var map_config: MapGenConfig
 
 const SPAWNER_SCENE: PackedScene = preload("uid://dbkc22ud4e32")
+## Rings searched around a debug spawn position for a walkable cell.
+const DEBUG_SEARCH_RADIUS: int = 8
 
 ## Seed of the generated map (>= 1 once the level is ready).
 var map_seed: int = 0
@@ -69,6 +73,7 @@ func _ready() -> void:
 	projectile_manager.bullet_fired.connect(_on_projectile_manager_bullet_fired)
 	projectile_manager.bullet_hit.connect(_on_projectile_manager_bullet_hit)
 	player_base.destroyed.connect(_on_player_base_destroyed)
+	player_base.damaged.connect(base_damaged.emit)
 	PathfindingManager.grid_changed.connect(_on_pathfinding_manager_grid_changed)
 
 	_create_preview_lines()
@@ -83,6 +88,105 @@ func start() -> void:
 ## Calls the next wave early while the countdown runs (pays the bonus); no-op otherwise.
 func call_next_wave() -> void:
 	wave_manager.call_next_wave()
+
+
+## Debug: the base takes no damage (enemies reaching it are still freed).
+func set_god_mode(enabled: bool) -> void:
+	player_base.invulnerable = enabled
+
+
+## Number of waves in a run ([member WaveConfig.max_waves]).
+func get_max_waves() -> int:
+	return wave_manager.config.max_waves
+
+
+## Number of spawners, open or not.
+func get_spawner_count() -> int:
+	return enemy_spawners.size()
+
+
+## Live enemies (group "enemies", not dying).
+func get_enemies() -> Array[Enemy]:
+	var result: Array[Enemy] = []
+	for node: Node in get_tree().get_nodes_in_group("enemies"):
+		var enemy: Enemy = node as Enemy
+		if enemy != null and not enemy.is_dying():
+			result.append(enemy)
+	return result
+
+
+## Debug: spawns [param count] enemies of [param scene] at spawner [param spawner_index].
+func debug_spawn_enemies(scene: PackedScene, count: int, spawner_index: int) -> Array[Enemy]:
+	if spawner_index < 0 or spawner_index >= enemy_spawners.size():
+		push_warning("Level: no spawner with index %d." % spawner_index)
+		return []
+	var spawner: EnemySpawner = enemy_spawners[spawner_index]
+	return _spawn_extra(spawner, scene, count, spawner.global_position)
+
+
+## Debug: spawns [param count] enemies of [param scene] at the walkable cell nearest to [param world_position].
+func debug_spawn_enemies_at(scene: PackedScene, count: int, world_position: Vector2) -> Array[Enemy]:
+	var center: Vector2i = PathfindingManager.world_to_cell(world_position)
+	var cell_size: Vector2 = Vector2(GameData.grid_cell_size)
+	var found: bool = false
+	var best_cell: Vector2i = center
+	if _is_walkable(center):
+		found = true
+	else:
+		for radius: int in range(1, DEBUG_SEARCH_RADIUS + 1):
+			var best_distance: float = INF
+			for x: int in range(center.x - radius, center.x + radius + 1):
+				for y: int in range(center.y - radius, center.y + radius + 1):
+					if maxi(absi(x - center.x), absi(y - center.y)) != radius:
+						continue
+					var cell := Vector2i(x, y)
+					var distance: float = (Vector2(cell) * cell_size + cell_size / 2.0).distance_squared_to(world_position)
+					if distance < best_distance and _is_walkable(cell):
+						best_distance = distance
+						best_cell = cell
+						found = true
+			if found:
+				break
+	if not found:
+		push_warning("Level: no walkable cell near %s." % world_position)
+		return []
+	var spawn_position: Vector2 = Vector2(best_cell) * cell_size + cell_size / 2.0
+	var owner_spawner: EnemySpawner = null
+	var best: float = INF
+	for spawner: EnemySpawner in enemy_spawners:
+		var distance: float = spawner.global_position.distance_squared_to(spawn_position)
+		if distance < best:
+			best = distance
+			owner_spawner = spawner
+	if owner_spawner == null:
+		push_warning("Level: no spawner to own the enemies.")
+		return []
+	return _spawn_extra(owner_spawner, scene, count, spawn_position)
+
+
+## Debug: spawns the plan of wave [param index] (0-based) as an extra on top of the running flow.
+func debug_spawn_wave(index: int) -> void:
+	wave_manager.debug_spawn_wave(index)
+
+
+## Debug: the next wave started or planned is [param index] (0-based).
+func debug_jump_to_wave(index: int) -> void:
+	wave_manager.debug_jump_to_wave(index)
+
+
+## Debug: multiplies the budget of waves planned from now on.
+func set_budget_scale(budget: float) -> void:
+	wave_manager.set_budget_scale(budget)
+
+
+## Debug: pauses or resumes the next-wave countdown.
+func set_countdown_held(held: bool) -> void:
+	wave_manager.set_countdown_held(held)
+
+
+## Debug: spawn delay (s) used instead of the wave's own, also for spawning in progress; <= 0 turns it off.
+func set_spawn_delay_override(delay: float) -> void:
+	wave_manager.set_spawn_delay_override(delay)
 
 
 ## Global position of the player base.
@@ -127,6 +231,28 @@ func would_block_path(cell_position: Vector2i) -> bool:
 		if PathfindingManager.would_block_path(cell_position, spawn_cell, target_cell):
 			return true
 	return false
+
+
+## Whether the cell has a tile and is not solid for pathfinding.
+func _is_walkable(cell: Vector2i) -> bool:
+	if not PathfindingManager.astar_grid.is_in_boundsv(cell):
+		return false
+	if tile_map_layer.get_cell_tile_data(cell) == null:
+		return false
+	return not PathfindingManager.astar_grid.is_point_solid(cell)
+
+
+## Spawns [param count] enemies through [param spawner], each jittered a few px around [param world_position].
+func _spawn_extra(spawner: EnemySpawner, scene: PackedScene, count: int, world_position: Vector2) -> Array[Enemy]:
+	var result: Array[Enemy] = []
+	var rng := RandomNumberGenerator.new()
+	rng.randomize()
+	for i: int in range(maxi(0, count)):
+		var offset: Vector2 = Vector2.from_angle(rng.randf() * TAU) * rng.randf_range(0.0, 4.0) if i > 0 else Vector2.ZERO
+		var enemy: Enemy = spawner.spawn_extra(scene, world_position + offset)
+		if enemy != null:
+			result.append(enemy)
+	return result
 
 
 ## Seed for the next generated map: the requested one, or a random one.

@@ -87,13 +87,6 @@ text = "0"
 horizontal_alignment = 2
 vertical_alignment = 1
 
-[node name="DebugCoinsButton" type="Button" parent="PanelContainer/MarginContainer/VBoxContainer" unique_id=1903274115]
-unique_name_in_owner = true
-layout_mode = 2
-focus_mode = 0
-theme_override_font_sizes/font_size = 16
-text = "+9999"
-
 [node name="WaveBanner" type="Label" parent="." unique_id=448877311]
 unique_name_in_owner = true
 process_mode = 3
