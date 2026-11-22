@@ -1,6 +1,6 @@
 ## Smoke that rises from a badly damaged [Enemy].
 ##
-## Reads the enemy through [code]owner[/code]. Below [member start_ratio] of max health the smoke
+## Reads the enemy through [code]owner[/code], or the parent when added at runtime. Below [member start_ratio] of max health the smoke
 ## starts faintly; at [member full_ratio] it is at full density. Polls health every frame, so
 ## healing (regeneration) fades the smoke away again. The emitter belongs to the enemy
 ## ([method Enemy.attach_effect]), which releases it on death.
@@ -31,7 +31,9 @@ var _active: bool = true
 func _ready() -> void:
 	_enemy = owner as Enemy
 	if _enemy == null:
-		push_error("DamageSmoke: owner is not an Enemy; component disabled.")
+		_enemy = get_parent() as Enemy
+	if _enemy == null:
+		push_error("DamageSmoke: owner and parent are not an Enemy; component disabled.")
 		return
 	_emitter = VfxManager.make_particles(max_amount, lifetime, color, particle_scale)
 	_emitter.local_coords = false

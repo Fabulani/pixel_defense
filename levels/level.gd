@@ -8,6 +8,8 @@ signal countdown_changed(time_left: float, bonus: int)
 ## The next wave was called early; [param coins] were paid.
 signal early_called(coins: int)
 signal enemy_count_changed(count: int)
+## The player base was hit (also in god mode).
+signal base_damaged(amount: int)
 signal lost
 signal won
 signal bullet_fired(data: ProjectileData)
@@ -69,6 +71,7 @@ func _ready() -> void:
 	projectile_manager.bullet_fired.connect(_on_projectile_manager_bullet_fired)
 	projectile_manager.bullet_hit.connect(_on_projectile_manager_bullet_hit)
 	player_base.destroyed.connect(_on_player_base_destroyed)
+	player_base.damaged.connect(base_damaged.emit)
 	PathfindingManager.grid_changed.connect(_on_pathfinding_manager_grid_changed)
 
 	_create_preview_lines()
@@ -83,6 +86,31 @@ func start() -> void:
 ## Calls the next wave early while the countdown runs (pays the bonus); no-op otherwise.
 func call_next_wave() -> void:
 	wave_manager.call_next_wave()
+
+
+## The wave manager.
+func get_wave_manager() -> WaveManager:
+	return wave_manager
+
+
+## All spawners, open or not.
+func get_spawners() -> Array[EnemySpawner]:
+	return enemy_spawners
+
+
+## The player base.
+func get_player_base() -> PlayerBase:
+	return player_base
+
+
+## Live enemies (group "enemies", not dying).
+func get_enemies() -> Array[Enemy]:
+	var result: Array[Enemy] = []
+	for node: Node in get_tree().get_nodes_in_group("enemies"):
+		var enemy: Enemy = node as Enemy
+		if enemy != null and not enemy.is_dying():
+			result.append(enemy)
+	return result
 
 
 ## Global position of the player base.
@@ -127,6 +155,15 @@ func would_block_path(cell_position: Vector2i) -> bool:
 		if PathfindingManager.would_block_path(cell_position, spawn_cell, target_cell):
 			return true
 	return false
+
+
+## Whether the cell has a tile and is not solid for pathfinding.
+func is_cell_walkable(cell: Vector2i) -> bool:
+	if not PathfindingManager.astar_grid.is_in_boundsv(cell):
+		return false
+	if tile_map_layer.get_cell_tile_data(cell) == null:
+		return false
+	return not PathfindingManager.astar_grid.is_point_solid(cell)
 
 
 ## Seed for the next generated map: the requested one, or a random one.

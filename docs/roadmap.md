@@ -12,7 +12,7 @@ First batch built (all values are placeholders): `armored` (flat armor, hits fla
 
 Health bars were rejected (screen clutter); instead enemy state effects were built (PR #30): smoke on damaged big enemies (below 75 % health), green pluses while regenerating, a wind trail while dashing, a deflect burst on armor hits.
 
-Left (postponed until the debug scene exists, see `docs/ideas.md`):
+Left (postponed until the debug menu existed; it does now, see CLAUDE.md "Debug menu"):
 
 - [x] Enemy state effects instead of health bars (PR #30)
 - [ ] The obstacle breaker (issue #11)
@@ -60,12 +60,14 @@ Replaces the dev-only wave generation: seeded per-wave budget, 20 waves (configu
 - [x] Phase 1: seeded budget generator
 - [x] Phase 2: templates, per-spawner composition, boss slot
 - [x] Phase 3: countdown, call-early bonus, wave banner
-- [ ] Phase 4: bosses (after the debug scene)
+- [x] Debug menu (PR #35), unblocks phase 4
+- [ ] Phase 4: bosses (after the debug menu)
 
 ## Later
 
 - [ ] Optimization pass. The Web build lags a bit (reported by the author, 2026-11-16); Android is unmeasured. Notes in `docs/ideas.md`.
 - [ ] Sound; options to reduce screen shake and flashes.
+- [ ] Player time scale (fast-forward), see `docs/ideas.md`.
 - [ ] Effect tuning and the smaller polish items listed in `docs/ideas.md` ("Effects polish").
 - [ ] More upgrade paths for the tower.
 - [ ] Endless mode (after the wave rework): waves past `max_waves` with growing budget; score = waves survived.

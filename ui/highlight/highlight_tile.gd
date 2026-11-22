@@ -9,6 +9,8 @@ var _flashing: bool = false
 
 
 func _ready() -> void:
+	# Follows the pointer and flashes while paused too (building and selecting work while paused).
+	process_mode = Node.PROCESS_MODE_ALWAYS
 	_using_touch = DisplayServer.is_touchscreen_available()
 	_sprite.visible = not _using_touch
 

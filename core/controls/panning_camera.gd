@@ -31,6 +31,9 @@ var smooth_damp: SmoothDamp
 
 
 func _ready() -> void:
+	# Pan and zoom keep working while the tree is paused (start menu, end screen, a game pause);
+	# TouchControls and KBMControls inherit this. InputController gates map taps/clicks itself (input_enabled).
+	process_mode = Node.PROCESS_MODE_ALWAYS
 	smooth_damp = SmoothDamp.new()
 	smooth_damp.pan_smoothing = pan_smoothing
 	smooth_damp.zoom_smoothing = zoom_smoothing
@@ -49,8 +52,10 @@ func _ready() -> void:
 
 
 func _process(delta: float) -> void:
-	_handle_directional_input(delta)
-	_apply_smooth_damp(delta)
+	# Real time: the camera moves at normal speed in slow motion (Engine.time_scale).
+	var real_delta: float = delta / Engine.time_scale if Engine.time_scale > 0.0 else delta
+	_handle_directional_input(real_delta)
+	_apply_smooth_damp(real_delta)
 
 
 func _apply_smooth_damp(delta: float) -> void:

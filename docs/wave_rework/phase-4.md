@@ -1,6 +1,6 @@
 # Phase 4: bosses (outline)
 
-Blocked on the debug scene (`docs/ideas.md`, roadmap item 2 "postponed until the debug scene exists"). Outline only: the manager writes a full brief per sub-phase when it starts.
+The debug menu it waited for exists (`debug/`, see CLAUDE.md "Debug menu"). Outline only: the manager writes a full brief per sub-phase when it starts.
 
 ## Goal
 

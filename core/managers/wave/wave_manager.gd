@@ -26,6 +26,10 @@ signal alive_count_changed(count: int)
 const COUNTDOWN_EMIT_INTERVAL: float = 0.1
 
 var wave_index: int = 0
+## Multiplies the budget of waves planned from now on (1.0 = normal).
+var difficulty: float = 1.0
+## Multiplies the spawn delay (1.0 = normal); see [method set_spawn_delay_multiplier].
+var spawn_delay_multiplier: float = 1.0
 
 var _spawners: Array[EnemySpawner] = []
 var _current_spawn_delay: float = 0.0
@@ -51,7 +55,7 @@ func _ready() -> void:
 
 
 func _process(delta: float) -> void:
-	if wave_timer.is_stopped():
+	if wave_timer.is_stopped() or wave_timer.paused:
 		return
 	_countdown_emit_in -= delta
 	if _countdown_emit_in <= 0.0:
@@ -113,7 +117,7 @@ func start_next_wave() -> void:
 			continue
 		_spawning_count += 1
 		var delay_multiplier: float = sp.template.spawn_delay_multiplier if sp.template != null else 1.0
-		spawner.start_spawning(sp.enemies, _current_spawn_delay * count * delay_multiplier, _current_spawn_delay * (k + 1))
+		spawner.start_spawning(sp.enemies, get_spawn_delay() * count * delay_multiplier, get_spawn_delay() * (k + 1))
 
 	wave_index += 1
 	wave_started.emit(wave_index)
@@ -159,22 +163,80 @@ func end_current_wave() -> void:
 	countdown_changed.emit(wave_timer.time_left, get_early_bonus())
 
 
+## Sets [member difficulty]; re-plans a plan already made.
+func set_difficulty(value: float) -> void:
+	difficulty = maxf(0.0, value)
+	_replan_next()
+
+
+## Pauses or resumes the next-wave countdown.
+func set_countdown_paused(paused: bool) -> void:
+	wave_timer.paused = paused
+
+
+## Sets [member spawn_delay_multiplier] (clamped to > 0). Spawners still spawning pick it up from
+## their next enemy.
+func set_spawn_delay_multiplier(m: float) -> void:
+	spawn_delay_multiplier = maxf(0.001, m)
+	var count: int = _get_active_spawners().size()
+	for spawner: EnemySpawner in _spawners:
+		if not is_instance_valid(spawner) or not spawner.is_spawning():
+			continue
+		var template: WaveTemplate = _last_templates.get(spawner)
+		var multiplier: float = template.spawn_delay_multiplier if template != null else 1.0
+		spawner.set_spawn_delay(get_spawn_delay() * count * multiplier)
+
+
+## Spawn delay for new spawning: the stepped delay times [member spawn_delay_multiplier].
+func get_spawn_delay() -> float:
+	return _current_spawn_delay * spawn_delay_multiplier
+
+
+## Base of the per-wave seeds (the map seed).
+func get_wave_seed() -> int:
+	return _wave_seed
+
+
+## The next wave started or planned is [param index] (0-based, clamped to the valid waves).
+## A running wave is not touched; a stored plan is re-made.
+func skip_to_wave(index: int) -> void:
+	var was_finished: bool = wave_index >= config.max_waves
+	wave_index = clampi(index, 0, maxi(0, config.max_waves - 1))
+	_replan_next()
+	# After the last wave no plan or countdown exists: restart the flow from the new index.
+	if was_finished and _spawning_count == 0:
+		end_current_wave()
+
+
+## Re-makes the stored plan (if any) for the current wave index and difficulty.
+func _replan_next() -> void:
+	if _next_plan == null:
+		return
+	_next_plan = _plan_next_wave()
+	wave_planned.emit(_next_plan)
+
+
 ## Generates the plan of the upcoming wave for its open spawners.
 func _plan_next_wave() -> WavePlan:
 	var active: Array[EnemySpawner] = _get_active_spawners()
 	var last_templates: Array[WaveTemplate] = []
 	for spawner: EnemySpawner in active:
 		last_templates.append(_last_templates.get(spawner))
-	return config.generate(wave_index, WaveConfig.make_rng(_wave_seed, wave_index), active.size(), last_templates)
+	return config.generate(wave_index, WaveConfig.make_rng(_wave_seed, wave_index), active.size(), last_templates, difficulty)
 
 
 func _get_active_spawners() -> Array[EnemySpawner]:
+	return get_spawners_open_at(wave_index)
+
+
+## Spawners open at wave [param index]; all of them if none is.
+func get_spawners_open_at(index: int) -> Array[EnemySpawner]:
 	var active: Array[EnemySpawner] = []
 	for spawner: EnemySpawner in _spawners:
-		if spawner.first_wave <= wave_index:
+		if spawner.first_wave <= index:
 			active.append(spawner)
 	if active.is_empty() and not _spawners.is_empty():
-		push_warning("WaveManager: no spawner is open for wave %d; using all." % wave_index)
+		push_warning("WaveManager: no spawner is open for wave %d; using all." % index)
 		active.assign(_spawners)
 	return active
 

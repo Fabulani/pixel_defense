@@ -24,6 +24,8 @@ var _built_at_msec: int = 0
 
 
 func _ready() -> void:
+	# Usable while paused: follows the camera and takes button presses.
+	process_mode = Node.PROCESS_MODE_ALWAYS
 	CurrencyManager.currency_changed.connect(_on_currency_manager_currency_changed)
 	visible = false
 

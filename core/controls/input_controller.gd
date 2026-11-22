@@ -11,6 +11,10 @@ signal tower_deselected()
 @export var tower_preview: TowerPreview
 @export var building_manager: BuildingManager
 
+## Map taps/clicks build and select only while true. Main turns it on at game start and off on
+## lost / won, so the start menu and end screen block them; a game pause does not.
+var input_enabled: bool = false
+
 var _preview_cell: Vector2i = Vector2i(-1, -1)
 
 
@@ -34,6 +38,8 @@ func _on_kbm_controls_clicked(position: Vector2) -> void:
 
 
 func _handle_cell_input(cell: Vector2i) -> void:
+	if not input_enabled:
+		return
 	var tower: Tower = building_manager.get_tower_at(cell)
 	if tower != null:
 		cancel_preview()

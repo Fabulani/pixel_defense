@@ -19,6 +19,10 @@ var _sweep_anchor: float = 0.0  ## Cannon rotation the idle sweep swings around
 var _sweep_dir: float = 1.0  ## Current sweep direction, 1 or -1
 var _turn_speed: float = 360.0  ## Cannon turn speed in degrees per second
 var _aim_tolerance: float = 5.0  ## Max angle in degrees between cannon and a target to fire
+## Whether the turret fires; when false it still aims, leads, sweeps and reloads (stays loaded).
+var firing_enabled: bool = true
+
+var _default_texture: Texture2D  ## Cannon texture from the scene, restored by reset_appearance()
 var _loaded: bool = false  ## True once the reload timer ran out; the next shot may fire as soon as aimed
 
 @onready var _turret: Sprite2D = %Turret
@@ -28,6 +32,7 @@ var _loaded: bool = false  ## True once the reload timer ran out; the next shot 
 
 func _ready() -> void:
 	_turret_scale = _turret.scale
+	_default_texture = _turret.texture
 	_detection_area.body_entered.connect(_on_detection_area_body_entered)
 	_detection_area.body_exited.connect(_on_detection_area_body_exited)
 	_reload_timer.timeout.connect(_on_reload_timer_timeout)
@@ -39,7 +44,7 @@ func _process(delta: float) -> void:
 		return
 	_idle_time = 0.0
 	_aim(_lead_point(target), delta)
-	if _loaded and _has_target_in_cone():
+	if _loaded and firing_enabled and _has_target_in_cone():
 		_fire()
 
 ## Update turret stats with the given TowerStats
@@ -81,6 +86,10 @@ func set_appearance(texture: Texture2D, sprite_material: Material, sprite_scale:
 		_squash_tween.kill()
 	_turret_scale = Vector2(sprite_scale, sprite_scale)
 	_turret.scale = _turret_scale
+
+## Restore the scene's cannon texture, no material and scale 1 (undo a major's look).
+func reset_appearance() -> void:
+	set_appearance(_default_texture, null, 1.0)
 
 ## Return the priority target, or null when no living target is in range. Dying enemies are skipped.
 func _get_priority_target(targets: Array[Enemy]) -> Enemy:

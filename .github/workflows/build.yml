@@ -240,7 +240,7 @@ jobs:
           # Only the release-signed Android path (release.yml) reads these (empty otherwise).
           GODOT_ANDROID_KEYSTORE_RELEASE_USER: ${{ inputs.require_signing && matrix.platform == 'android' && secrets.ANDROID_KEYSTORE_USER || '' }}
           GODOT_ANDROID_KEYSTORE_RELEASE_PASSWORD: ${{ inputs.require_signing && matrix.platform == 'android' && secrets.ANDROID_KEYSTORE_PASSWORD || '' }}
-          SIGN_MODE: ${{ steps.sign.outputs.mode }}
+          REQUIRE_SIGNING: ${{ inputs.require_signing }}
         run: |
           case "$PLATFORM" in
             windows) out=build/windows/pixel_defense.exe ;;
@@ -249,8 +249,16 @@ jobs:
             web)     out=build/web/index.html ;;  # index.html -> deployable as-is (GitHub Pages)
           esac
           mkdir -p "$(dirname "$out")"
-          flag=--export-release
-          [ "$SIGN_MODE" = debug ] && flag=--export-debug  # non-release fallback: debug template + debug key
+          # Tag releases (release.yml, require_signing) are release exports. Every other build
+          # (PR, main, manual) is a debug export on all platforms, so testers get the debug
+          # menu (OS.is_debug_build()); Android ones are also signed with the throwaway debug key.
+          flag=--export-debug
+          [ "$REQUIRE_SIGNING" = true ] && flag=--export-release
+          # Release exports leave the debug menu out (Main loads it with load(), guarded by is_debug_build()).
+          if [ "$REQUIRE_SIGNING" = true ]; then
+            sed -i 's|^exclude_filter="tools/\*"$|exclude_filter="tools/*,debug/*"|' export_presets.cfg
+            [ "$(grep -c 'debug/\*' export_presets.cfg)" = 4 ] || { echo "::error::debug/* exclude missing from the export presets"; exit 1; }
+          fi
           godot --headless "$flag" "$PRESET" "$out" 2>&1 | tee export.log
           # Godot can exit 0 after a failed export; failures are `ERROR:` lines
           # (missing template, bad preset, config errors), `WARNING:`s are tolerated.

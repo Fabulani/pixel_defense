@@ -72,6 +72,23 @@ func apply_major_upgrade(tower: Tower, major: MajorUpgrade) -> void:
 	tower_upgraded.emit(tower)
 
 
+## Sets [param tower] to [param level] for free. Below max level the major is dropped; at max
+## level [param major] (or the tower's first major when null) is applied. Emits [signal tower_upgraded].
+## [member Tower.total_spent] is untouched.
+func set_tower_level(tower: Tower, target_level: int, major: MajorUpgrade) -> void:
+	if not _is_managed(tower):
+		push_warning("BuildingManager: set_tower_level on a tower that is not managed.")
+		return
+	var new_level: int = clampi(target_level, 0, TowerStats.MAX_LEVEL)
+	var new_major: MajorUpgrade = null
+	if new_level == TowerStats.MAX_LEVEL:
+		new_major = major
+		if new_major == null and not tower.major_upgrades.is_empty():
+			new_major = tower.major_upgrades[0]
+	tower.set_level(new_level, new_major)
+	tower_upgraded.emit(tower)
+
+
 ## Remove the tower and refund everything spent on it. Emits [signal tower_sold].
 func sell_tower(tower: Tower) -> void:
 	if not _is_managed(tower):

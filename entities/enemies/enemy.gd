@@ -28,6 +28,7 @@ var _is_dying: bool = false
 var _base_scale: Vector2 = Vector2.ONE
 var _tween: Tween
 var _speed_factors: Dictionary[StringName, float] = {}
+var _damage_factors: Dictionary[StringName, float] = {}
 var _spawn_done: bool = false
 var _stretch: float = 1.0
 var _attached_effects: Array[GPUParticles2D] = []
@@ -75,6 +76,8 @@ func take_damage(amount: float) -> void:
 			flash_color = _ARMOR_FLASH_COLOR
 			deflected = true
 		amount = reduced
+	for factor: float in _damage_factors.values():
+		amount *= factor
 	Flash.play(_sprite, flash_duration, flash_color)
 	if deflected:
 		armor_deflected.emit(global_position)
@@ -87,6 +90,14 @@ func heal(amount: float) -> void:
 	if _is_dying:
 		return
 	health.heal(amount, float(stats.max_health))
+
+
+## Sets hp to [param ratio] (clamped to 0.01..1) of max health, without a hit or flash.
+## Does nothing while dying.
+func set_health_ratio(ratio: float) -> void:
+	if _is_dying:
+		return
+	health.set_hp(clampf(ratio, 0.01, 1.0) * float(stats.max_health))
 
 
 ## Current movement speed (px/s): stats speed times the product of all speed factors.
@@ -106,6 +117,17 @@ func set_speed_factor(source: StringName, factor: float) -> void:
 ## Remove the speed factor owned by [param source].
 func clear_speed_factor(source: StringName) -> void:
 	_speed_factors.erase(source)
+
+
+## Set the damage factor owned by [param source]: hits are multiplied by the product of all
+## factors after armor (0 makes the enemy immune; hits still flash and emit [signal damaged]).
+func set_damage_factor(source: StringName, factor: float) -> void:
+	_damage_factors[source] = factor
+
+
+## Remove the damage factor owned by [param source].
+func clear_damage_factor(source: StringName) -> void:
+	_damage_factors.erase(source)
 
 
 ## Flash the sprite with [param color] and fade back over [param duration] seconds.
