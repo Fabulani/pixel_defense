@@ -50,7 +50,7 @@ func _ready() -> void:
 	material.emission_sphere_radius = plus_emission_radius
 	_enemy.attach_effect(_plus_emitter)
 	_enemy.damaged.connect(_on_enemy_damaged)
-	_enemy.health_set.connect(_on_enemy_health_set)
+	_enemy.health.changed.connect(_on_health_changed)
 	_enemy.died.connect(_on_enemy_died)
 	# Added at runtime to an already damaged enemy: start the heal cycle now. A scene-owned
 	# component runs before Enemy._ready (hp not initialised yet), so it is skipped.
@@ -66,8 +66,8 @@ func _on_enemy_damaged(_amount: float) -> void:
 	_timer.start()
 
 
-## hp was set directly (debug): start the heal cycle if below max.
-func _on_enemy_health_set() -> void:
+## hp changed (for example set directly): start the heal cycle if below max.
+func _on_health_changed() -> void:
 	if not _enemy.is_dying() and _enemy.health.hp < float(_enemy.stats.max_health) and _timer.is_stopped():
 		_timer.start()
 

@@ -41,9 +41,9 @@ func is_boss_wave(index: int) -> bool:
 ## Builds the plan of the wave at [param index] for [param open_spawners] spawners, drawing only
 ## from [param rng]. [param last_templates][k] is the template open spawner k used in its previous
 ## wave (missing or null = none); a special template is not drawn twice in a row for a spawner.
-## [param budget_scale] multiplies the wave budget (debug; 1.0 changes nothing).
+## [param difficulty] multiplies the wave budget (1.0 = normal).
 ## Draw order: boss slot, template per spawner, then each spawner's enemies.
-func generate(index: int, rng: RandomNumberGenerator, open_spawners: int, last_templates: Array[WaveTemplate] = [], budget_scale: float = 1.0) -> WavePlan:
+func generate(index: int, rng: RandomNumberGenerator, open_spawners: int, last_templates: Array[WaveTemplate] = [], difficulty: float = 1.0) -> WavePlan:
 	var plan := WavePlan.new()
 	plan.index = index
 	var count: int = maxi(1, open_spawners)
@@ -63,7 +63,7 @@ func generate(index: int, rng: RandomNumberGenerator, open_spawners: int, last_t
 			sp.template = _draw_template(index, rng, last)
 		plan.spawners.append(sp)
 
-	var share: float = budget(index) * budget_scale / count
+	var share: float = budget(index) * difficulty / count
 	for sp: SpawnerPlan in plan.spawners:
 		var multiplier: float = sp.template.budget_multiplier if sp.template != null else 1.0
 		sp.budget = share * multiplier

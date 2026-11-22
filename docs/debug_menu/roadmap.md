@@ -73,3 +73,40 @@ Same as `docs/wave_rework/roadmap.md` "Agent briefing" (read it). Additionally:
 | Backend | done (review fixed) |
 | UI | done (review fixed) |
 | Playtest | open |
+| Refactor: game | done (review fixed) |
+| Refactor: debug | done (review fixed) |
+
+## Refactor: separate debug code from game code
+
+The first version put debug-only code into game scripts: `debug_*` methods, cheat flags, a release queue in `WaveManager`, and eight relays on `Level`. The refactor makes the dependency one-way: `debug/` uses game code, and game code never names `debug/`.
+- Capabilities become plain game API.
+- Cheat flags become general modifiers.
+- Debug-only orchestration moves into `debug/`.
+
+There are two bundles, run in parallel, on disjoint files:
+- [refactor-game.md](refactor-game.md): game scripts.
+- [refactor-debug.md](refactor-debug.md): `debug/`, `main/main.gd`, CI.
+
+### Contract (game API after the refactor)
+
+Doc comments must not say "debug". Defaults change nothing.
+
+| Class | API |
+|---|---|
+| `Tower` | `set_level(new_level: int, new_major: MajorUpgrade) -> void`: no currency, no `upgraded` signal; resets a major's look when the major is dropped. `set_firing_enabled(enabled: bool) -> void` |
+| `TurretComponent` | `var firing_enabled: bool = true`: aims, leads, sweeps and reloads as usual; fires only while true. `reset_appearance()` stays |
+| `BuildingManager` | `set_tower_level(tower: Tower, level: int, major: MajorUpgrade) -> void`: free, managed towers only, clamped; at max level uses `major` or, if null, the tower's first major; emits `tower_upgraded`; `total_spent` untouched |
+| `EnemySpawner` | `spawn(scene: PackedScene, world_position: Vector2) -> Enemy`: outside any wave queue, counted alive; null if not an `Enemy` |
+| `Health` | The built-in `Resource.changed` signal (no parameter; `Health` calls `emit_changed()`), emitted by `take_damage`, `heal` and `set_hp(value: float) -> void` |
+| `Enemy` | `set_health_ratio(ratio: float) -> void` (via `health.set_hp`; clamped 0.01..1; not while dying). `set_damage_factor(source: StringName, factor: float)` / `clear_damage_factor(source: StringName)`. `take_damage`: armor, then × the product of factors, then flash, deflect and `damaged.emit(final)` (final may be 0), then `health.take_damage(final)` |
+| `PlayerBase` | `set_damage_factor(source, factor)` / `clear_damage_factor(source)`. `take_damage(amount: int)` always emits `damaged(amount)`, then subtracts `roundi(amount × product)` |
+| `WaveConfig` | `generate(index, rng, open_spawners, last_templates := [], difficulty: float = 1.0)`: multiplies the wave budget |
+| `WaveManager` | `var difficulty: float = 1.0` and `set_difficulty(value: float)`, which re-plans a stored plan and emits `wave_planned`. `set_countdown_paused(paused: bool)`. `skip_to_wave(index: int)` (clamped; restarts the flow after the last wave). `var spawn_delay_multiplier: float = 1.0` and `set_spawn_delay_multiplier(m: float)`, which also updates spawners still spawning. `get_spawn_delay() -> float` (stepped delay × multiplier). `get_wave_seed() -> int`. `get_spawners_open_at(index: int) -> Array[EnemySpawner]` |
+| `Level` | `get_wave_manager() -> WaveManager`, `get_spawners() -> Array[EnemySpawner]`, `get_player_base() -> PlayerBase`, `is_cell_walkable(cell: Vector2i) -> bool`, `get_enemies() -> Array[Enemy]`. No debug relays |
+
+### Debug-side rules
+
+- Scripts in `debug/` have no `class_name`. They reference each other through `preload` consts.
+- `Main` loads the menu with `load("res://debug/debug_menu.gd")` inside `if OS.is_debug_build()`, and calls `setup(level, building_manager, tower_menu, vfx, camera)` on it.
+- Debug may read through the `Level` getters, but changes state only through public game methods.
+- Release exports exclude `debug/*`: the CI Export step adds it to the preset `exclude_filter` when `REQUIRE_SIGNING` is true.

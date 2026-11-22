@@ -90,9 +90,9 @@ func spawn_next() -> void:
 	_create_enemy(_spawn_queue[index], global_position, false)
 
 
-## Debug: spawns [param scene] at [param world_position] outside any wave queue.
+## Spawns [param scene] at [param world_position] outside any wave queue, for example a boss's minions.
 ## Counted alive like any spawn. Returns null if the scene is not an [Enemy].
-func spawn_extra(scene: PackedScene, world_position: Vector2) -> Enemy:
+func spawn(scene: PackedScene, world_position: Vector2) -> Enemy:
 	return _create_enemy(scene, world_position, false)
 
 

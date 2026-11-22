@@ -66,13 +66,9 @@ func _ready() -> void:
 	hud.set_enemy_count(0)
 
 	if OS.is_debug_build():
-		var debug_menu: DebugMenu = DebugMenu.new()
-		debug_menu.level = current_level
-		debug_menu.building_manager = building_manager
-		debug_menu.tower_menu = tower_menu
-		debug_menu.vfx = vfx
-		debug_menu.camera = camera
-		add_child(debug_menu)
+		var menu: Node = (load("res://debug/debug_menu.gd") as GDScript).new()
+		add_child(menu)
+		menu.call("setup", current_level, building_manager, tower_menu, vfx, camera)
 
 
 func _unhandled_input(event: InputEvent) -> void:

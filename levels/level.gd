@@ -26,8 +26,6 @@ signal armor_deflected(hit_position: Vector2)
 @export var map_config: MapGenConfig
 
 const SPAWNER_SCENE: PackedScene = preload("uid://dbkc22ud4e32")
-## Rings searched around a debug spawn position for a walkable cell.
-const DEBUG_SEARCH_RADIUS: int = 8
 
 ## Seed of the generated map (>= 1 once the level is ready).
 var map_seed: int = 0
@@ -90,19 +88,19 @@ func call_next_wave() -> void:
 	wave_manager.call_next_wave()
 
 
-## Debug: the base takes no damage (enemies reaching it are still freed).
-func set_god_mode(enabled: bool) -> void:
-	player_base.invulnerable = enabled
+## The wave manager.
+func get_wave_manager() -> WaveManager:
+	return wave_manager
 
 
-## Number of waves in a run ([member WaveConfig.max_waves]).
-func get_max_waves() -> int:
-	return wave_manager.config.max_waves
+## All spawners, open or not.
+func get_spawners() -> Array[EnemySpawner]:
+	return enemy_spawners
 
 
-## Number of spawners, open or not.
-func get_spawner_count() -> int:
-	return enemy_spawners.size()
+## The player base.
+func get_player_base() -> PlayerBase:
+	return player_base
 
 
 ## Live enemies (group "enemies", not dying).
@@ -113,80 +111,6 @@ func get_enemies() -> Array[Enemy]:
 		if enemy != null and not enemy.is_dying():
 			result.append(enemy)
 	return result
-
-
-## Debug: spawns [param count] enemies of [param scene] at spawner [param spawner_index].
-func debug_spawn_enemies(scene: PackedScene, count: int, spawner_index: int) -> Array[Enemy]:
-	if spawner_index < 0 or spawner_index >= enemy_spawners.size():
-		push_warning("Level: no spawner with index %d." % spawner_index)
-		return []
-	var spawner: EnemySpawner = enemy_spawners[spawner_index]
-	return _spawn_extra(spawner, scene, count, spawner.global_position)
-
-
-## Debug: spawns [param count] enemies of [param scene] at the walkable cell nearest to [param world_position].
-func debug_spawn_enemies_at(scene: PackedScene, count: int, world_position: Vector2) -> Array[Enemy]:
-	var center: Vector2i = PathfindingManager.world_to_cell(world_position)
-	var cell_size: Vector2 = Vector2(GameData.grid_cell_size)
-	var found: bool = false
-	var best_cell: Vector2i = center
-	if _is_walkable(center):
-		found = true
-	else:
-		for radius: int in range(1, DEBUG_SEARCH_RADIUS + 1):
-			var best_distance: float = INF
-			for x: int in range(center.x - radius, center.x + radius + 1):
-				for y: int in range(center.y - radius, center.y + radius + 1):
-					if maxi(absi(x - center.x), absi(y - center.y)) != radius:
-						continue
-					var cell := Vector2i(x, y)
-					var distance: float = (Vector2(cell) * cell_size + cell_size / 2.0).distance_squared_to(world_position)
-					if distance < best_distance and _is_walkable(cell):
-						best_distance = distance
-						best_cell = cell
-						found = true
-			if found:
-				break
-	if not found:
-		push_warning("Level: no walkable cell near %s." % world_position)
-		return []
-	var spawn_position: Vector2 = Vector2(best_cell) * cell_size + cell_size / 2.0
-	var owner_spawner: EnemySpawner = null
-	var best: float = INF
-	for spawner: EnemySpawner in enemy_spawners:
-		var distance: float = spawner.global_position.distance_squared_to(spawn_position)
-		if distance < best:
-			best = distance
-			owner_spawner = spawner
-	if owner_spawner == null:
-		push_warning("Level: no spawner to own the enemies.")
-		return []
-	return _spawn_extra(owner_spawner, scene, count, spawn_position)
-
-
-## Debug: spawns the plan of wave [param index] (0-based) as an extra on top of the running flow.
-func debug_spawn_wave(index: int) -> void:
-	wave_manager.debug_spawn_wave(index)
-
-
-## Debug: the next wave started or planned is [param index] (0-based).
-func debug_jump_to_wave(index: int) -> void:
-	wave_manager.debug_jump_to_wave(index)
-
-
-## Debug: multiplies the budget of waves planned from now on.
-func set_budget_scale(budget: float) -> void:
-	wave_manager.set_budget_scale(budget)
-
-
-## Debug: pauses or resumes the next-wave countdown.
-func set_countdown_held(held: bool) -> void:
-	wave_manager.set_countdown_held(held)
-
-
-## Debug: spawn delay (s) used instead of the wave's own, also for spawning in progress; <= 0 turns it off.
-func set_spawn_delay_override(delay: float) -> void:
-	wave_manager.set_spawn_delay_override(delay)
 
 
 ## Global position of the player base.
@@ -234,25 +158,12 @@ func would_block_path(cell_position: Vector2i) -> bool:
 
 
 ## Whether the cell has a tile and is not solid for pathfinding.
-func _is_walkable(cell: Vector2i) -> bool:
+func is_cell_walkable(cell: Vector2i) -> bool:
 	if not PathfindingManager.astar_grid.is_in_boundsv(cell):
 		return false
 	if tile_map_layer.get_cell_tile_data(cell) == null:
 		return false
 	return not PathfindingManager.astar_grid.is_point_solid(cell)
-
-
-## Spawns [param count] enemies through [param spawner], each jittered a few px around [param world_position].
-func _spawn_extra(spawner: EnemySpawner, scene: PackedScene, count: int, world_position: Vector2) -> Array[Enemy]:
-	var result: Array[Enemy] = []
-	var rng := RandomNumberGenerator.new()
-	rng.randomize()
-	for i: int in range(maxi(0, count)):
-		var offset: Vector2 = Vector2.from_angle(rng.randf() * TAU) * rng.randf_range(0.0, 4.0) if i > 0 else Vector2.ZERO
-		var enemy: Enemy = spawner.spawn_extra(scene, world_position + offset)
-		if enemy != null:
-			result.append(enemy)
-	return result
 
 
 ## Seed for the next generated map: the requested one, or a random one.

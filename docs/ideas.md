@@ -13,9 +13,15 @@
 - [ ] **Enemies spread out like a wave.** Enemies currently clump and only walk the shortest path from flag to base. Experiment: each enemy starts on the flag-to-base path but keeps its own independent path, so when it is pushed off the main path (knockback, crowding) it may take a different route instead of snapping back. Goal: no more big clumps; a wave should spread and expand across the map.
 - [ ] **Turret turn slowdown after a shot.** For 1 s after firing, a turret turns at 25 % of its turn speed.
 - [ ] **Allow building on farms.** Farmland cells should be buildable like grass.
-- [ ] **Difficulty setting.** A difficulty choice that scales `WaveConfig.budget_growth` (and maybe `max_waves`). Belongs with the wave-settings / advanced settings screen.
+- [ ] **Difficulty setting.** A difficulty choice that scales `WaveConfig.budget_growth` (and maybe `max_waves`). The hook exists since the debug refactor: `WaveManager.set_difficulty()` multiplies the wave budget (`WaveConfig.generate(..., difficulty)`). Belongs with the wave-settings / advanced settings screen.
+- [ ] **Shields and vulnerability.** Enemy shields, armour-break or vulnerability debuffs, and a base shield power-up, built on the damage factors (`Enemy.set_damage_factor()`, `PlayerBase.set_damage_factor()`; one factor per source, they multiply).
+- [ ] **Tower-disabling enemy.** An enemy (EMP) that stops nearby towers from firing for a while, through `Tower.set_firing_enabled()` (the turret keeps aiming).
+- [ ] **Tower status effects.** Poison, slow or burn from tower shots: components attached to the enemy at runtime (effect and ability components already resolve their enemy from the parent) plus speed and damage factors.
+- [ ] **Save and continue a run.** Restore a run with `WaveManager.skip_to_wave()` and `BuildingManager.set_tower_level()` (free, `total_spent` kept separately).
+- [ ] **DamageSmoke on `Health.changed`.** Replace the per-frame health polling in `DamageSmoke` with the `Health.changed` signal.
+- [ ] **Debug: flags on wave spawns.** The debug menu's freeze and invulnerable apply to live and debug-spawned enemies only. Applying them to wave spawns needs an `enemy_spawned` signal on `EnemySpawner`.
 - [ ] **Unique maps.** Hand-made maps playable next to generated ones. The old legacy map (still painted in `levels/level.tscn`, not playable since wave rework phase 0) becomes the first unique map. Needs its own plan: map selection, where unique maps live, spawner `first_wave` per map.
-- [ ] **Boss varieties.** A base boss plus varieties: shielded (big shield effect that keeps regenerating like the regenerator; once broken, no more regen), carrier (keeps spawning fast / dasher enemies), stealther (goes invisible every x seconds, untargetable), more later. Planned as wave rework phase 4 (`docs/wave_rework/phase-4.md`).
+- [ ] **Boss varieties.** A base boss plus varieties: shielded (big shield effect that keeps regenerating like the regenerator; once broken, no more regen), carrier (keeps spawning fast / dasher enemies), stealther (goes invisible every x seconds, untargetable), more later. Planned as wave rework phase 4 (`docs/wave_rework/phase-4.md`). The carrier can spawn through `EnemySpawner.spawn(scene, position)`, which counts the minions alive.
 
 ## UI rework
 

@@ -19,8 +19,8 @@ var _sweep_anchor: float = 0.0  ## Cannon rotation the idle sweep swings around
 var _sweep_dir: float = 1.0  ## Current sweep direction, 1 or -1
 var _turn_speed: float = 360.0  ## Cannon turn speed in degrees per second
 var _aim_tolerance: float = 5.0  ## Max angle in degrees between cannon and a target to fire
-## Debug: aim, lead, sweep and reload as usual but never fire (stays loaded).
-var hold_fire: bool = false
+## Whether the turret fires; when false it still aims, leads, sweeps and reloads (stays loaded).
+var firing_enabled: bool = true
 
 var _default_texture: Texture2D  ## Cannon texture from the scene, restored by reset_appearance()
 var _loaded: bool = false  ## True once the reload timer ran out; the next shot may fire as soon as aimed
@@ -44,7 +44,7 @@ func _process(delta: float) -> void:
 		return
 	_idle_time = 0.0
 	_aim(_lead_point(target), delta)
-	if _loaded and not hold_fire and _has_target_in_cone():
+	if _loaded and firing_enabled and _has_target_in_cone():
 		_fire()
 
 ## Update turret stats with the given TowerStats

@@ -254,6 +254,11 @@ jobs:
           # menu (OS.is_debug_build()); Android ones are also signed with the throwaway debug key.
           flag=--export-debug
           [ "$REQUIRE_SIGNING" = true ] && flag=--export-release
+          # Release exports leave the debug menu out (Main loads it with load(), guarded by is_debug_build()).
+          if [ "$REQUIRE_SIGNING" = true ]; then
+            sed -i 's|^exclude_filter="tools/\*"$|exclude_filter="tools/*,debug/*"|' export_presets.cfg
+            [ "$(grep -c 'debug/\*' export_presets.cfg)" = 4 ] || { echo "::error::debug/* exclude missing from the export presets"; exit 1; }
+          fi
           godot --headless "$flag" "$PRESET" "$out" 2>&1 | tee export.log
           # Godot can exit 0 after a failed export; failures are `ERROR:` lines
           # (missing template, bad preset, config errors), `WARNING:`s are tolerated.

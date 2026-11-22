@@ -64,13 +64,13 @@ func apply_major(new_major: MajorUpgrade) -> void:
 	_flash(upgrade_flash_time)
 	upgraded.emit()
 
-## Debug: stop or resume firing; the turret still aims and sweeps.
-func set_hold_fire(enabled: bool) -> void:
-	_turret.hold_fire = enabled
+## Enables or disables firing; the turret still aims, leads, sweeps and reloads.
+func set_firing_enabled(enabled: bool) -> void:
+	_turret.firing_enabled = enabled
 
-## Debug: set level and major directly (no currency, no [signal upgraded]) and refresh the look.
+## Sets level and major directly (no currency, no [signal upgraded]) and refresh the look.
 ## [param new_major] is only kept at MAX_LEVEL.
-func debug_set_level(new_level: int, new_major: MajorUpgrade) -> void:
+func set_level(new_level: int, new_major: MajorUpgrade) -> void:
 	level = clampi(new_level, 0, TowerStats.MAX_LEVEL)
 	major = new_major if level == TowerStats.MAX_LEVEL else null
 	if major == null:
