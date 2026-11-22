@@ -123,6 +123,7 @@ func _on_game_end_screen_restart_requested() -> void:
 
 
 func _on_start_menu_start_requested() -> void:
+	input_controller.input_enabled = true
 	current_level.start()
 
 
@@ -165,5 +166,6 @@ func _on_building_manager_tower_sold(tower: Tower, cell_position: Vector2i) -> v
 
 
 func _close_tower_ui() -> void:
+	input_controller.input_enabled = false
 	tower_menu.hide_menu()
 	input_controller.cancel_preview()

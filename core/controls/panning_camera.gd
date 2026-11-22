@@ -31,8 +31,8 @@ var smooth_damp: SmoothDamp
 
 
 func _ready() -> void:
-	# Pan and zoom keep working while the tree is paused (start menu, end screen, debug pause);
-	# TouchControls and KBMControls inherit this. Map taps/clicks are ignored by InputController then.
+	# Pan and zoom keep working while the tree is paused (start menu, end screen, a game pause);
+	# TouchControls and KBMControls inherit this. InputController gates map taps/clicks itself (input_enabled).
 	process_mode = Node.PROCESS_MODE_ALWAYS
 	smooth_damp = SmoothDamp.new()
 	smooth_damp.pan_smoothing = pan_smoothing
