@@ -10,44 +10,54 @@
 [ext_resource type="PackedScene" uid="uid://cmplrw87602f1" path="res://entities/enemies/regenerator/regenerator_enemy.tscn" id="8_regen"]
 [ext_resource type="PackedScene" uid="uid://bfng13bn36l8i" path="res://entities/enemies/splitter/splitter_enemy.tscn" id="9_splitter"]
 
+[sub_resource type="Resource" id="Resource_basic"]
+script = ExtResource("3_wenemy")
+scene = ExtResource("2_basic")
+weight = 3.0
+
 [sub_resource type="Resource" id="Resource_fast"]
 script = ExtResource("3_wenemy")
 scene = ExtResource("4_fast")
 first_wave = 5
-share = 0.3
-
-[sub_resource type="Resource" id="Resource_heavy"]
-script = ExtResource("3_wenemy")
-scene = ExtResource("5_heavy")
-first_wave = 10
-share = 0.2
+weight = 2.0
+max_share = 0.4
 
 [sub_resource type="Resource" id="Resource_dasher"]
 script = ExtResource("3_wenemy")
 scene = ExtResource("6_dasher")
 first_wave = 3
-share = 0.15
+cost = 2
+weight = 2.0
+max_share = 0.4
 
-[sub_resource type="Resource" id="Resource_armored"]
+[sub_resource type="Resource" id="Resource_heavy"]
 script = ExtResource("3_wenemy")
-scene = ExtResource("7_armored")
-first_wave = 6
-share = 0.2
+scene = ExtResource("5_heavy")
+first_wave = 10
+cost = 4
+max_share = 0.4
 
 [sub_resource type="Resource" id="Resource_regen"]
 script = ExtResource("3_wenemy")
 scene = ExtResource("8_regen")
 first_wave = 8
-share = 0.15
+cost = 4
+max_share = 0.4
+
+[sub_resource type="Resource" id="Resource_armored"]
+script = ExtResource("3_wenemy")
+scene = ExtResource("7_armored")
+first_wave = 6
+cost = 5
+max_share = 0.4
 
 [sub_resource type="Resource" id="Resource_splitter"]
 script = ExtResource("3_wenemy")
 scene = ExtResource("9_splitter")
 first_wave = 11
-share = 0.1
+cost = 6
+max_share = 0.3
 
 [resource]
 script = ExtResource("1_cfg")
-max_waves = 15
-default_enemy = ExtResource("2_basic")
-variants = Array[ExtResource("3_wenemy")]([SubResource("Resource_fast"), SubResource("Resource_heavy"), SubResource("Resource_dasher"), SubResource("Resource_armored"), SubResource("Resource_regen"), SubResource("Resource_splitter")])
+enemies = Array[ExtResource("3_wenemy")]([SubResource("Resource_basic"), SubResource("Resource_fast"), SubResource("Resource_dasher"), SubResource("Resource_heavy"), SubResource("Resource_regen"), SubResource("Resource_armored"), SubResource("Resource_splitter")])

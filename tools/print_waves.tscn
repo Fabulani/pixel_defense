@@ -1,0 +1,6 @@
+[gd_scene format=3 uid="uid://cq1mcn80b4jh5"]
+
+[ext_resource type="Script" uid="uid://8lfuyup5vy1q" path="res://tools/print_waves.gd" id="1_pw"]
+
+[node name="PrintWaves" type="Node"]
+script = ExtResource("1_pw")
