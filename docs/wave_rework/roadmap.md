@@ -25,7 +25,7 @@ Planned 2026-11-22. Replaces the dev-only wave generation (roadmap item 5). One 
 | # | Brief | Content | Status |
 |---|---|---|---|
 | 0 | [phase-0.md](phase-0.md) | Remove legacy map option | done |
-| 1 | [phase-1.md](phase-1.md) | Seeded budget generator, 20 waves, `tools/print_waves` | todo |
+| 1 | [phase-1.md](phase-1.md) | Seeded budget generator, 20 waves, `tools/print_waves` | done |
 | 2 | [phase-2.md](phase-2.md) | Wave templates, per-spawner composition, boss slot | todo |
 | 3 | [phase-3.md](phase-3.md) | Countdown, call-early bonus, wave banner | todo |
 | 4 | [phase-4.md](phase-4.md) | Bosses (base + varieties). Blocked on debug scene | outline |
@@ -58,7 +58,7 @@ pixel_defense deltas (win over studio files on conflict):
 
 1. Manager: branch `wave-rework/phase-N` from `main`; recheck brief vs code.
 2. Implementer (sonnet, medium effort).
-3. Reviewer (sonnet, high effort, read-only): `git diff main` + untracked files vs brief.
+3. Reviewer (sonnet, high effort, read-only): `git diff origin/main` + untracked files vs brief.
 4. Manager triages findings -> fixes back to same implementer.
 5. Headless verification (manager reruns acceptance commands).
 6. Manager updates `CLAUDE.md`, docs, phase status, `docs/untracked/workflow-notes.md` (git-ignored personal notes).

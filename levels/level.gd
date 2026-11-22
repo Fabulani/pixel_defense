@@ -56,7 +56,7 @@ func _ready() -> void:
 	for spawner: EnemySpawner in enemy_spawners:
 		spawner.enemy_died.connect(_on_enemy_spawner_enemy_died)
 		spawner.enemy_armor_deflected.connect(_on_enemy_spawner_enemy_armor_deflected)
-	wave_manager.setup(enemy_spawners)
+	wave_manager.setup(enemy_spawners, map_seed)
 	projectile_manager.bullet_fired.connect(_on_projectile_manager_bullet_fired)
 	projectile_manager.bullet_hit.connect(_on_projectile_manager_bullet_hit)
 	player_base.destroyed.connect(_on_player_base_destroyed)

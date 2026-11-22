@@ -12,7 +12,7 @@ signal alive_count_changed(count: int)
 @export var spawn_delay: float = 1.0
 ## Subtracted from the spawn delay after each wave whose spawning completed.
 @export var spawn_delay_step: float = 0.1
-@export var min_spawn_delay: float = 0.01
+@export var min_spawn_delay: float = 0.3
 
 var wave_index: int = 0
 
@@ -21,6 +21,8 @@ var _current_spawn_delay: float = 0.0
 ## Spawners of the running wave that have not finished spawning yet.
 var _spawning_count: int = 0
 var _is_exiting: bool = false
+## Base of the per-wave seeds (the map seed).
+var _wave_seed: int = 1
 
 @onready var wave_timer: Timer = $WaveTimer
 
@@ -35,8 +37,10 @@ func _exit_tree() -> void:
 
 
 ## Takes over the spawners (called by [Level], after this node's [method Node._ready]).
-func setup(spawners: Array[EnemySpawner]) -> void:
+## [param wave_seed] seeds the wave generation together with the wave index.
+func setup(spawners: Array[EnemySpawner], wave_seed: int) -> void:
 	_spawners = spawners
+	_wave_seed = wave_seed
 	for spawner: EnemySpawner in _spawners:
 		spawner.set_active(spawner.first_wave <= 0)
 		spawner.spawning_complete.connect(_on_enemy_spawner_spawning_complete)
@@ -61,7 +65,7 @@ func start_next_wave() -> void:
 		push_error("WaveManager: no spawners; call setup() first.")
 		return
 
-	var wave: Array[PackedScene] = config.generate(wave_index)
+	var wave: Array[PackedScene] = config.generate(wave_index, WaveConfig.make_rng(_wave_seed, wave_index)).enemies
 	var active: Array[EnemySpawner] = _get_active_spawners()
 	var count: int = active.size()
 
