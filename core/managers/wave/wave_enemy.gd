@@ -9,5 +9,5 @@ class_name WaveEnemy extends Resource
 @export var cost: int = 1
 ## Weight of this enemy in the weighted pick.
 @export var weight: float = 1.0
-## Maximum fraction of the wave budget this entry may take; 1.0 means uncapped.
+## Maximum fraction of the spawner's budget (its share of the wave x template budget_multiplier) this entry may take; 1.0 means uncapped.
 @export_range(0.0, 1.0) var max_share: float = 1.0

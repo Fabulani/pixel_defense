@@ -1,0 +1,32 @@
+[gd_resource type="Resource" script_class="WaveTemplate" format=3 uid="uid://fmmaxu10pa4a"]
+
+[ext_resource type="Script" uid="uid://wjbmh338yskt" path="res://core/managers/wave/wave_enemy_weight.gd" id="1_4628o"]
+[ext_resource type="PackedScene" uid="uid://cavk4vh6k1igx" path="res://entities/enemies/heavy/heavy_enemy.tscn" id="2_loek3"]
+[ext_resource type="PackedScene" uid="uid://bed7ulmwtdwx8" path="res://entities/enemies/armored/armored_enemy.tscn" id="3_3sg2y"]
+[ext_resource type="PackedScene" uid="uid://b1mg352s1f4mt" path="res://entities/enemies/basic/basic_enemy.tscn" id="4_8v33v"]
+[ext_resource type="Script" uid="uid://durs445cwrswf" path="res://core/managers/wave/wave_template.gd" id="5_ek1tn"]
+
+[sub_resource type="Resource" id="Resource_gj1cb"]
+script = ExtResource("1_4628o")
+scene = ExtResource("2_loek3")
+multiplier = 3.0
+
+[sub_resource type="Resource" id="Resource_ewgmv"]
+script = ExtResource("1_4628o")
+scene = ExtResource("3_3sg2y")
+multiplier = 3.0
+
+[sub_resource type="Resource" id="Resource_pblf6"]
+script = ExtResource("1_4628o")
+scene = ExtResource("4_8v33v")
+multiplier = 0.3
+
+[resource]
+script = ExtResource("5_ek1tn")
+id = &"tank"
+display_name = "Tank"
+description = "Slow, armored and tough."
+is_special = true
+first_wave = 2
+spawn_delay_multiplier = 1.2
+enemy_weights = Array[ExtResource("1_4628o")]([SubResource("Resource_gj1cb"), SubResource("Resource_ewgmv"), SubResource("Resource_pblf6")])

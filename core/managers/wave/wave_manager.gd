@@ -23,6 +23,8 @@ var _spawning_count: int = 0
 var _is_exiting: bool = false
 ## Base of the per-wave seeds (the map seed).
 var _wave_seed: int = 1
+## Template each spawner used in its previous wave (no-repeat rule for special templates).
+var _last_templates: Dictionary[EnemySpawner, WaveTemplate] = {}
 
 @onready var wave_timer: Timer = $WaveTimer
 
@@ -48,8 +50,7 @@ func setup(spawners: Array[EnemySpawner], wave_seed: int) -> void:
 
 
 ## Spawns the next wave, unless the last one was already sent.
-## The enemies are dealt round-robin to the spawners that are open for this wave; the spawners
-## alternate, so the whole wave spawns at the pace of one spawner.
+## Every open spawner spawns its own [SpawnerPlan]; the spawners alternate (staggered first delay).
 func start_next_wave() -> void:
 	wave_timer.stop()
 
@@ -65,26 +66,25 @@ func start_next_wave() -> void:
 		push_error("WaveManager: no spawners; call setup() first.")
 		return
 
-	var wave: Array[PackedScene] = config.generate(wave_index, WaveConfig.make_rng(_wave_seed, wave_index)).enemies
 	var active: Array[EnemySpawner] = _get_active_spawners()
 	var count: int = active.size()
 
-	var shares: Array[Array] = []
-	for k: int in range(count):
-		shares.append([])
-	for i: int in range(wave.size()):
-		shares[(i + wave_index) % count].append(wave[i])
+	var last_templates: Array[WaveTemplate] = []
+	for spawner: EnemySpawner in active:
+		last_templates.append(_last_templates.get(spawner))
+	var plan: WavePlan = config.generate(wave_index, WaveConfig.make_rng(_wave_seed, wave_index), count, last_templates)
 
 	_spawning_count = 0
 	for k: int in range(count):
 		var spawner: EnemySpawner = active[k]
 		spawner.set_active(true)
-		var share: Array[PackedScene] = []
-		share.assign(shares[k])
-		if share.is_empty():
+		var sp: SpawnerPlan = plan.spawners[k]
+		_last_templates[spawner] = sp.template
+		if sp.enemies.is_empty():
 			continue
 		_spawning_count += 1
-		spawner.start_spawning(share, _current_spawn_delay * count, _current_spawn_delay * (k + 1))
+		var delay_multiplier: float = sp.template.spawn_delay_multiplier if sp.template != null else 1.0
+		spawner.start_spawning(sp.enemies, _current_spawn_delay * count * delay_multiplier, _current_spawn_delay * (k + 1))
 
 	wave_index += 1
 	wave_started.emit(wave_index)

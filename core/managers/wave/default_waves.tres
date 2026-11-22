@@ -1,6 +1,7 @@
 [gd_resource type="Resource" script_class="WaveConfig" format=3 uid="uid://cndjldqtub12x"]
 
 [ext_resource type="Script" uid="uid://cpnvubwtwrkup" path="res://core/managers/wave/wave_config.gd" id="1_cfg"]
+[ext_resource type="Resource" uid="uid://d073o33i8spw7" path="res://core/managers/wave/templates/boss.tres" id="1_s4v0n"]
 [ext_resource type="PackedScene" uid="uid://b1mg352s1f4mt" path="res://entities/enemies/basic/basic_enemy.tscn" id="2_basic"]
 [ext_resource type="Script" uid="uid://cvj1rwtrcol72" path="res://core/managers/wave/wave_enemy.gd" id="3_wenemy"]
 [ext_resource type="PackedScene" uid="uid://dnwd6vi1t3f5d" path="res://entities/enemies/fast/fast_enemy.tscn" id="4_fast"]
@@ -9,6 +10,11 @@
 [ext_resource type="PackedScene" uid="uid://bed7ulmwtdwx8" path="res://entities/enemies/armored/armored_enemy.tscn" id="7_armored"]
 [ext_resource type="PackedScene" uid="uid://cmplrw87602f1" path="res://entities/enemies/regenerator/regenerator_enemy.tscn" id="8_regen"]
 [ext_resource type="PackedScene" uid="uid://bfng13bn36l8i" path="res://entities/enemies/splitter/splitter_enemy.tscn" id="9_splitter"]
+[ext_resource type="Resource" uid="uid://cfnt0j4305ghh" path="res://core/managers/wave/templates/normal.tres" id="10_amrf7"]
+[ext_resource type="Script" uid="uid://durs445cwrswf" path="res://core/managers/wave/wave_template.gd" id="12_0y8ph"]
+[ext_resource type="Resource" uid="uid://dkypqr23n1epg" path="res://core/managers/wave/templates/swarm.tres" id="13_yst1q"]
+[ext_resource type="Resource" uid="uid://fmmaxu10pa4a" path="res://core/managers/wave/templates/tank.tres" id="14_syyle"]
+[ext_resource type="Resource" uid="uid://dly88catgkkhm" path="res://core/managers/wave/templates/rush.tres" id="15_6r547"]
 
 [sub_resource type="Resource" id="Resource_basic"]
 script = ExtResource("3_wenemy")
@@ -61,3 +67,6 @@ max_share = 0.3
 [resource]
 script = ExtResource("1_cfg")
 enemies = Array[ExtResource("3_wenemy")]([SubResource("Resource_basic"), SubResource("Resource_fast"), SubResource("Resource_dasher"), SubResource("Resource_heavy"), SubResource("Resource_regen"), SubResource("Resource_armored"), SubResource("Resource_splitter")])
+templates = Array[ExtResource("12_0y8ph")]([ExtResource("10_amrf7"), ExtResource("13_yst1q"), ExtResource("14_syyle"), ExtResource("15_6r547")])
+normal_template = ExtResource("10_amrf7")
+boss_template = ExtResource("1_s4v0n")

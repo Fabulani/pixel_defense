@@ -4,7 +4,7 @@ Read [roadmap.md](roadmap.md) "Agent briefing" first. Requires phase 1 merged. M
 
 ## Goal
 
-Special waves via data (`WaveTemplate` `.tres`). Each open spawner gets its own share of the budget and its own template. Boss slot every 5th wave and on the last wave (placeholder boss = tank variant until phase 4).
+Special waves via data (`WaveTemplate` `.tres`). Each open spawner gets its own share of the budget and its own template. Boss slot every 10th wave and on the last wave (placeholder boss = tank variant until phase 4).
 
 ## Design
 
@@ -36,7 +36,7 @@ Display names/descriptions (placeholder text): Swarm "A horde of small enemies."
 
 ### `WaveConfig` additions
 - `templates: Array[WaveTemplate]` (normal, swarm, tank, rush), `normal_template: WaveTemplate`, `boss_template: WaveTemplate`
-- `boss_interval: int = 5` -> boss on banner waves 5, 10, 15, 20 (index % 5 == 4) and always on the last wave.
+- `boss_interval: int = 10` -> boss on banner waves 10, 20 (index % 10 == 9) and always on the last wave. (Was 5; changed to 10 by the user after review.)
 - `generate(index, rng, open_spawners: int) -> WavePlan`.
 
 ### Per spawner
@@ -59,7 +59,7 @@ Add `--spawners=N` (open count from banner wave 3; 1 before). Print per spawner:
 
 - Clean import + boot.
 - Same seed + spawners -> same digest; different seed -> different.
-- Boss on banner waves 5, 10, 15, 20 (exactly one spawner `boss`), never elsewhere.
+- Boss on banner waves 10, 20 (exactly one spawner `boss`), never elsewhere.
 - No spawner gets the same special template on two consecutive waves.
 - Banner waves 1-2: all `normal`.
 - Per spawner: `spent <= share budget`, `spent > share budget − 1`.

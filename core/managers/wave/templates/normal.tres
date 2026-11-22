@@ -1,0 +1,9 @@
+[gd_resource type="Resource" script_class="WaveTemplate" format=3 uid="uid://cfnt0j4305ghh"]
+
+[ext_resource type="Script" uid="uid://wjbmh338yskt" path="res://core/managers/wave/wave_enemy_weight.gd" id="1_h8ae0"]
+[ext_resource type="Script" uid="uid://durs445cwrswf" path="res://core/managers/wave/wave_template.gd" id="2_ax3m5"]
+
+[resource]
+script = ExtResource("2_ax3m5")
+id = &"normal"
+weight = 3.0
