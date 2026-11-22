@@ -2,8 +2,8 @@
 
 [ext_resource type="Script" uid="uid://dviylmcgi8ydp" path="res://ui/hud/hud.gd" id="1_as3gr"]
 [ext_resource type="Texture2D" uid="uid://c3qi8dlri4pv1" path="res://ui/hud/zero.png" id="1_bngdn"]
-[ext_resource type="FontFile" uid="uid://cnc783dgux1da" path="res://ui/themes/default/Kenney Mini.ttf" id="3_font"]
 [ext_resource type="Texture2D" uid="uid://bbntvb0npfhix" path="res://ui/hud/ship_grey_2.png" id="2_qao66"]
+[ext_resource type="FontFile" uid="uid://cnc783dgux1da" path="res://ui/themes/default/Kenney Mini.ttf" id="3_font"]
 
 [node name="CanvasLayer" type="CanvasLayer" unique_id=796709017]
 script = ExtResource("1_as3gr")
@@ -94,7 +94,7 @@ focus_mode = 0
 theme_override_font_sizes/font_size = 16
 text = "+9999"
 
-[node name="WaveBanner" type="Label" parent="."]
+[node name="WaveBanner" type="Label" parent="." unique_id=448877311]
 unique_name_in_owner = true
 process_mode = 3
 visible = false
@@ -107,7 +107,6 @@ offset_top = 96.0
 offset_right = 200.0
 offset_bottom = 152.0
 grow_horizontal = 2
-mouse_filter = 2
 theme_override_colors/font_color = Color(1, 1, 1, 1)
 theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
 theme_override_constants/outline_size = 8
@@ -116,3 +115,41 @@ theme_override_font_sizes/font_size = 40
 text = "Wave"
 horizontal_alignment = 1
 vertical_alignment = 1
+
+[node name="WaveBannerDetail" type="Label" parent="WaveBanner" unique_id=2127471395]
+unique_name_in_owner = true
+visible = false
+layout_mode = 0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -160.0
+offset_right = 160.0
+offset_bottom = 90.0
+grow_horizontal = 2
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
+theme_override_constants/outline_size = 6
+theme_override_fonts/font = ExtResource("3_font")
+theme_override_font_sizes/font_size = 20
+horizontal_alignment = 1
+autowrap_mode = 3
+
+[node name="NextWaveButton" type="Button" parent="." unique_id=260532327]
+unique_name_in_owner = true
+visible = false
+custom_minimum_size = Vector2(64, 64)
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -90.0
+offset_top = -100.0
+offset_right = 90.0
+offset_bottom = -28.0
+grow_horizontal = 2
+grow_vertical = 0
+focus_mode = 0
+theme_override_font_sizes/font_size = 16
+text = "Next wave"

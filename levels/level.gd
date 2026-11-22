@@ -1,6 +1,12 @@
 class_name Level extends Node2D
 
 signal wave_started(wave_index: int)
+## Next wave planned (countdown start, or right before the first wave).
+signal wave_planned(plan: WavePlan)
+## Countdown to the next wave: seconds left and current early-call bonus; (0.0, 0) when it ends.
+signal countdown_changed(time_left: float, bonus: int)
+## The next wave was called early; [param coins] were paid.
+signal early_called(coins: int)
 signal enemy_count_changed(count: int)
 signal lost
 signal won
@@ -51,6 +57,9 @@ func _ready() -> void:
 	RenderingServer.set_default_clear_color('dff6f5')
 
 	wave_manager.wave_started.connect(_on_wave_manager_wave_started)
+	wave_manager.wave_planned.connect(_on_wave_manager_wave_planned)
+	wave_manager.countdown_changed.connect(_on_wave_manager_countdown_changed)
+	wave_manager.early_called.connect(_on_wave_manager_early_called)
 	wave_manager.all_waves_done.connect(_on_wave_manager_all_waves_done)
 	wave_manager.alive_count_changed.connect(_on_wave_manager_alive_count_changed)
 	for spawner: EnemySpawner in enemy_spawners:
@@ -69,6 +78,16 @@ func _ready() -> void:
 ## Start the first wave.
 func start() -> void:
 	wave_manager.start_next_wave()
+
+
+## Calls the next wave early while the countdown runs (pays the bonus); no-op otherwise.
+func call_next_wave() -> void:
+	wave_manager.call_next_wave()
+
+
+## Global position of the player base.
+func get_base_position() -> Vector2:
+	return player_base.global_position
 
 
 ## Register a freshly built tower: block its cell and hook it to the projectile manager.
@@ -176,6 +195,18 @@ func _update_pathfinding_preview() -> void:
 func _on_wave_manager_wave_started(wave_index: int) -> void:
 	_update_pathfinding_preview()
 	wave_started.emit(wave_index)
+
+
+func _on_wave_manager_wave_planned(plan: WavePlan) -> void:
+	wave_planned.emit(plan)
+
+
+func _on_wave_manager_countdown_changed(time_left: float, bonus: int) -> void:
+	countdown_changed.emit(time_left, bonus)
+
+
+func _on_wave_manager_early_called(coins: int) -> void:
+	early_called.emit(coins)
 
 
 func _on_wave_manager_all_waves_done() -> void:

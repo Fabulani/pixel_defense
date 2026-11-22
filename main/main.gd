@@ -31,6 +31,10 @@ func _ready() -> void:
 	current_level.won.connect(_on_level_won)
 	current_level.wave_started.connect(hud.set_wave)
 	current_level.wave_started.connect(hud.show_wave_banner)
+	current_level.wave_planned.connect(hud.show_wave_plan)
+	current_level.countdown_changed.connect(hud.set_countdown)
+	current_level.early_called.connect(_on_level_early_called)
+	hud.next_wave_requested.connect(current_level.call_next_wave)
 	current_level.bullet_fired.connect(_on_level_bullet_fired)
 	current_level.bullet_hit.connect(_on_level_bullet_hit)
 	current_level.enemy_died.connect(_on_level_enemy_died)
@@ -65,6 +69,7 @@ func _unhandled_input(event: InputEvent) -> void:
 
 func _on_level_lost() -> void:
 	camera.shake(0.7)
+	hud.hide_next_wave_button()
 	_close_tower_ui()
 	game_end_screen.show_defeat(current_level.waves_survived, CurrencyManager.coins, current_level.map_seed)
 
@@ -82,11 +87,16 @@ func _on_level_enemy_died(death_position: Vector2, coins: int, color: Color) -> 
 	vfx.play_coin_popup(death_position, coins)
 
 
+func _on_level_early_called(coins: int) -> void:
+	vfx.play_coin_popup(current_level.get_base_position(), coins)
+
+
 func _on_level_armor_deflected(hit_position: Vector2) -> void:
 	vfx.play_deflect(hit_position)
 
 
 func _on_level_won() -> void:
+	hud.hide_next_wave_button()
 	_close_tower_ui()
 	game_end_screen.show_victory(current_level.waves_survived, CurrencyManager.coins, current_level.map_seed)
 
