@@ -38,7 +38,7 @@ sequenceDiagram
   end
   B->>E: body_entered → take_damage(damage), apply_knockback
   B-->>PM: hit(pos, dir) → bullet_hit → Level → Main → play_impact
-  Note over B: dies after `penetration` hits or 3 s lifetime;<br/>its trail is handed to the parent to fade out
+  Note over B: dies after `penetration` hits or 3 s lifetime,<br/>its trail is handed to the parent to fade out
 ```
 
 ## Damage pipeline (`Enemy.take_damage`, enemy.gd:68)

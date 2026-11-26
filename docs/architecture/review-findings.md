@@ -2,6 +2,8 @@
 
 These were found while mapping the code. They are not fixed. "Verified" means it was checked line by line; the rest comes from a first pass and still needs confirming.
 
+Every item below is tracked as an issue draft in [issues/](issues/README.md).
+
 ## Likely bugs
 
 1. **Enemies freeze forever if a tower is built on their cell. Verified.**

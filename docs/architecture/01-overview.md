@@ -99,7 +99,7 @@ sequenceDiagram
   M->>M: camera.fit_rect(level.get_map_rect())
   SM->>SM: paused = true (in its own _ready)
   SM-->>M: start_requested
-  M->>L: input_enabled = true; level.start()
+  M->>L: input_enabled = true, level.start()
   L->>WM: start_next_wave() (wave 1, no countdown)
 ```
 

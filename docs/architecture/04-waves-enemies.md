@@ -5,8 +5,8 @@
 ```mermaid
 stateDiagram-v2
   [*] --> Waiting: setup(spawners, map_seed)
-  Waiting --> Spawning: Level.start() → start_next_wave()<br/>(wave 1: no countdown)
-  Spawning --> Countdown: all open spawners emitted spawning_complete<br/>→ delay step down, end_current_wave():<br/>plan next (wave_planned), WaveTimer 12 s
+  Waiting --> Spawning: Level.start() → start_next_wave()<br/>(wave 1, no countdown)
+  Spawning --> Countdown: all open spawners emitted spawning_complete<br/>→ delay step down, end_current_wave()<br/>plans next (wave_planned), WaveTimer 12 s
   Countdown --> Spawning: WaveTimer timeout
   Countdown --> Spawning: call_next_wave()<br/>pays floori(time_left × 0.5), early_called
   Spawning --> Done: last wave sent and spawning complete
