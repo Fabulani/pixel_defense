@@ -63,6 +63,7 @@ One file per issue, ready to become a GitHub issue: the first line is the title 
 | # | Title | Type | Priority | Area |
 |---|---|---|---|---|
 | [045](045-level-damage-bonus-rarely-changes-shots-to-kill.md) | Level damage bonus rarely changes shots to kill | balance | low | towers |
+| [046](046-upgrade-and-effect-system-rework.md) | Upgrades: rework stat calculation and on-hit effects | refactor / design | low | towers |
 
 Folded into existing drafts: "walled-in enemies" → 001; "fallback map never hit" → 014.
 
@@ -71,5 +72,5 @@ Left out on purpose:
 - **Already GitHub issues:** targeting priorities (#10), obstacle-breaking enemy (#11).
 - **Descriptions, not problems:** one base tower by design; `TurretComponent.configure()` timer behaviour; the slightly-under fire rate (kept on purpose); health bars rejected.
 
-By design, not issues: a tap or click acts at the release position, and the first 3 mm of a one-finger drag don't pan. Death-child offsets use the global `randf()` (was draft 042; cosmetic randomness, closed as by design).
+By design, not issues: a tap or click acts at the release position, and the first 3 mm of a one-finger drag don't pan. Death-child offsets use the global `randf()` (was draft 042; cosmetic randomness, closed as by design). Selling refunds 100 % of what was spent, so towers can be swapped mid-wave (the author does not want partial refunds).
 

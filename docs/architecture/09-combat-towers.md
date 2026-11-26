@@ -104,7 +104,7 @@ Because the base is never mutated, any level and major can be set in any order (
 | long_shot | 1.5 | 3.0 | 300 | 216 | 4.5 | 105 |
 | big_boy | 3.0 | 3.0 | 150 | 126 | 9.0 | 105 |
 
-Costs: build 5, then `cost × next level` (5, 10, 15, 20), then the major for 50. Selling refunds `total_spent` in full.
+Costs: build 5, then `cost × next level` (5, 10, 15, 20), then the major for 50. Selling refunds `total_spent` in full. That is by design: swapping towers mid-wave (big_boy out, rapid_fire in for a rush wave) is allowed micro-play.
 
 The level bonus is applied to damage *and* rate, so ideal DPS grows with the square: level 4 is 1.4² = 1.96× a new tower, a major 1.5² × its multiplier. "Ideal" means a target always in the cone. Real DPS is lower (see 9.4).
 
@@ -208,5 +208,6 @@ All visual, none of it changes stats, timing or the bullet origin:
 - Level damage bonus rarely changes shots to kill (issue 045, balance).
 - `Tower.upgraded` has no listener (issue 018). `Main` listens to `BuildingManager.tower_upgraded` instead.
 - `penetration` is supported end to end but is 1 for every tower and no major changes it. An unused lever, not a bug.
+- Stats live in two copies (base and effective), and majors are a fixed list of multipliers; a rework is planned (issue 046).
 - `place_tower()` instantiates before checking coins (issue 012), and `Bullet` crashes without `setup()` (issue 011).
 - Targeting is entry order (#10); slow cannons can miss fast close enemies (040).
