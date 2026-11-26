@@ -58,6 +58,12 @@ One file per issue, ready to become a GitHub issue: the first line is the title 
 | [043](043-wave-1-start-button-and-countdown.md) | Wave 1 starts immediately: add a player-started first wave | feature / design | medium | waves, UI |
 | [044](044-wave-system-redesign.md) | Wave system: discuss and redesign pacing and early calls | design / discussion | medium | waves |
 
+### From the combat and towers deep dive
+
+| # | Title | Type | Priority | Area |
+|---|---|---|---|---|
+| [045](045-level-damage-bonus-rarely-changes-shots-to-kill.md) | Level damage bonus rarely changes shots to kill | balance | low | towers |
+
 Folded into existing drafts: "walled-in enemies" → 001; "fallback map never hit" → 014.
 
 Left out on purpose:
