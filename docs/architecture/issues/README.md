@@ -50,6 +50,13 @@ One file per issue, ready to become a GitHub issue: the first line is the title 
 | [039](039-debug-menu-known-issues.md) | Debug menu known issues | debug | low | debug |
 | [040](040-turret-aim-cone-fast-close-enemies.md) | Slow cannons may never hit fast close enemies | design | low | towers |
 
+### From the wave deep dive
+
+| # | Title | Type | Priority | Area |
+|---|---|---|---|---|
+| [041](041-spawning-complete-one-interval-late.md) | `spawning_complete` fires one interval after the last spawn | polish / timing | low | waves |
+| [042](042-death-children-global-randf.md) | Death-child offsets use the global random generator | determinism | low | spawners |
+
 Folded into existing drafts: "walled-in enemies" → 001; "fallback map never hit" → 014.
 
 Left out on purpose:

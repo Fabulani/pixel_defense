@@ -10,7 +10,9 @@ The guide is in reading order:
 4. [04-waves-enemies.md](04-waves-enemies.md): the wave lifecycle, the budget fill, templates, enemy life, and the variant table.
 5. [05-mapgen.md](05-mapgen.md): the map generator pipeline and the painter.
 6. [06-debug-ci.md](06-debug-ci.md): the debug menu and the CI/release pipeline.
-7. [review-findings.md](review-findings.md): places where CLAUDE.md and the code disagree, and fragile code found while mapping.
+7. [07-controls.md](07-controls.md): controls deep dive: gesture classifier, click vs pan, the camera frame.
+8. [08-waves.md](08-waves.md): wave system deep dive: the cycle, pacing, planning, the numbers, and the win check.
+9. [review-findings.md](review-findings.md): places where CLAUDE.md and the code disagree, and fragile code found while mapping.
 
 Diagrams are Mermaid. GitHub renders them, and so does VS Code with a Mermaid extension.
 
