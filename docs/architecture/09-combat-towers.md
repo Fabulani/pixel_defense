@@ -1,6 +1,6 @@
 # 9. Combat and towers deep dive
 
-Rendered PNGs of these diagrams are in `img/towers-*.png`. Chapter 3 has the short version (shot sequence, damage pipeline, game-feel table). This one walks the tower code.
+Chapter 3 has the short version (shot sequence, damage pipeline, game-feel table). This one walks the tower code.
 
 ## 9.1 Who is who
 

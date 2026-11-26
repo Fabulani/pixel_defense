@@ -1,7 +1,5 @@
 # 7. Controls deep dive (`core/controls/`)
 
-Rendered PNGs of these diagrams are in `img/controls-*.png`.
-
 ## 7.1 Wiring: raw events → meaning → consumers
 
 <!-- controls-1-wiring -->

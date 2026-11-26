@@ -1,6 +1,6 @@
 # 8. Wave system deep dive (`core/managers/wave/`)
 
-Rendered PNGs of these diagrams are in `img/waves-*.png`. Chapter 4 has the short version. This one walks the code.
+Chapter 4 has the short version. This one walks the code.
 
 ## 8.1 Who is who
 
