@@ -55,7 +55,8 @@ One file per issue, ready to become a GitHub issue: the first line is the title 
 | # | Title | Type | Priority | Area |
 |---|---|---|---|---|
 | [041](041-spawning-complete-one-interval-late.md) | `spawning_complete` fires one interval after the last spawn | polish / timing | low | waves |
-| [042](042-death-children-global-randf.md) | Death-child offsets use the global random generator | determinism | low | spawners |
+| [043](043-wave-1-start-button-and-countdown.md) | Wave 1 starts immediately: add a player-started first wave | feature / design | medium | waves, UI |
+| [044](044-wave-system-redesign.md) | Wave system: discuss and redesign pacing and early calls | design / discussion | medium | waves |
 
 Folded into existing drafts: "walled-in enemies" → 001; "fallback map never hit" → 014.
 
@@ -64,5 +65,5 @@ Left out on purpose:
 - **Already GitHub issues:** targeting priorities (#10), obstacle-breaking enemy (#11).
 - **Descriptions, not problems:** one base tower by design; `TurretComponent.configure()` timer behaviour; the slightly-under fire rate (kept on purpose); health bars rejected.
 
-By design, not issues: a tap or click acts at the release position, and the first 3 mm of a one-finger drag don't pan.
+By design, not issues: a tap or click acts at the release position, and the first 3 mm of a one-finger drag don't pan. Death-child offsets use the global `randf()` (was draft 042; cosmetic randomness, closed as by design).
 

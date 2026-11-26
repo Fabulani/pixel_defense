@@ -152,7 +152,17 @@ Each pass rebuilds the eligible list: `first_wave <= index`, `cost <= remaining`
 
 Budget = `(4 + 2i) × 1.08^i`, with `i` = banner − 1. The budget is a total for the wave, split between the open spawners, so more spawners means the same threat spread over more lanes (plus the boss bonus).
 
-The early-call bonus is `floor(time_left × 0.5)`: 6 coins at the very start of the 12 s countdown, 5 a tenth of a second later. There is no cap (issue 028).
+The early-call bonus is `floor(time_left × 0.5)`: 6 coins at the very start of the 12 s countdown, 5 a tenth of a second later. Wave 1 has no countdown, so a run has 19 countdowns: about 95 coins if the player always calls at once, 114 at most. There is no cap (issue 028).
+
+When a capped enemy can first appear depends on the spawner count. A splitter (cost 6, cap 0.3) needs a spawner budget of 20:
+
+| Open spawners | Splitter first possible |
+|---|---|
+| 1 to 3 | banner 12 (3 spawners: 60.6 / 3 = 20.2, just enough) |
+| 4 | banner 14 (81.6 / 4 = 20.4) |
+| 5 | banner 16 (107.9 / 5 = 21.6) |
+
+A boss slot (×1.5) or difficulty above 1 can bring it earlier for that spawner, never before its `first_wave`.
 
 ## 8.7 How the game is won
 
@@ -194,5 +204,7 @@ These are public `WaveManager` methods that only the debug menu calls (the one-w
 - `set_spawn_delay_multiplier()` uses the wrong open count (issue 008).
 - Calling early has no cap (issue 028), and `waves_survived` counts waves started (issue 038).
 - **New:** `spawning_complete` fires one interval after the last spawn (issue 041, low).
-- **New:** death-child offsets use the global `randf()` (issue 042, low). Waves stay deterministic, but the minis' exact positions do not, so a replay of a seed is not bit-exact.
+- Death-child offsets use the global `randf()`. Waves stay deterministic, but the minis' exact positions do not. By design (cosmetic randomness).
+- Wave 1 starts with no build phase or countdown (issue 043).
+- Pacing and the early-call model are up for a redesign (issue 044): the per-spawner interval grows with the spawner count, and the countdown resets after every wave.
 - `tools/print_waves.tscn` is the way to see a seed's waves without playing. Godot is not installed in this environment, so the table above is computed from the formula, not printed.
