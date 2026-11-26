@@ -24,3 +24,12 @@ Diagrams are Mermaid. GitHub renders them, and so does VS Code with a Mermaid ex
 3. **Managers own state changes.** `BuildingManager` owns towers and their coins. `WaveManager` owns pacing. `EnemySpawner._create_enemy()` is the *only* place that creates enemies. `VfxManager.make_particles()` is the only place that creates particles.
 4. **Entities are thin, behaviour lives in components and resources.** Examples: `Enemy` + `Pathfinding`/`Health`/`Dash`/`Regeneration`/`DamageSmoke`, and `Tower` + `TurretComponent`. Tunables are `.tres` resources (`TowerStats`, `EnemyStats`, `Drops`, `MajorUpgrade`, `WaveConfig`, `WaveTemplate`, `MapGenConfig`).
 5. **Everything random that defines a run is seeded.** The map uses `hash([seed, attempt])` and the waves use `hash([wave_seed, index])`. Only cosmetic randomness (dash phase, death offsets, particles) uses global `randf`.
+
+## Next steps (as of 2026-11-26)
+
+Walk-throughs done: overview, controls (ch. 7), waves (ch. 8), combat and towers (ch. 9). Left for a later session:
+
+- [ ] **Map generation** walk-through: generator pipeline, rejects and fallback, painter lookups (base: [05-mapgen.md](05-mapgen.md)).
+- [ ] **Debug menu and CI** walk-through: the one-way rule, sections, build/release workflows (base: [06-debug-ci.md](06-debug-ci.md)).
+- [ ] Hand-pick the drafts in [issues/](issues/README.md) and create the GitHub issues.
+- [ ] Update CLAUDE.md and the other docs (drafts 019, 020).
